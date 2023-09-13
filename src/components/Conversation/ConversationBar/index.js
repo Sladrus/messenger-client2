@@ -68,10 +68,10 @@ const ConversationBar = observer(({ handleDrawerOpen, open }) => {
                       justifyContent: 'space-between',
                     }}
                   >
-                    {/* <ClearIcon
-                  sx={{ pr: '25px', cursor: 'pointer' }}
-                  onClick={clearSelectedConversation}
-                /> */}
+                    <ClearIcon
+                      sx={{ pr: '25px', cursor: 'pointer' }}
+                      onClick={clearSelectedConversation}
+                    />
                     <Box>
                       <Typography variant="subtitle2" fontWeight="bold">
                         {conversationStore.selectedConversation.title}

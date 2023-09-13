@@ -5,6 +5,7 @@ import { Box, CircularProgress, Typography } from '@mui/material';
 import ConversationItem from '../ConversationItem';
 import { StoreContext } from '../../../context/store';
 import { observer } from 'mobx-react-lite';
+import { List, AutoSizer } from 'react-virtualized';
 
 const Item = styled('div')(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -51,7 +52,6 @@ const ConversationList = observer(() => {
     }
   }, [conversationStore.selectedChatId, conversationStore.selectedIsLoading]);
 
-
   return (
     <Item>
       <ConversationSearch />
@@ -68,35 +68,29 @@ const ConversationList = observer(() => {
           <CircularProgress />
         </Box>
       ) : (
-        <Box
-          ref={scrollRef}
-          sx={{ height: 'calc(100% - 65px)', overflowY: 'scroll' }}
-        >
-          {conversations?.length > 0 ? (
-            conversations?.map((conversation) => (
-              <ConversationItem
-                key={conversation?._id}
-                conversation={conversation}
-                onClick={() => handleSelectConversation(conversation?.chat_id)}
-                dataChatId={conversation?.chat_id}
-              />
-            ))
-          ) : (
-            <Typography
-              sx={{
-                textOveralow: 'ellipsis',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                width: '100%',
-                p: '25px 0',
-              }}
-              variant="body2"
-              color="textSecondary"
-            >
-              По данному запросу чаты отсутствуют
-            </Typography>
+        <AutoSizer>
+          {({ height, width }) => (
+            <List
+              height={height - 65}
+              rowCount={conversations.length}
+              rowHeight={60} // Высота каждого элемента списка
+              rowRenderer={({ index, key, style }) => (
+                <div key={key} style={style}>
+                  {/* Рендеринг элемента списка */}
+                  <ConversationItem
+                    conversation={conversations[index]}
+                    onClick={() =>
+                      handleSelectConversation(conversations[index].chat_id)
+                    }
+                    dataChatId={conversations[index].chat_id}
+                  />
+                </div>
+              )}
+              overscanRowCount={10} // Количество предварительно отображаемых элементов сверху и снизу
+              width={width}
+            />
           )}
-        </Box>
+        </AutoSizer>
       )}
     </Item>
   );

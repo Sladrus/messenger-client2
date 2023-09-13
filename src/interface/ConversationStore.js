@@ -22,7 +22,8 @@ class ConversationStore {
     };
 
     this.conversations = null;
-
+    this.page = 1;
+    this.limit = 100;
     this.searchedConversations = null;
     this.searchInput = '';
     this.searchIsLoading = false;

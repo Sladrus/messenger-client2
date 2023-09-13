@@ -29,6 +29,7 @@ export const registerUserHandlers = (
   navigate
 ) => {
   const setUserData = (userData) => {
+    console.log(userData);
     userStore.setUserData(userData);
     enqueueSnackbar(`${userData.user.username} успешно авторизован`, {
       variant: 'success',

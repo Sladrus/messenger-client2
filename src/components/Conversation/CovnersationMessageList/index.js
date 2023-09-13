@@ -16,6 +16,7 @@ import { generatePastelColor } from '../../../utils/color';
 import Badge from '@mui/material/Badge';
 import env from 'react-dotenv';
 import DescriptionIcon from '@mui/icons-material/Description';
+import { FixedSizeList as List } from 'react-window';
 
 const token = env.BOT_TOKEN;
 
@@ -47,7 +48,7 @@ const EventMessage = observer(({ message }) => {
         justifyContent: 'center', // changed 'end' to 'flex-end' and 'start' to 'flex-start'
       }}
     >
-      <Stack sx={{ maxWidth: 'calc(100% - 55px)' }}>
+      <Stack sx={{ maxWidth: 'calc(100% - 60px)' }}>
         {message?.unread && (
           <StyledBadge badgeContent={'Новое'} color="primary" />
         )}
@@ -141,7 +142,7 @@ const TextMessage = observer(({ message, isSentByMe }) => {
           N
         </Avatar>
       )}
-      <Stack sx={{ maxWidth: 'calc(100% - 55px)' }}>
+      <Stack sx={{ maxWidth: 'calc(100% - 60px)' }}>
         {message?.unread && (
           <StyledBadge badgeContent={'Новое'} color="primary" />
         )}
@@ -224,7 +225,7 @@ const PhotoMessage = observer(({ message, isSentByMe }) => {
           N
         </Avatar>
       )}
-      <Stack sx={{ maxWidth: 'calc(100% - 55px)' }}>
+      <Stack sx={{ maxWidth: 'calc(100% - 60px)' }}>
         {message?.unread && (
           <StyledBadge badgeContent={'Новое'} color="primary" />
         )}

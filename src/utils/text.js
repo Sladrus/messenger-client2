@@ -10,7 +10,6 @@ export function chatCount(num) {
 }
 
 export function unreadCount(array) {
-  console.log(array);
   const filteredArray = array?.filter((item) => item.unreadCount > 0);
   return filteredArray?.length || 0;
 }

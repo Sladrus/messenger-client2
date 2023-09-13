@@ -23,7 +23,6 @@ class UserStore {
   }
 
   setUserData(userData) {
-    console.log('Юзер получен и аутентифицирован');
     this.user = userData.user;
     this.setLoggedIn(true);
     this.setLoading(false);

@@ -274,14 +274,12 @@ const PhotoMessage = ({ message, isSentByMe }) => {
 
 const DocumentMessage = ({ message, isSentByMe }) => {
   const [documentUrl, setDocumentUrl] = useState(null);
-  console.log(message);
   useEffect(() => {
     fetch(
       `https://api.telegram.org/bot${token}/getFile?file_id=${message.document.file_id}`
     )
       .then((response) => response.json())
       .then((data) => {
-        console.log(data.result);
         // URL-адрес фото находится в свойстве file_path объекта File
         const url = `https://api.telegram.org/file/bot${token}/${data.result?.file_path}`;
         setDocumentUrl(url);

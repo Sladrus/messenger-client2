@@ -5,7 +5,6 @@ import { observer } from 'mobx-react-lite';
 
 const FilterTags = observer(({ tags, conversationStore }) => {
   const handleChange = (event, newValue) => {
-    console.log(newValue);
     conversationStore.setFilterTags(newValue);
   };
 

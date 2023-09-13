@@ -25,7 +25,6 @@ const FilterDate = observer(({ show, handleClose, conversationStore }) => {
     range1.startDate.setHours(0);
     range1.startDate.setMinutes(0);
     range1.startDate.setSeconds(0);
-    console.log(range1);
 
     conversationStore.setFilterDateRange(range1);
   };

@@ -144,7 +144,6 @@ class ConversationStore {
     }
 
     this.conversations = updatedConversations;
-    console.log(conversation, this.selectedConversation);
     if (
       conversation?._id === this.selectedConversation?._id &&
       conversation?._id &&
@@ -163,7 +162,6 @@ class ConversationStore {
         this.selectedConversation?.messages.push(conversation?.lastMessage);
         if (conversation?.lastMessage?.from.is_bot) {
           this.selectedConversation?.messages.forEach((message) => {
-            console.log(message);
             message.unread = false;
           });
         } else {
@@ -255,7 +253,6 @@ class ConversationStore {
   }
 
   async createMoneysend(socket, id, data) {
-    console.log(id, data);
     this.setMoneysendLoading(true);
     socket.emit('conversation:createMoneysend', {
       id,

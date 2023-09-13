@@ -32,9 +32,7 @@ const ConversationTask = observer(({ conversation }) => {
 
   const handleChangeType = (e, value, reason, details) => {
     e.preventDefault();
-    console.log(e, value, reason, details);
     if (reason === 'createOption') {
-      console.log(details.option);
       taskStore.createTaskType(socket, conversation?._id, details.option);
     }
   };

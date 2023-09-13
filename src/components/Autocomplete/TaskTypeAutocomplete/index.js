@@ -6,7 +6,6 @@ const TaskTypeAutocomplete = ({ types, onChange, isLoading }) => {
 
   const handleChange = (e, value, reason, details) => {
     if (reason === 'createOption') {
-      console.log(details.option);
       setValue({ title: details.option });
     }
     onChange(e, value, reason, details);

@@ -80,7 +80,6 @@ export const registerConversationHandlers = (
   };
 
   const setSearchConversations = ({ conversations }) => {
-    console.log(conversations);
     conversationStore.setSearchedConversations(conversations);
     conversationStore.setLoading(false);
   };

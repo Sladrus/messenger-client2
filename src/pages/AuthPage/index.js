@@ -31,7 +31,6 @@ const AuthPage = observer(() => {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    console.log('Кнопка войти');
     await userStore.login(socket, { username, password });
   }
 

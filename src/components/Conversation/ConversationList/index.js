@@ -51,7 +51,6 @@ const ConversationList = observer(() => {
     }
   }, [conversationStore.selectedChatId, conversationStore.selectedIsLoading]);
 
-  console.log(conversations?.length);
 
   return (
     <Item>

@@ -4,7 +4,6 @@ import TagIcon from '@mui/icons-material/Tag';
 
 const TagAutocompelte = ({ tags, convTags, onChange, isLoading }) => {
   function filterOptions(options, { inputValue }) {
-    console.log(inputValue);
 
     return tags
       ? options?.filter((option) => {

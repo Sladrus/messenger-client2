@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
   Divider,
   List,
@@ -10,7 +10,11 @@ import { styled } from '@mui/material/styles';
 import MuiDrawer from '@mui/material/Drawer';
 import { authRoutes } from '../../routes';
 import { useNavigate } from 'react-router-dom';
-
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import { Logout } from '@mui/icons-material';
+import { observer } from 'mobx-react-lite';
+import { SocketContext } from '../../context/socket';
+import { StoreContext } from '../../context/store';
 const drawerWidth = 200;
 
 const openedMixin = (theme) => ({
@@ -52,7 +56,10 @@ const Drawer = styled(MuiDrawer, {
   }),
 }));
 
-const MiniDrawer = () => {
+const MiniDrawer = observer(() => {
+  const { socket } = useContext(SocketContext);
+  const { userStore } = useContext(StoreContext);
+
   const [selectedPath, setSelectedPath] = useState(window.location.pathname);
   const navigate = useNavigate();
 
@@ -65,11 +72,16 @@ const MiniDrawer = () => {
     setSelectedPath(window.location.pathname);
   }, [window.location.pathname]);
 
+  const logout = () => {
+    userStore.logout(socket);
+  };
+
   return (
     <Drawer variant="permanent" open={false}>
       <List
         sx={{
           padding: 0,
+          height: '100%',
         }}
       >
         {authRoutes.map(({ title, Icon, path }, index) => (
@@ -100,9 +112,28 @@ const MiniDrawer = () => {
           </ListItem>
         ))}
       </List>
+      <ListItemButton
+        onClick={logout}
+        sx={{
+          minHeight: 48,
+          justifyContent: 'center',
+          px: 2.5,
+        }}
+      >
+        <ListItemIcon
+          sx={{
+            minWidth: 0,
+            mr: 'auto',
+            justifyContent: 'center',
+          }}
+        >
+          {<ExitToAppIcon color="action" />}
+        </ListItemIcon>
+      </ListItemButton>
+
       <Divider />
     </Drawer>
   );
-};
+});
 
 export default MiniDrawer;

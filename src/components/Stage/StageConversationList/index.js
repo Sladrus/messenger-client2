@@ -1,22 +1,40 @@
 import { Box, Stack, Typography } from '@mui/material';
 import React from 'react';
 import StageConversationCard from '../StageConversationCard';
-import AddIcon from '@mui/icons-material/Add';
+import { AutoSizer, List } from 'react-virtualized';
 
 const StageConversationList = ({ conversations }) => {
+  const rowRenderer = ({ index, key, style }) => {
+    const conversation = conversations[index];
+
+    return (
+      <div key={key} style={style}>
+        <StageConversationCard conversation={conversation} />
+      </div>
+    );
+  };
+
   return (
     <Box sx={{ height: 'calc(100% - 64px)', overflow: 'auto' }}>
       {conversations?.length > 0 ? (
-        <Stack>
-          {conversations?.map((conversation) => {
-            return (
-              <StageConversationCard
-                key={conversation._id}
-                conversation={conversation}
-              />
-            );
-          })}
-        </Stack>
+        <AutoSizer>
+          {({ height, width }) => (
+            <List
+              height={height} // Subtract the header height (64px)
+              rowCount={conversations?.length}
+              rowHeight={100}
+              rowRenderer={({ key, index, style }) => {
+                const conversation = conversations[index];
+                return (
+                  <div key={key} style={style}>
+                    <StageConversationCard conversation={conversation} />
+                  </div>
+                );
+              }}
+              width={width}
+            />
+          )}
+        </AutoSizer>
       ) : (
         <Typography
           sx={{

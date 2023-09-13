@@ -60,6 +60,8 @@ export const registerConversationHandlers = (
     conversationStore.setTagsLoading(false);
     conversationStore.setTaskLoading(false);
     conversationStore.setMessageLoading(false);
+    conversationStore.setMoneysendLoading(false);
+    conversationStore.setUnreadLoading(false);
   };
 
   const setConversations = ({ conversations }) => {
@@ -77,6 +79,7 @@ export const registerConversationHandlers = (
     conversationStore.setCommentLoading(false);
     conversationStore.setMessageLoading(false);
     conversationStore.setMoneysendLoading(false);
+    conversationStore.setUnreadLoading(false);
   };
 
   const setSearchConversations = ({ conversations }) => {

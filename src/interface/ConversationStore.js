@@ -38,11 +38,13 @@ class ConversationStore {
     this.taskTypeLoading = false;
     this.messageLoading = false;
     this.moneysendLoading = false;
+    this.unreadLoading = false;
 
     this.selectedChatId = null;
     this.selectedConversation = null;
     makeAutoObservable(this, {
       setStageLoading: action,
+      setUnreadLoading: action,
       setMessageLoading: action,
       setTaskTypeLoading: action,
       setUserLoading: action,
@@ -74,6 +76,10 @@ class ConversationStore {
 
   setTagsLoading(value) {
     this.tagsLoading = value;
+  }
+
+  setUnreadLoading(value) {
+    this.unreadLoading = value;
   }
 
   setTaskLoading(value) {
@@ -154,6 +160,13 @@ class ConversationStore {
       this.selectedConversation.user = conversation?.user;
       this.selectedConversation.tags = conversation?.tags;
       this.selectedConversation.members = conversation?.members;
+      this.selectedConversation.unreadCount = conversation?.unreadCount;
+      if (this.selectedConversation.unreadCount === 0) {
+        this.selectedConversation?.messages?.map((message) => {
+          message.unread = false;
+          return message;
+        });
+      }
       if (
         !this.selectedConversation?.messages.find(
           (message) => message._id === conversation?.lastMessage?._id
@@ -249,6 +262,13 @@ class ConversationStore {
       text,
       type,
       user,
+    });
+  }
+
+  async readConversation(socket, id) {
+    this.setUnreadLoading(true);
+    socket.emit('conversation:read', {
+      id,
     });
   }
 

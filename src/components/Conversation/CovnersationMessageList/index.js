@@ -1,6 +1,13 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { styled } from '@mui/material/styles';
-import { Box, Card, CircularProgress, Stack, Typography } from '@mui/material';
+import {
+  Box,
+  Card,
+  CircularProgress,
+  Fab,
+  Stack,
+  Typography,
+} from '@mui/material';
 import Avatar from '@mui/joy/Avatar';
 import { observer } from 'mobx-react-lite';
 import { StoreContext } from '../../../context/store';
@@ -30,7 +37,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
   },
 }));
 
-const EventMessage = ({ message }) => {
+const EventMessage = observer(({ message }) => {
   return (
     <Box
       sx={{
@@ -80,9 +87,9 @@ const EventMessage = ({ message }) => {
       </Stack>
     </Box>
   );
-};
+});
 
-const LoadingMessage = () => {
+const LoadingMessage = observer(() => {
   return (
     <Box
       sx={{
@@ -112,9 +119,9 @@ const LoadingMessage = () => {
       </Stack>
     </Box>
   );
-};
+});
 
-const TextMessage = ({ message, isSentByMe }) => {
+const TextMessage = observer(({ message, isSentByMe }) => {
   const fullName =
     message.from.first_name +
     (message.from.last_name ? ' ' + message.from.last_name : '');
@@ -179,9 +186,9 @@ const TextMessage = ({ message, isSentByMe }) => {
       </Stack>
     </Box>
   );
-};
+});
 
-const PhotoMessage = ({ message, isSentByMe }) => {
+const PhotoMessage = observer(({ message, isSentByMe }) => {
   const [photoUrl, setPhotoUrl] = useState(null);
 
   useEffect(() => {
@@ -270,9 +277,9 @@ const PhotoMessage = ({ message, isSentByMe }) => {
       </Stack>
     </Box>
   );
-};
+});
 
-const DocumentMessage = ({ message, isSentByMe }) => {
+const DocumentMessage = observer(({ message, isSentByMe }) => {
   const [documentUrl, setDocumentUrl] = useState(null);
   useEffect(() => {
     fetch(
@@ -375,7 +382,7 @@ const DocumentMessage = ({ message, isSentByMe }) => {
       </Stack>
     </Box>
   );
-};
+});
 
 const ConversationMessageList = observer(() => {
   const { conversationStore, userStore } = useContext(StoreContext);

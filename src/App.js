@@ -1,24 +1,37 @@
-import logo from './logo.svg';
+import AppRoutes from './pages/AppRoutes';
 import './App.css';
+import { SocketContext, socket } from './context/socket';
+import {
+  StoreContext,
+  userStore,
+  conversationStore,
+  stageStore,
+  tagsStore,
+  taskStore,
+} from './context/store';
+import React from 'react';
+import { SnackbarProvider } from 'notistack';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+    <SocketContext.Provider value={{ socket }}>
+      <StoreContext.Provider
+        value={{
+          userStore,
+          conversationStore,
+          stageStore,
+          tagsStore,
+          taskStore,
+        }}
+      >
+        <SnackbarProvider
+          autoHideDuration={3000}
+          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         >
-          Learn React
-        </a>
-      </header>
-    </div>
+          <AppRoutes />
+        </SnackbarProvider>
+      </StoreContext.Provider>
+    </SocketContext.Provider>
   );
 }
 

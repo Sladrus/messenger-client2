@@ -126,6 +126,7 @@ class ConversationStore {
 
   setConversations(value) {
     this.conversations = value;
+    console.log(this.conversations);
   }
 
   setSearchedConversations(value) {
@@ -137,6 +138,61 @@ class ConversationStore {
     this.selectedConversation = null;
   }
 
+  isConversationMatchingFilter(conversation) {
+    // Check user
+    if (
+      this.filter.user !== 'all' &&
+      conversation?.user?._id !== this.filter.user
+    ) {
+      return false;
+    }
+
+    // Check unread
+    if (
+      this.filter.unread !== 'all' &&
+      conversation?.unread !== this.filter.unread
+    ) {
+      return false;
+    }
+
+    // Check stage
+    if (
+      this.filter.stage !== 'all' &&
+      conversation?.stage._id !== this.filter.stage
+    ) {
+      return false;
+    }
+
+    // Check tags
+    if (
+      this.filter.tags.length > 0 &&
+      !conversation?.tags?.some((tag) => this.filter.tags.includes(tag))
+    ) {
+      return false;
+    }
+
+    // Check dateRange
+    const startDate = this.filter.dateRange.startDate;
+    const endDate = this.filter.dateRange.endDate;
+    const conversationDate = conversation?.workAt;
+
+    if (
+      startDate &&
+      new Date(startDate).getTime() > new Date(conversationDate)?.getTime()
+    ) {
+      return false;
+    }
+
+    if (
+      endDate &&
+      new Date(endDate).getTime() < new Date(conversationDate)?.getTime()
+    ) {
+      return false;
+    }
+
+    return true;
+  }
+
   updateConversation(conversation) {
     const updatedConversations = this.conversations?.map((conv) => {
       if (conv?._id === conversation?._id) {
@@ -146,7 +202,10 @@ class ConversationStore {
       }
     });
 
-    if (!updatedConversations?.includes(conversation)) {
+    if (
+      !updatedConversations?.includes(conversation) &&
+      this.isConversationMatchingFilter(conversation)
+    ) {
       updatedConversations.push(conversation);
     }
 

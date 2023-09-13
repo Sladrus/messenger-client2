@@ -68,22 +68,31 @@ const ConversationBar = observer(({ handleDrawerOpen, open }) => {
                       justifyContent: 'space-between',
                     }}
                   >
-                    <ClearIcon
-                      sx={{ pr: '25px', cursor: 'pointer' }}
-                      onClick={clearSelectedConversation}
-                    />
-                    <Box>
-                      <Typography variant="subtitle2" fontWeight="bold">
-                        {conversationStore.selectedConversation.title}
-                      </Typography>
-                      <Typography variant="body2" color="textSecondary">
-                        Кол-во сообщений:{' '}
-                        {
-                          conversationStore.selectedConversation.messages
-                            ?.length
-                        }
-                      </Typography>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <ClearIcon
+                        sx={{ pr: '25px', cursor: 'pointer' }}
+                        onClick={clearSelectedConversation}
+                      />
+                      <Box>
+                        <Typography variant="subtitle2" fontWeight="bold">
+                          {conversationStore.selectedConversation.title}
+                        </Typography>
+                        <Typography variant="body2" color="textSecondary">
+                          Кол-во сообщений:{' '}
+                          {
+                            conversationStore.selectedConversation.messages
+                              ?.length
+                          }
+                        </Typography>
+                      </Box>
                     </Box>
+
                     <Box sx={{ p: '0 10px' }}>
                       {conversationStore?.selectedChatId !== null &&
                         conversationStore.selectedConversation?.unreadCount >

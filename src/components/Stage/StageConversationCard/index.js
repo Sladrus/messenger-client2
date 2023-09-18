@@ -160,7 +160,7 @@ const StageConversationCard = observer(({ conversation }) => {
         >
           {renderType(conversation?.type)}
           <>
-            <Box sx={{ width: '100%' }}>
+            <Box sx={{ width: '100%', display: 'flex' }}>
               {conversation?.tags?.map((tag) => {
                 return (
                   <Chip

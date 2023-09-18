@@ -1,15 +1,15 @@
 import { Autocomplete, Box, CircularProgress, TextField } from '@mui/material';
 import React, { useState } from 'react';
 
-const TaskTypeAutocomplete = ({ types, onChange, isLoading }) => {
-  const [value, setValue] = useState({ title: '' });
+const TaskTypeAutocomplete = ({ types, onChange, isLoading, value }) => {
+  // const [value, setValue] = useState({ title: '' });
 
-  const handleChange = (e, value, reason, details) => {
-    if (reason === 'createOption') {
-      setValue({ title: details.option });
-    }
-    onChange(e, value, reason, details);
-  };
+  // const handleChange = (e, value, reason, details) => {
+  //   if (reason === 'createOption') {
+  //     setValue({ title: details.option });
+  //   }
+  //   onChange(e, value, reason, details);
+  // };
 
   return (
     <Autocomplete
@@ -17,7 +17,7 @@ const TaskTypeAutocomplete = ({ types, onChange, isLoading }) => {
         p: '0px 15px',
       }}
       freeSolo
-      onChange={handleChange}
+      onChange={onChange}
       size={'small'}
       value={value}
       options={types}
@@ -35,7 +35,6 @@ const TaskTypeAutocomplete = ({ types, onChange, isLoading }) => {
             sx={{
               height: '40px',
               border: 'none',
-              // '& fieldset': { border: 'none' },
               '& input::placeholder': {
                 fontSize: '14px',
               },

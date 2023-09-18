@@ -55,7 +55,10 @@ export const registerConversationHandlers = (
 ) => {
   const updateConversation = ({ conversation }) => {
     conversationStore.updateConversation(conversation); // stage Store.setConversations(updatedConversations);
-    stageStore.setConversations(conversationStore.conversations);
+    stageStore.setConversations(
+      conversationStore.conversations,
+      conversationStore.filter.type
+    );
     conversationStore.setUserLoading(false);
     conversationStore.setStageLoading(false);
     conversationStore.setTagsLoading(false);

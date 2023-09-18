@@ -9,6 +9,7 @@ import FilterTask from '../Filters/FilterTask';
 import FilterTags from '../Filters/FilterTags';
 import FilterDate from '../Filters/FilterDate';
 import FilterDateButton from '../Filters/FilterDateButton';
+import FilterType from '../Filters/FilterType';
 
 const FilterBar = observer(() => {
   const { userStore, stageStore, conversationStore } = useContext(StoreContext);
@@ -34,6 +35,7 @@ const FilterBar = observer(() => {
       >
         <Toolbar>
           <Stack direction="row" spacing={2} sx={{ height: '45px' }}>
+            <FilterType conversationStore={conversationStore} />
             <FilterUnread conversationStore={conversationStore} />
             <FilterUser
               users={userStore.users}

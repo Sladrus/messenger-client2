@@ -7,7 +7,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import styled from '@emotion/styled';
 
@@ -30,11 +30,14 @@ const ConversationTask = observer(({ conversation }) => {
   const { socket } = useContext(SocketContext);
   const { conversationStore, taskStore } = useContext(StoreContext);
 
+  const [type, setType] = useState('');
+
   const handleChangeType = (e, value, reason, details) => {
     e.preventDefault();
-    if (reason === 'createOption') {
-      taskStore.createTaskType(socket, conversation?._id, details.option);
-    }
+    setType(value);
+    // if (reason === 'createOption') {
+    //   taskStore.createTaskType(socket, conversation?._id, details.option);
+    // }
   };
 
   return (
@@ -53,6 +56,7 @@ const ConversationTask = observer(({ conversation }) => {
         <AccordionDetails sx={{ p: 0, borderRadius: 0 }}>
           <Stack spacing={1} sx={{ p: '10px 0px' }}>
             <TaskTypeAutocomplete
+              value={type}
               types={taskStore.taskTypes}
               onChange={handleChangeType}
               isLoading={taskStore.isTypesLoading}

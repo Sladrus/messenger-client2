@@ -2,9 +2,20 @@ import { Box, Chip, Typography } from '@mui/material';
 import React from 'react';
 import { chatCount, unreadCount } from '../../../utils/text';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined';
+import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 
 const StageCard = ({ stage, conversations }) => {
   const unreadLength = unreadCount(conversations);
+  const renderType = (type) => {
+    if (type === 'supergroup' || type === 'group')
+      return <GroupsOutlinedIcon sx={{ fontSize: '20px', pr: '10px' }} />;
+    if (type === 'private')
+      return (
+        <AccountCircleOutlinedIcon sx={{ fontSize: '20px', pr: '10px' }} />
+      );
+  };
+
   return (
     <Box
       sx={{
@@ -32,10 +43,13 @@ const StageCard = ({ stage, conversations }) => {
             whiteSpace: 'nowrap',
             overflow: 'hidden',
             width: '100%',
+            display: 'flex',
+            alignItems: 'center',
           }}
           variant="subtitle1"
           fontWeight="bold"
         >
+          {renderType(stage.type)}
           {stage.label}
         </Typography>
         <MoreVertIcon

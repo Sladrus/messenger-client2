@@ -16,7 +16,15 @@ const Item = styled('div')(({ theme }) => ({
 }));
 
 const BoardPage = observer(() => {
-  const { stageStore } = useContext(StoreContext);
+  const { stageStore, conversationStore } = useContext(StoreContext);
+  console.log(conversationStore.filter.type);
+  const filteredStages =
+    conversationStore.filter.type === 'all'
+      ? stageStore.stages
+      : stageStore.stages.filter(
+          (stage) =>
+            stage.type === 'all' || stage.type === conversationStore.filter.type
+        );
 
   const [open, setOpen] = React.useState(false);
 
@@ -41,7 +49,7 @@ const BoardPage = observer(() => {
             flexDirection: 'row',
           }}
         >
-          {stageStore.stages?.map((stage) => {
+          {filteredStages?.map((stage) => {
             return (
               <StageList
                 key={stage._id}

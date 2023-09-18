@@ -1,9 +1,10 @@
-import { makeAutoObservable, action, observable } from 'mobx';
+import { makeAutoObservable, action } from 'mobx';
 
 class ConversationStore {
   constructor() {
     this.filter = {
       user: 'all',
+      type: 'all',
       unread: 'all',
       stage: 'all',
       tags: [],
@@ -163,6 +164,11 @@ class ConversationStore {
       return false;
     }
 
+    // Check type
+    if (this.filter.type !== 'all' && conversation?.type !== this.filter.type) {
+      return false;
+    }
+
     // Check tags
     if (
       this.filter.tags.length > 0 &&
@@ -250,6 +256,10 @@ class ConversationStore {
   }
 
   //FILTERS
+
+  setFilterType(value) {
+    this.filter.type = value;
+  }
 
   setFilterDateRange(range) {
     this.filter.dateRange = range;

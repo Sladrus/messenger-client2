@@ -17,9 +17,9 @@ export const isToday = (date) => {
   } else {
     return `${today} ${messageDate.getDate().toLocaleString([], {
       minimumIntegerDigits: 2,
-    })}.${messageDate
-      .getMonth()
-      .toLocaleString([], { minimumIntegerDigits: 2 })}`;
+    })}.${(messageDate.getMonth() + 1).toLocaleString([], {
+      minimumIntegerDigits: 2,
+    })}`;
   }
 };
 
@@ -42,8 +42,8 @@ export const isTodayUnix = (timestamp) => {
   } else {
     return `${today} ${messageDate.getDate().toLocaleString([], {
       minimumIntegerDigits: 2,
-    })}.${messageDate
-      .getMonth()
-      .toLocaleString([], { minimumIntegerDigits: 2 })}`;
+    })}.${(messageDate.getMonth() + 1).toLocaleString([], {
+      minimumIntegerDigits: 2,
+    })}`;
   }
 };

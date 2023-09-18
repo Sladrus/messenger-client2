@@ -49,6 +49,7 @@ export const useChat = () => {
   }, [
     conversationStore.filter.unread,
     conversationStore.filter.user,
+    conversationStore.filter.type,
     conversationStore.filter.stage,
     conversationStore.filter.tags,
     conversationStore.filter.task,

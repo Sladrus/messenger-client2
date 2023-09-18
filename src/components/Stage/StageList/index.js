@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Box, Card, CircularProgress, Grid, Typography } from '@mui/material';
+import { Box, CircularProgress, Grid } from '@mui/material';
 import StageCard from '../StageCard';
 import StageConversationList from '../StageConversationList';
 import { StoreContext } from '../../../context/store';

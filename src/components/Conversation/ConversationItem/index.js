@@ -7,6 +7,8 @@ import Badge from '@mui/material/Badge';
 import { styled } from '@mui/material/styles';
 import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
+import GroupsIcon from '@mui/icons-material/Groups';
+import PersonIcon from '@mui/icons-material/Person';
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   '& .MuiBadge-badge': {
@@ -22,6 +24,11 @@ const renderType = (type) => {
     return <GroupsOutlinedIcon sx={{ fontSize: '20px' }} />;
   if (type === 'private')
     return <AccountCircleOutlinedIcon sx={{ fontSize: '20px' }} />;
+};
+
+const renderAvatar = (type) => {
+  if (type === 'supergroup' || type === 'group') return <GroupsIcon />;
+  if (type === 'private') return <PersonIcon />;
 };
 
 const ConversationItem = observer(({ conversation, onClick, dataChatId }) => {
@@ -56,7 +63,9 @@ const ConversationItem = observer(({ conversation, onClick, dataChatId }) => {
         <Avatar
           alt={conversation?.title}
           sx={{ background: conversation?.stage.color }}
-        ></Avatar>
+        >
+          {renderAvatar(conversation?.type)}
+        </Avatar>
       </StyledBadge>
       <Box
         sx={{
@@ -126,7 +135,7 @@ const ConversationItem = observer(({ conversation, onClick, dataChatId }) => {
             variant="body2"
             color="textSecondary"
           >
-            {conversation?.lastMessage.text}
+            {conversation?.lastMessage?.text}
           </Typography>
           {renderType(conversation?.type)}
         </Box>

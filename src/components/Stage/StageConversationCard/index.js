@@ -6,6 +6,10 @@ import LinkIcon from '@mui/icons-material/Link';
 import { observer } from 'mobx-react-lite';
 import { StoreContext } from '../../../context/store';
 import { useNavigate } from 'react-router-dom';
+import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined';
+import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
+import GroupsIcon from '@mui/icons-material/Groups';
+import PersonIcon from '@mui/icons-material/Person';
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   '& .MuiBadge-badge': {
@@ -23,6 +27,18 @@ const StageConversationCard = observer(({ conversation }) => {
   const handleSelectConversation = (chat_id) => {
     conversationStore.setSelectedChatId(chat_id);
     navigate('/messenger');
+  };
+
+  const renderType = (type) => {
+    if (type === 'supergroup' || type === 'group')
+      return <GroupsOutlinedIcon sx={{ fontSize: '20px' }} />;
+    if (type === 'private')
+      return <AccountCircleOutlinedIcon sx={{ fontSize: '20px' }} />;
+  };
+
+  const renderAvatar = (type) => {
+    if (type === 'supergroup' || type === 'group') return <GroupsIcon />;
+    if (type === 'private') return <PersonIcon />;
   };
 
   return (
@@ -62,7 +78,9 @@ const StageConversationCard = observer(({ conversation }) => {
           <Avatar
             alt={conversation.name}
             sx={{ background: conversation.stage.color }}
-          />
+          >
+            {renderAvatar(conversation?.type)}
+          </Avatar>
         </StyledBadge>
         <Box
           sx={{
@@ -120,7 +138,7 @@ const StageConversationCard = observer(({ conversation }) => {
             variant="body2"
             color="textSecondary"
           >
-            {conversation.lastMessage.text}
+            {conversation?.lastMessage?.text}
           </Typography>
         </Box>
       </Box>
@@ -132,41 +150,53 @@ const StageConversationCard = observer(({ conversation }) => {
           justifyContent: 'space-between',
         }}
       >
-        <Box>
-          {conversation?.tags?.map((tag) => {
-            return (
-              <Chip
-                sx={{ mr: '5px', fontSize: '11px' }}
-                key={tag?._id}
-                label={tag?.value}
-                size="small"
-                variant="outlined"
-              />
-            );
-          })}
-        </Box>
-
         <Box
           sx={{
+            width: '100%',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'end',
+            justifyContent: 'start',
           }}
         >
-          <LinkIcon sx={{ fontSize: '18px' }} />
-          <Typography
-            sx={{
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textAlign: 'right',
-              pl: '5px',
-            }}
-            variant="body2"
-            color="textSecondary"
-          >
-            {conversation?.user?.username}
-          </Typography>
+          {renderType(conversation?.type)}
+          <>
+            <Box sx={{ width: '100%' }}>
+              {conversation?.tags?.map((tag) => {
+                return (
+                  <Chip
+                    sx={{ ml: '5px', fontSize: '11px' }}
+                    key={tag?._id}
+                    label={tag?.value}
+                    size="small"
+                    variant="outlined"
+                  />
+                );
+              })}
+            </Box>
+            <Box
+              sx={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'end',
+              }}
+            >
+              <LinkIcon sx={{ fontSize: '18px' }} />
+              <Typography
+                sx={{
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textAlign: 'right',
+                  pl: '5px',
+                }}
+                variant="body2"
+                color="textSecondary"
+              >
+                {conversation?.user?.username}
+              </Typography>
+            </Box>
+          </>
         </Box>
       </Box>
     </Card>

@@ -3,7 +3,11 @@ import {
   Button,
   Card,
   CircularProgress,
+  FormControl,
+  InputLabel,
+  MenuItem,
   Modal,
+  Select,
   Stack,
   TextField,
 } from '@mui/material';
@@ -30,13 +34,14 @@ const CreateStageModal = observer(({ show, handleClose }) => {
   const [color, setColor] = useState('white');
   const [label, setLabel] = useState('');
   const [value, setValue] = useState('');
+  const [type, setType] = useState('group');
 
   const handleColorChange = (color, event) => {
     setColor(color.hex);
   };
 
   const handleClick = () => {
-    stageStore.createStage(socket, { label, value, color });
+    stageStore.createStage(socket, { label, value, color, type });
     handleClose();
   };
 
@@ -72,6 +77,19 @@ const CreateStageModal = observer(({ show, handleClose }) => {
                   color={color}
                   onChange={handleColorChange}
                 />
+                <FormControl fullWidth>
+                  <InputLabel id="demo-simple-select-label">Тип</InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={type}
+                    label="Age"
+                    onChange={(e) => setType(e.target.value)}
+                  >
+                    <MenuItem value={'group'}>Группа</MenuItem>
+                    <MenuItem value={'private'}>Личка</MenuItem>
+                  </Select>
+                </FormControl>
                 {stageStore.isLoading ? (
                   <Box
                     sx={{

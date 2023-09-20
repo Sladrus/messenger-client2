@@ -126,7 +126,7 @@ const TextMessage = observer(({ message, isSentByMe }) => {
   const fullName =
     message.from.first_name +
     (message.from.last_name ? ' ' + message.from.last_name : '');
-
+  console.log(message);
   const color = generatePastelColor(fullName || message.from._id);
   return (
     <Box
@@ -193,17 +193,21 @@ const PhotoMessage = observer(({ message, isSentByMe }) => {
   const [photoUrl, setPhotoUrl] = useState(null);
 
   useEffect(() => {
-    fetch(
-      `https://api.telegram.org/bot${token}/getFile?file_id=${
-        message?.photo[message?.photo?.length - 1]?.file_id
-      }`
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        // URL-адрес фото находится в свойстве file_path объекта File
-        const url = `https://api.telegram.org/file/bot${token}/${data.result.file_path}`;
-        setPhotoUrl(url);
-      });
+    if (message?.photo) {
+      setPhotoUrl(`${env.SERVER_URL}/photo/${message?.photo}.jpg`);
+    } else {
+      fetch(
+        `https://api.telegram.org/bot${token}/getFile?file_id=${
+          message?.photo[message?.photo?.length - 1]?.file_id
+        }`
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          // URL-адрес фото находится в свойстве file_path объекта File
+          const url = `https://api.telegram.org/file/bot${token}/${data.result.file_path}`;
+          setPhotoUrl(url);
+        });
+    }
   }, []);
 
   const fullName =
@@ -392,13 +396,21 @@ const ConversationMessageList = observer(() => {
 
   useEffect(() => {
     if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'auto', block: 'end' });
+      messagesEndRef.current?.scrollIntoView({
+        behavior: 'auto',
+        block: 'end',
+      });
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({
+          behavior: 'auto',
+          block: 'end',
+        });
+      }, 1); // Add a delay of 1 second (1000 milliseconds)
     }
   }, [
     conversationStore.selectedConversation,
     conversationStore.selectedConversation?.messages?.length,
   ]);
-
   return (
     <Item>
       <Stack spacing={1}>

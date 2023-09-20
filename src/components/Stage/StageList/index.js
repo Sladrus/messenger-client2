@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState, useLayoutEffect } from 'react';
 import { Box, CircularProgress, Grid } from '@mui/material';
 import StageCard from '../StageCard';
 import StageConversationList from '../StageConversationList';
@@ -7,6 +7,7 @@ import { observer } from 'mobx-react-lite';
 
 const StageList = observer(({ stage, conversations }) => {
   const { conversationStore } = useContext(StoreContext);
+
   return (
     <Grid
       sx={{

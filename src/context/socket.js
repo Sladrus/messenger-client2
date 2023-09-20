@@ -66,6 +66,7 @@ export const registerConversationHandlers = (
     conversationStore.setMessageLoading(false);
     conversationStore.setMoneysendLoading(false);
     conversationStore.setUnreadLoading(false);
+    conversationStore.setSendChatLoading(false);
   };
 
   const setConversations = ({ conversations }) => {
@@ -84,6 +85,7 @@ export const registerConversationHandlers = (
     conversationStore.setMessageLoading(false);
     conversationStore.setMoneysendLoading(false);
     conversationStore.setUnreadLoading(false);
+    conversationStore.setSendChatLoading(false);
   };
 
   const setSearchConversations = ({ conversations }) => {
@@ -151,6 +153,7 @@ export const registerErrorHandlers = (
     conversationStore.setCommentLoading(false);
     conversationStore.setMessageLoading(false);
     conversationStore.setMoneysendLoading(false);
+    conversationStore.setSendChatLoading(false);
   });
 
   socket.on('connect_error', (error) => {

@@ -4,7 +4,7 @@ import BookmarkIcon from '@mui/icons-material/Bookmark';
 import React from 'react';
 import { Box, CircularProgress } from '@mui/material';
 
-const StatusSelect = ({ stage, stages, isLoading, onChange }) => {
+const StatusSelect = ({ type, stage, stages, isLoading, onChange }) => {
   const handleChange = (event) => {
     onChange(event);
   };
@@ -48,14 +48,20 @@ const StatusSelect = ({ stage, stages, isLoading, onChange }) => {
           );
         }}
       >
-        {stages?.map((item) => (
-          <MenuItem key={item._id} value={item._id} sx={{ p: '5px' }}>
-            <BookmarkIcon
-              sx={{ fontSize: '18px', p: '5px', color: item?.color }}
-            />
-            {item.label}
-          </MenuItem>
-        ))}
+        {stages
+          ?.filter((item) =>
+            type === 'private'
+              ? item.type === 'private' || item.type === 'all'
+              : item.type !== 'private' || item.type === 'all'
+          )
+          .map((item) => (
+            <MenuItem key={item._id} value={item._id} sx={{ p: '5px' }}>
+              <BookmarkIcon
+                sx={{ fontSize: '18px', p: '5px', color: item?.color }}
+              />
+              {item.label}
+            </MenuItem>
+          ))}
       </Select>
     </Box>
   );

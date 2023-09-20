@@ -54,6 +54,7 @@ const ConversationInstruments = observer(({ conversation }) => {
         <AccordionDetails sx={{ p: 0, borderRadius: 0 }}>
           <Stack spacing={1} sx={{ p: '10px 0' }}>
             <StatusSelect
+              type={conversationStore.selectedConversation?.type}
               stage={conversation?.stage}
               stages={stageStore?.stages}
               isLoading={conversationStore.stageLoading}

@@ -1,18 +1,33 @@
 import { Box, Stack, Typography } from '@mui/material';
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import StageConversationCard from '../StageConversationCard';
 import { AutoSizer, List } from 'react-virtualized';
 
 const StageConversationList = ({ conversations }) => {
-  const rowRenderer = ({ index, key, style }) => {
-    const conversation = conversations[index];
+  const listRef = useRef(null);
 
-    return (
-      <div key={key} style={style}>
-        <StageConversationCard conversation={conversation} />
-      </div>
-    );
+  // Function to save the scroll position
+  const saveScrollPosition = () => {
+    if (listRef.current) {
+      const scrollTop = listRef.current.Grid._scrollingContainer.scrollTop;
+      localStorage.setItem('scrollPosition', scrollTop);
+      console.log(scrollTop);
+    }
   };
+
+  // Function to restore the scroll position
+  const restoreScrollPosition = () => {
+    const savedScrollPosition = localStorage.getItem('scrollPosition');
+
+    if (savedScrollPosition && listRef.current) {
+      listRef.current.scrollToPosition(savedScrollPosition);
+      console.log(listRef.current);
+    }
+  };
+
+  useEffect(() => {
+    restoreScrollPosition();
+  }, []);
 
   return (
     <Box sx={{ height: 'calc(100% - 64px)', overflow: 'auto' }}>
@@ -20,6 +35,7 @@ const StageConversationList = ({ conversations }) => {
         <AutoSizer>
           {({ height, width }) => (
             <List
+              ref={listRef} // Assign the ref to the list
               height={height} // Subtract the header height (64px)
               rowCount={conversations?.length}
               rowHeight={100}
@@ -32,6 +48,8 @@ const StageConversationList = ({ conversations }) => {
                 );
               }}
               width={width}
+              onScroll={saveScrollPosition} // Save scroll position while scrolling
+              // onMount={restoreScrollPosition} // Restore scroll position when the component mounts
             />
           )}
         </AutoSizer>

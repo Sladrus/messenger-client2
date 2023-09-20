@@ -41,10 +41,12 @@ class ConversationStore {
     this.messageLoading = false;
     this.moneysendLoading = false;
     this.unreadLoading = false;
+    this.sendChatIsLoading = false;
 
     this.selectedChatId = null;
     this.selectedConversation = null;
     makeAutoObservable(this, {
+      setSendChatLoading: action,
       setStageLoading: action,
       setUnreadLoading: action,
       setMessageLoading: action,
@@ -109,6 +111,10 @@ class ConversationStore {
 
   setSearchIsLoading(value) {
     this.searchIsLoading = value;
+  }
+
+  setSendChatLoading(value) {
+    this.sendChatIsLoading = value;
   }
 
   //MAIN
@@ -347,6 +353,14 @@ class ConversationStore {
     socket.emit('conversation:createMoneysend', {
       id,
       data,
+    });
+  }
+
+  async sendChat(socket, id, user) {
+    this.setSendChatLoading(true);
+    socket.emit('conversation:sendChat', {
+      id,
+      user,
     });
   }
 

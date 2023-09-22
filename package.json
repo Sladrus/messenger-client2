@@ -60,7 +60,7 @@
     "whitelist": [
       "SERVER_URL",
       "BOT_TOKEN",
-      "PHOTO_URL"
+      "SERVER_PHOTO_URL"
     ]
   }
 }

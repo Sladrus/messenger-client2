@@ -126,7 +126,6 @@ const TextMessage = observer(({ message, isSentByMe }) => {
   const fullName =
     message.from.first_name +
     (message.from.last_name ? ' ' + message.from.last_name : '');
-  console.log(message);
   const color = generatePastelColor(fullName || message.from._id);
   return (
     <Box
@@ -194,7 +193,7 @@ const PhotoMessage = observer(({ message, isSentByMe }) => {
 
   useEffect(() => {
     if (message?.photo) {
-      setPhotoUrl(`${env.PHOTO_URL}/photo/${message?.photo}.jpg`);
+      setPhotoUrl(`${env.SERVER_PHOTO_URL}/photo/${message?.photo}.jpg`);
     } else {
       fetch(
         `https://api.telegram.org/bot${token}/getFile?file_id=${

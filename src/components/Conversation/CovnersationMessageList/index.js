@@ -193,8 +193,9 @@ const PhotoMessage = observer(({ message, isSentByMe }) => {
   const [photoUrl, setPhotoUrl] = useState(null);
 
   useEffect(() => {
+    console.log(env.PHOTO_URL);
     if (message?.photo) {
-      setPhotoUrl(`${env.SERVER_URL}/photo/${message?.photo}.jpg`);
+      setPhotoUrl(`${env.PHOTO_URL}/photo/${message?.photo}.jpg`);
     } else {
       fetch(
         `https://api.telegram.org/bot${token}/getFile?file_id=${

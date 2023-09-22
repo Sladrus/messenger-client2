@@ -59,7 +59,8 @@
   "react-dotenv": {
     "whitelist": [
       "SERVER_URL",
-      "BOT_TOKEN"
+      "BOT_TOKEN",
+      "PHOTO_URL"
     ]
   }
 }

@@ -193,7 +193,6 @@ const PhotoMessage = observer(({ message, isSentByMe }) => {
   const [photoUrl, setPhotoUrl] = useState(null);
 
   useEffect(() => {
-    console.log(env.PHOTO_URL);
     if (message?.photo) {
       setPhotoUrl(`${env.PHOTO_URL}/photo/${message?.photo}.jpg`);
     } else {

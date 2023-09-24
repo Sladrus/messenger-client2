@@ -25,6 +25,7 @@ export const useChat = () => {
       socket,
       userStore,
       conversationStore,
+      tagsStore,
       enqueueSnackbar
     );
     registerUserHandlers(socket, userStore, enqueueSnackbar, navigate); // eslint-disable-next-line

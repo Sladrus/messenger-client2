@@ -1,15 +1,28 @@
 import Autocomplete from '@mui/material/Autocomplete';
-import React from 'react';
-import { TextField } from '@mui/material';
+import React, { useContext } from 'react';
+import { Box, Button, TextField } from '@mui/material';
 import { observer } from 'mobx-react-lite';
+import CloseIcon from '@mui/icons-material/Close';
+import { SocketContext } from '../../../context/socket';
+import { StoreContext } from '../../../context/store';
 
 const FilterTags = observer(({ tags, conversationStore }) => {
+  const { socket } = useContext(SocketContext);
+  const { tagsStore } = useContext(StoreContext);
+
   const handleChange = (event, newValue) => {
     conversationStore.setFilterTags(newValue);
   };
 
+  const handleButtonClick = (e, option) => {
+    e.stopPropagation();
+    tagsStore.setLoading(true);
+    conversationStore.removeTag(socket, option._id);
+  };
+  console.log(tagsStore.isLoading);
   return (
     <Autocomplete
+      disabled={tagsStore.isLoading}
       multiple
       sx={{ minWidth: '200px', height: '45px' }}
       size="small"
@@ -21,6 +34,7 @@ const FilterTags = observer(({ tags, conversationStore }) => {
       renderInput={(params) => (
         <TextField
           {...params}
+          disabled={tagsStore.isLoading}
           variant="standard"
           label="Теги"
           placeholder="Выберите теги"
@@ -37,6 +51,24 @@ const FilterTags = observer(({ tags, conversationStore }) => {
           }}
           required
         />
+      )}
+      renderOption={(props, option, state) => (
+        <Box {...props}>
+          <Box
+            sx={{
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
+            {option.value}
+            <CloseIcon
+              sx={{ fontSize: '18px', textAlign: 'right' }}
+              onClick={(e) => handleButtonClick(e, option)}
+            />
+          </Box>
+        </Box>
       )}
     />
   );

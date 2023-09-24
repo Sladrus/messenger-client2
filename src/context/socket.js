@@ -131,6 +131,7 @@ export const registerErrorHandlers = (
   socket,
   userStore,
   conversationStore,
+  tagsStore,
   enqueueSnackbar
 ) => {
   socket.on('jwt_error', (error) => {
@@ -154,6 +155,7 @@ export const registerErrorHandlers = (
     conversationStore.setMessageLoading(false);
     conversationStore.setMoneysendLoading(false);
     conversationStore.setSendChatLoading(false);
+    tagsStore.setLoading(false);
   });
 
   socket.on('connect_error', (error) => {

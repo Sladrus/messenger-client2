@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import {
+  Box,
+  Chip,
   Divider,
   List,
   ListItem,
@@ -58,7 +60,7 @@ const Drawer = styled(MuiDrawer, {
 
 const MiniDrawer = observer(() => {
   const { socket } = useContext(SocketContext);
-  const { userStore } = useContext(StoreContext);
+  const { userStore, conversationStore } = useContext(StoreContext);
 
   const [selectedPath, setSelectedPath] = useState(window.location.pathname);
   const navigate = useNavigate();
@@ -76,6 +78,29 @@ const MiniDrawer = observer(() => {
     userStore.logout(socket);
   };
 
+  const countUnread = () => {
+    let count = 0;
+
+    conversationStore?.conversations?.forEach((conversation) => {
+      if (conversation?.type !== 'private' && conversation?.unreadCount > 0) {
+        count++;
+      }
+    });
+
+    return count;
+  };
+
+  const countLkUnread = () => {
+    let count = 0;
+
+    conversationStore?.conversations?.forEach((conversation) => {
+      if (conversation?.type === 'private' && conversation?.unreadCount > 0) {
+        count++;
+      }
+    });
+
+    return count;
+  };
   return (
     <Drawer variant="permanent" open={false}>
       <List
@@ -111,6 +136,26 @@ const MiniDrawer = observer(() => {
             </ListItemButton>
           </ListItem>
         ))}
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+          <Chip
+            sx={{ mb: '5px', width: '48px' }}
+            label={countUnread()}
+            color="primary"
+            variant="outlined"
+          />
+          <Chip
+            sx={{ mb: '5px', width: '48px' }}
+            label={countLkUnread()}
+            color="success"
+            variant="outlined"
+          />
+        </Box>
       </List>
       <ListItemButton
         onClick={logout}
@@ -130,7 +175,6 @@ const MiniDrawer = observer(() => {
           {<ExitToAppIcon color="action" />}
         </ListItemIcon>
       </ListItemButton>
-
       <Divider />
     </Drawer>
   );

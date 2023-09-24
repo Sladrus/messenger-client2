@@ -323,6 +323,13 @@ class ConversationStore {
     });
   }
 
+  async removeTag(socket, id) {
+    this.setTagsLoading(true);
+    socket.emit('conversation:removeTag', {
+      id,
+    });
+  }
+
   async createComment(socket, id, value) {
     this.setCommentLoading(true);
     socket.emit('conversation:createComment', {

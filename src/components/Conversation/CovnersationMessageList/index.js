@@ -190,10 +190,11 @@ const TextMessage = observer(({ message, isSentByMe }) => {
 
 const PhotoMessage = observer(({ message, isSentByMe }) => {
   const [photoUrl, setPhotoUrl] = useState(null);
+  const { conversationStore } = useContext(StoreContext);
 
   useEffect(() => {
     console.log(message);
-    if (message?.photo) {
+    if (conversationStore?.selectedConversation?.type === 'private') {
       console.log(env.SERVER_PHOTO_URL, env.SERVER_URL);
       setPhotoUrl(`http://13.79.115.102/photo/${message?.photo}.jpg`);
     } else {

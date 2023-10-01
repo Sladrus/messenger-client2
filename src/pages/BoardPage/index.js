@@ -7,6 +7,7 @@ import StageList from '../../components/Stage/StageList';
 import { styled } from '@mui/material/styles';
 import EmptyStageList from '../../components/Stage/EmptyStageList';
 import CreateStageModal from '../../components/Stage/CreateStageModal';
+import EditStageModal from '../../components/Stage/EditStageModal';
 
 const Item = styled('div')(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -26,11 +27,19 @@ const BoardPage = observer(() => {
             stage.type === 'all' || stage.type === conversationStore.filter.type
         );
 
-  const [open, setOpen] = React.useState(false);
+  const [openCreate, setOpenCreate] = React.useState(false);
+  const [openEdit, setOpenEdit] = React.useState(false);
 
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const [selectedStage, setSelectedStage] = React.useState('');
 
+  const handleOpenCreate = () => setOpenCreate(true);
+  const handleCloseCreate = () => setOpenCreate(false);
+
+  const handleOpenEdit = (stage) => {
+    setSelectedStage(stage);
+    setOpenEdit(true);
+  };
+  const handleCloseEdit = () => setOpenEdit(false);
   return (
     <Item>
       <Box
@@ -55,13 +64,19 @@ const BoardPage = observer(() => {
                 key={stage._id}
                 stage={stage}
                 conversations={stageStore?.fullStages[stage.value]}
+                handleOpenEdit={handleOpenEdit}
               />
             );
           })}
-          <EmptyStageList handleOpen={handleOpen} />
+          <EmptyStageList handleOpen={handleOpenCreate} />
         </Grid>
       </Box>
-      <CreateStageModal show={open} handleClose={handleClose} />
+      <CreateStageModal show={openCreate} handleClose={handleCloseCreate} />
+      <EditStageModal
+        show={openEdit}
+        handleClose={handleCloseEdit}
+        selectedStage={selectedStage}
+      />
     </Item>
   );
 });

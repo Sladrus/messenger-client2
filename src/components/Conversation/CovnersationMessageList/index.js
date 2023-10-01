@@ -11,12 +11,15 @@ import {
 import Avatar from '@mui/joy/Avatar';
 import { observer } from 'mobx-react-lite';
 import { StoreContext } from '../../../context/store';
-import { isTodayUnix } from '../../../utils/time';
+import { formatDate, isTodayUnix, taskColor } from '../../../utils/time';
 import { generatePastelColor } from '../../../utils/color';
 import Badge from '@mui/material/Badge';
 import env from 'react-dotenv';
 import DescriptionIcon from '@mui/icons-material/Description';
 import { FixedSizeList as List } from 'react-window';
+import { TimelineDot } from '@mui/lab';
+import { SocketContext } from '../../../context/socket';
+import CheckIcon from '@mui/icons-material/Check';
 
 const token = env.BOT_TOKEN;
 
@@ -83,6 +86,143 @@ const EventMessage = observer(({ message }) => {
             >
               {isTodayUnix(message?.date)}
             </span>
+          </Box>
+        </Card>
+      </Stack>
+    </Box>
+  );
+});
+
+const TaskMessage = observer(({ message }) => {
+  const { socket } = useContext(SocketContext);
+  const { conversationStore } = useContext(StoreContext);
+
+  const formattedDate = formatDate(message?.task?.endAt);
+
+  const handleClickDone = (id) => {
+    conversationStore.doneTask(socket, id);
+  };
+
+  return (
+    <Box
+      sx={{
+        p: '0 10px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center', // changed 'end' to 'flex-end' and 'start' to 'flex-start'
+      }}
+    >
+      <Stack sx={{ maxWidth: 'calc(100% - 60px)' }}>
+        {message?.unread && (
+          <StyledBadge badgeContent={'Новое'} color="primary" />
+        )}
+        <Card
+          sx={{
+            minWidth: '500px',
+            maxWidth: '500px',
+
+            position: 'relative',
+            textAlign: 'center',
+            borderRadius: '10px',
+            p: '5px 10px',
+            background: '#fff',
+            border: '1px solid #e0e0e0',
+            boxShadow: 'none',
+          }}
+        >
+          <Typography
+            sx={{
+              fontSize: '12px',
+              textAlign: 'center',
+            }}
+            variant="subtitle3"
+            color="textSecondary"
+          >
+            Задача добавлена
+          </Typography>
+          <Box
+            key={message?.task?._id}
+            sx={{
+              display: 'flex',
+              p: '8px 6px',
+              minHeight: '30px',
+            }}
+          >
+            <Box sx={{ p: '0px 8px', width: '100%' }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <TimelineDot
+                    sx={{
+                      backgroundColor: taskColor(message?.task),
+                      width: '1px',
+                      m: '4px 5px 0 0',
+                      p: '2px',
+                    }}
+                  />
+                  <Typography
+                    sx={{
+                      fontSize: '12px',
+                      textAlign: 'left',
+                    }}
+                    variant="subtitle2"
+                    fontWeight="bold"
+                  >
+                    {message?.task?.type?.title}
+                  </Typography>
+                </Box>
+
+                <Typography
+                  sx={{
+                    fontSize: '12px',
+                    textAlign: 'left',
+                  }}
+                  variant="subtitle2"
+                >
+                  {formattedDate}
+                </Typography>
+              </Box>
+
+              <Typography
+                sx={{
+                  fontSize: '12px',
+                  textAlign: 'left',
+                }}
+                variant="body2"
+                color="textSecondary"
+              >
+                {message?.task?.text}
+              </Typography>
+            </Box>
+            {!message?.task?.done && conversationStore.taskLoading ? (
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                }}
+              >
+                <CircularProgress
+                  sx={{
+                    p: '1px',
+                  }}
+                  size={16}
+                />
+              </Box>
+            ) : (
+              !message?.task?.done && (
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <CheckIcon
+                    sx={{ m: '0 10px', cursor: 'pointer' }}
+                    onClick={() => handleClickDone(message?.task?._id)}
+                  />
+                </Box>
+              )
+            )}
           </Box>
         </Card>
       </Stack>
@@ -437,6 +577,9 @@ const ConversationMessageList = observer(() => {
           }
           if (message.type === 'event') {
             return <EventMessage key={message._id} message={message} />;
+          }
+          if (message.type === 'task') {
+            return <TaskMessage key={message._id} message={message} />;
           }
           if (message.type === 'document') {
             return <DocumentMessage key={message._id} message={message} />;

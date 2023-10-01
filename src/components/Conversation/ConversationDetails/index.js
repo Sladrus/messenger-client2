@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import ConversationInfo from '../ConversationInfo';
 import ConversationMembers from '../ConversationMembers';
 import ConversationNotes from '../ConversationNotes';
@@ -10,9 +10,11 @@ import { StoreContext } from '../../../context/store';
 import { observer } from 'mobx-react-lite';
 import ConversationSendChat from '../ConversationSendChat';
 import { SocketContext } from '../../../context/socket';
+import CreateTaskModal from '../CreateTaskModal';
 
 const ConversationDetails = observer(() => {
   const { socket } = useContext(SocketContext);
+  const [taskModalIsOpen, setTaskModalIsOpen] = useState(false);
 
   const { conversationStore, userStore } = useContext(StoreContext);
 
@@ -23,6 +25,14 @@ const ConversationDetails = observer(() => {
       conversationStore.selectedConversation?._id,
       userStore.user
     );
+  };
+
+  const openModal = () => {
+    setTaskModalIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setTaskModalIsOpen(false);
   };
 
   return (
@@ -44,7 +54,11 @@ const ConversationDetails = observer(() => {
           members={conversationStore.selectedConversation?.members}
         />
       )}
-
+      <ConversationTask
+        conversation={conversationStore.selectedConversation}
+        openModal={openModal}
+        isLoading={conversationStore.taskLoading}
+      />
       <ConversationNotes
         conversation={conversationStore.selectedConversation}
       />
@@ -57,7 +71,7 @@ const ConversationDetails = observer(() => {
         />
       )}
 
-      <ConversationTask conversation={conversationStore.selectedConversation} />
+      <CreateTaskModal show={taskModalIsOpen} closeModal={closeModal} />
     </Box>
   );
 });

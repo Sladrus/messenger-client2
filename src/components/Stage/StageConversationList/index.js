@@ -11,7 +11,6 @@ const StageConversationList = ({ conversations }) => {
     if (listRef.current) {
       const scrollTop = listRef.current.Grid._scrollingContainer.scrollTop;
       localStorage.setItem('scrollPosition', scrollTop);
-      console.log(scrollTop);
     }
   };
 
@@ -21,7 +20,6 @@ const StageConversationList = ({ conversations }) => {
 
     if (savedScrollPosition && listRef.current) {
       listRef.current.scrollToPosition(savedScrollPosition);
-      console.log(listRef.current);
     }
   };
 
@@ -30,7 +28,7 @@ const StageConversationList = ({ conversations }) => {
   }, []);
 
   return (
-    <Box sx={{ height: 'calc(100% - 64px)', overflow: 'auto' }}>
+    <Box sx={{ height: 'calc(100% - 59px)', overflow: 'auto' }}>
       {conversations?.length > 0 ? (
         <AutoSizer>
           {({ height, width }) => (

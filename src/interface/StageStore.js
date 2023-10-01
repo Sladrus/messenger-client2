@@ -20,21 +20,11 @@ class StageStore {
 
   async getStages(socket) {
     this.setLoading(true);
-    await new Promise((resolve) => {
-      setTimeout(() => {
-        resolve();
-      }, 500);
-    });
     socket.emit('stages:get');
   }
 
   async createStage(socket, stage) {
     this.setLoading(true);
-    await new Promise((resolve) => {
-      setTimeout(() => {
-        resolve();
-      }, 500);
-    });
     socket.emit('stage:create', stage);
   }
 

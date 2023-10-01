@@ -1,8 +1,29 @@
 import { Box, Card, Divider, Stack, Typography } from '@mui/material';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Telegram, Phone, Mail, Link } from '@mui/icons-material';
+import axios from 'axios';
 
 const ConversationInfo = ({ conversation }) => {
+  async function getClient(chat_id) {
+    try {
+      //
+      console.log(process.env.API_TOKEN);
+      const response = await axios.get(
+        `https://api.moneyport.world/getClient?chat_id=${chat_id}`,
+        { headers: { 'x-api-key': `${process.env.API_TOKEN}` } }
+      );
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    const data = getClient(-1001975008285).then((data) => {
+      console.log(data);
+    });
+  }, []);
+
   return (
     <Card sx={{ border: 0, borderRadius: 0 }}>
       <Box sx={{ p: '15px' }}>

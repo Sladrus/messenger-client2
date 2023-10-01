@@ -2,7 +2,9 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Box,
   Card,
+  CircularProgress,
   Divider,
   Stack,
   Typography,
@@ -11,14 +13,12 @@ import React, { useContext, useState } from 'react';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import styled from '@emotion/styled';
 
-import TaskDateButton from '../../Button/TaskDateButton';
-import TaskTypeAutocomplete from '../../Autocomplete/TaskTypeAutocomplete';
-import SimpleTextarea from '../../Textarea/SimpleTextarea';
-import TaskButton from '../../Button/TaskButton';
-import AddIcon from '@mui/icons-material/Add';
 import { observer } from 'mobx-react-lite';
 import { SocketContext } from '../../../context/socket';
 import { StoreContext } from '../../../context/store';
+import CheckIcon from '@mui/icons-material/Check';
+import { formatDate, isToday, taskColor } from '../../../utils/time';
+import { LoadingButton, TimelineDot } from '@mui/lab';
 
 const CustomizedAccordion = styled(Accordion)(() => ({
   border: '0 !important',
@@ -26,18 +26,34 @@ const CustomizedAccordion = styled(Accordion)(() => ({
   boxShadow: 'none !important',
 }));
 
-const ConversationTask = observer(({ conversation }) => {
+const ConversationTask = observer(({ conversation, openModal, isLoading }) => {
   const { socket } = useContext(SocketContext);
-  const { conversationStore, taskStore } = useContext(StoreContext);
+  const { conversationStore } = useContext(StoreContext);
+  // const tasks = [
+  //   {
+  //     text: 'Zadacha N1 Text Longtext long long texttextteadasdasdd adasdas adassdsdsd asdasdasd asdasdasd',
+  //     type: 'Встреча',
+  //     date: new Date(),
+  //   },
+  //   {
+  //     text: 'Zadacha N3 Text L',
+  //     type: 'Перевод',
+  //     date: new Date(),
+  //   },
+  //   {
+  //     text: 'Zadacha N3 Text Longtext long long texttextteadasdasdd adasdas adassdsdsd asdasdasd asdasdasd',
+  //     type: 'Перевод',
+  //     date: new Date(),
+  //   },
+  //   {
+  //     text: 'Zadacha N3 Text L',
+  //     type: 'Перевод',
+  //     date: new Date(),
+  //   },
+  // ];
 
-  const [type, setType] = useState('');
-
-  const handleChangeType = (e, value, reason, details) => {
-    e.preventDefault();
-    setType(value);
-    // if (reason === 'createOption') {
-    //   taskStore.createTaskType(socket, conversation?._id, details.option);
-    // }
+  const handleClickDone = (id) => {
+    conversationStore.doneTask(socket, id);
   };
 
   return (
@@ -49,21 +65,130 @@ const ConversationTask = observer(({ conversation }) => {
           aria-controls="panel1a-content"
           id="panel1a-header"
         >
-          <Typography variant="subtitle2" fontWeight="bold">
-            Добавить задачу
+          <Typography
+            sx={{ display: 'flex' }}
+            variant="subtitle2"
+            fontWeight="bold"
+          >
+            <>Задачи</>
+            <Box sx={{ fontWeight: '300', pl: '10px' }}>
+              {conversation?.tasks?.length}
+            </Box>
           </Typography>
         </AccordionSummary>
         <AccordionDetails sx={{ p: 0, borderRadius: 0 }}>
-          <Stack spacing={1} sx={{ p: '10px 0px' }}>
-            <TaskTypeAutocomplete
-              value={type}
-              types={taskStore.taskTypes}
-              onChange={handleChangeType}
-              isLoading={taskStore.isTypesLoading}
-            />
-            <TaskDateButton />
-            <SimpleTextarea placeholder={'Введите текст задачи'} />
-            <TaskButton text={'Создать'} Icon={AddIcon} />
+          <Stack>
+            {conversation?.tasks?.length > 0 ? (
+              conversation?.tasks.map((task) => {
+                const formattedDate = formatDate(task?.endAt);
+                return (
+                  <Box
+                    key={task._id}
+                    sx={{
+                      display: 'flex',
+                      p: '10px 8px',
+                      minHeight: '30px',
+                    }}
+                  >
+                    <Box sx={{ p: '0px 8px', width: '100%' }}>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                        }}
+                      >
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                          <TimelineDot
+                            sx={{
+                              backgroundColor: taskColor(task),
+                              width: '1px',
+                              m: '4px 5px 0 0',
+                              p: '2px',
+                            }}
+                          />
+                          <Typography
+                            sx={{
+                              fontSize: '12px',
+                              textAlign: 'left',
+                            }}
+                            variant="subtitle2"
+                            fontWeight="bold"
+                          >
+                            {task?.type?.title}
+                          </Typography>
+                        </Box>
+                        <Typography
+                          sx={{
+                            fontSize: '12px',
+                            textAlign: 'left',
+                          }}
+                          variant="subtitle2"
+                        >
+                          {formattedDate}
+                        </Typography>
+                      </Box>
+
+                      <Typography
+                        sx={{
+                          fontSize: '12px',
+                          textAlign: 'left',
+                        }}
+                        variant="body2"
+                        color="textSecondary"
+                      >
+                        {task?.text}
+                      </Typography>
+                    </Box>
+                    {!task?.done && conversationStore.taskLoading ? (
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                        }}
+                      >
+                        <CircularProgress
+                          sx={{
+                            p: '1px',
+                          }}
+                          size={16}
+                        />
+                      </Box>
+                    ) : (
+                      !task?.done && (
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                          <CheckIcon
+                            sx={{ m: '0 10px', cursor: 'pointer' }}
+                            onClick={() => handleClickDone(task?._id)}
+                          />
+                        </Box>
+                      )
+                    )}
+                  </Box>
+                );
+              })
+            ) : (
+              <Typography
+                sx={{
+                  fontSize: '12px',
+                  textAlign: 'center',
+                  p: 1,
+                }}
+                variant="body2"
+                color="textSecondary"
+              >
+                Задачи отсутствуют. Нажмите кнопку, чтобы добавить задачу.
+              </Typography>
+            )}
+            <LoadingButton
+              sx={{ m: '5px 15px' }}
+              variant="contained"
+              size="small"
+              loading={isLoading}
+              onClick={openModal}
+            >
+              Создать
+            </LoadingButton>
           </Stack>
         </AccordionDetails>
       </CustomizedAccordion>

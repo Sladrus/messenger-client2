@@ -26,6 +26,8 @@ export const useChat = () => {
       userStore,
       conversationStore,
       tagsStore,
+      taskStore,
+      stageStore,
       enqueueSnackbar
     );
     registerUserHandlers(socket, userStore, enqueueSnackbar, navigate); // eslint-disable-next-line
@@ -42,6 +44,7 @@ export const useChat = () => {
     userStore.getUsers(socket);
     stageStore.getStages(socket); // eslint-disable-next-line
     tagsStore.getTags(socket); // eslint-disable-next-line
+    taskStore.getTasks(socket); // eslint-disable-next-line
     taskStore.getTaskTypes(socket); // eslint-disable-next-line
   }, []);
 

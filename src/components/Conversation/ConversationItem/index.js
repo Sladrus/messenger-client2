@@ -9,6 +9,7 @@ import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import GroupsIcon from '@mui/icons-material/Groups';
 import PersonIcon from '@mui/icons-material/Person';
+import { isMessageType } from '../../../utils/text';
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   '& .MuiBadge-badge': {
@@ -135,7 +136,9 @@ const ConversationItem = observer(({ conversation, onClick, dataChatId }) => {
             variant="body2"
             color="textSecondary"
           >
-            {conversation?.lastMessage?.text}
+            {conversation?.lastMessage?.text
+              ? conversation?.lastMessage?.text
+              : isMessageType(conversation?.lastMessage?.type)}
           </Typography>
           {renderType(conversation?.type)}
         </Box>

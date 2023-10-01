@@ -23,3 +23,18 @@ export function getMessageEnding(count) {
     return 'сообщений';
   }
 }
+
+export function isMessageType(type) {
+  if (type === 'task') {
+    return 'Новая задача';
+  }
+  if (type === 'event') {
+    return 'Новое событие';
+  }
+  if (type === 'Photo') {
+    return 'Фото';
+  }
+  if (type === 'document') {
+    return 'Документ';
+  }
+}

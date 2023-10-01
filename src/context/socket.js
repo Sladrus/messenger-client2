@@ -82,6 +82,8 @@ export const registerConversationHandlers = (
     conversationStore.setStageLoading(false);
     conversationStore.setTagsLoading(false);
     conversationStore.setCommentLoading(false);
+    conversationStore.setTaskLoading(false);
+
     conversationStore.setMessageLoading(false);
     conversationStore.setMoneysendLoading(false);
     conversationStore.setUnreadLoading(false);
@@ -124,7 +126,20 @@ export const registerTaskHandlers = (socket, taskStore) => {
     taskStore.setTypesLoading(false);
   };
 
+  const setTasks = ({ tasks }) => {
+    taskStore.setTasks(tasks);
+    taskStore.setTasksLoading(false);
+  };
+
+  const updateTask = ({ task }) => {
+    taskStore.updateTask(task);
+    taskStore.setTasksLoading(false);
+  };
+
+  socket.on('task:update', updateTask);
+
   socket.on('taskTypes:set', setTaskTypes);
+  socket.on('tasks:set', setTasks);
 };
 
 export const registerErrorHandlers = (
@@ -132,6 +147,8 @@ export const registerErrorHandlers = (
   userStore,
   conversationStore,
   tagsStore,
+  taskStore,
+  stageStore,
   enqueueSnackbar
 ) => {
   socket.on('jwt_error', (error) => {
@@ -155,7 +172,14 @@ export const registerErrorHandlers = (
     conversationStore.setMessageLoading(false);
     conversationStore.setMoneysendLoading(false);
     conversationStore.setSendChatLoading(false);
+    conversationStore.setTaskLoading(false);
+
     tagsStore.setLoading(false);
+
+    taskStore.setTypesLoading(false);
+    taskStore.setTasksLoading(false);
+
+    stageStore.setLoading(false);
   });
 
   socket.on('connect_error', (error) => {

@@ -133,7 +133,6 @@ class ConversationStore {
 
   setConversations(value) {
     this.conversations = value;
-    console.log(this.conversations);
   }
 
   setSearchedConversations(value) {
@@ -291,6 +290,29 @@ class ConversationStore {
     this.filter.tags = value;
   }
 
+  async deleteStage(socket, id) {
+    this.setStageLoading(true);
+    socket.emit('conversation:deleteStage', {
+      id,
+     });
+  }
+
+  async editStage(socket, id, stage) {
+    this.setStageLoading(true);
+    socket.emit('conversation:editStage', {
+      id,
+      stage,
+    });
+  }
+
+  async moveStage(socket, id, position) {
+    this.setStageLoading(true);
+    socket.emit('conversation:moveStage', {
+      id,
+      position,
+    });
+  }
+
   async changeStage(socket, id, stageId) {
     this.setStageLoading(true);
     socket.emit('conversation:updateStage', {
@@ -360,6 +382,21 @@ class ConversationStore {
     socket.emit('conversation:createMoneysend', {
       id,
       data,
+    });
+  }
+
+  async createTask(socket, id, data) {
+    this.setTaskLoading(true);
+    socket.emit('conversation:createTask', {
+      id,
+      data,
+    });
+  }
+
+  async doneTask(socket, id) {
+    this.setTaskLoading(true);
+    socket.emit('conversation:doneTask', {
+      id,
     });
   }
 

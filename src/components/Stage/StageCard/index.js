@@ -1,11 +1,19 @@
-import { Box, Chip, Typography } from '@mui/material';
-import React from 'react';
+import { Box, Chip, CircularProgress, Typography } from '@mui/material';
+import React, { useContext } from 'react';
 import { chatCount, unreadCount } from '../../../utils/text';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import { observer } from 'mobx-react-lite';
+import { SocketContext } from '../../../context/socket';
+import { StoreContext } from '../../../context/store';
 
-const StageCard = ({ stage, conversations }) => {
+const StageCard = observer(({ stage, conversations, handleOpenEdit }) => {
+  const { socket } = useContext(SocketContext);
+  const { conversationStore, stageStore } = useContext(StoreContext);
+
   const unreadLength = unreadCount(conversations);
   const renderType = (type) => {
     if (type === 'supergroup' || type === 'group')
@@ -14,6 +22,11 @@ const StageCard = ({ stage, conversations }) => {
       return (
         <AccountCircleOutlinedIcon sx={{ fontSize: '20px', pr: '10px' }} />
       );
+  };
+
+  const handlePosition = (position) => {
+    stageStore.setLoading(true);
+    conversationStore.moveStage(socket, stage._id, position);
   };
 
   return (
@@ -52,9 +65,22 @@ const StageCard = ({ stage, conversations }) => {
           {renderType(stage.type)}
           {stage.label}
         </Typography>
-        <MoreVertIcon
-          sx={{ fontSize: '22px', color: '#00000099', cursor: 'pointer' }}
-        />
+        {stageStore.isLoading ? (
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <CircularProgress size={20} />
+          </Box>
+        ) : (
+          <MoreVertIcon
+            sx={{ fontSize: '22px', color: '#00000099', cursor: 'pointer' }}
+            onClick={() => handleOpenEdit(stage)}
+          />
+        )}
       </Box>
       <Typography
         sx={{
@@ -62,6 +88,7 @@ const StageCard = ({ stage, conversations }) => {
           whiteSpace: 'nowrap',
           overflow: 'hidden',
           width: '100%',
+          height: '25px',
         }}
         variant="body2"
         color="textSecondary"
@@ -78,15 +105,32 @@ const StageCard = ({ stage, conversations }) => {
       </Typography>
       <Box
         sx={{
-          background: stage.color,
-          width: 'calc(100% - 10px)',
-          borderRadius: '15px',
-          p: '5px 5px',
-          mt: 'auto',
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
-      />
+      >
+        <KeyboardArrowLeftIcon
+          sx={{ cursor: 'pointer' }}
+          onClick={() => handlePosition(stage.position - 1)}
+        />
+        <Box
+          sx={{
+            background: stage?.color,
+            width: 'calc(100% - 10px)',
+            borderRadius: '15px',
+            p: '5px 5px',
+            // mt: 'auto',
+          }}
+        />
+        <KeyboardArrowRightIcon
+          sx={{ cursor: 'pointer' }}
+          onClick={() => handlePosition(stage.position + 1)}
+        />
+      </Box>
     </Box>
   );
-};
+});
 
 export default StageCard;

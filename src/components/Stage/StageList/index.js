@@ -5,7 +5,7 @@ import StageConversationList from '../StageConversationList';
 import { StoreContext } from '../../../context/store';
 import { observer } from 'mobx-react-lite';
 
-const StageList = observer(({ stage, conversations }) => {
+const StageList = observer(({ stage, conversations, handleOpenEdit }) => {
   const { conversationStore } = useContext(StoreContext);
 
   return (
@@ -25,11 +25,15 @@ const StageList = observer(({ stage, conversations }) => {
       item
       key={stage._id}
     >
-      <StageCard stage={stage} conversations={conversations} />
+      <StageCard
+        stage={stage}
+        conversations={conversations}
+        handleOpenEdit={handleOpenEdit}
+      />
       {conversationStore.isLoading ? (
         <Box
           sx={{
-            height: 'calc(100% - 65px)',
+            height: 'calc(100% - 60px)',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',

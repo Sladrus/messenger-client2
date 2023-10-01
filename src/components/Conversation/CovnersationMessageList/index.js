@@ -102,7 +102,6 @@ const TaskMessage = observer(({ message }) => {
   const handleClickDone = (id) => {
     conversationStore.doneTask(socket, id);
   };
-  console.log(message);
   return (
     <Box
       sx={{

@@ -226,12 +226,17 @@ class ConversationStore {
       conversation?._id &&
       this.selectedConversation?._id
     ) {
+      console.log(conversation);
       this.selectedConversation.stage = conversation?.stage;
       this.selectedConversation.title = conversation?.title;
       this.selectedConversation.user = conversation?.user;
       this.selectedConversation.tags = conversation?.tags;
+      this.selectedConversation.tasks = conversation?.tasks;
       this.selectedConversation.members = conversation?.members;
       this.selectedConversation.unreadCount = conversation?.unreadCount;
+      this.selectedConversation?.tasks?.sort((a, b) => {
+        return new Date(a.createdAt) - new Date(b.createdAt);
+      });
       if (this.selectedConversation.unreadCount === 0) {
         this.selectedConversation?.messages?.map((message) => {
           message.unread = false;
@@ -244,7 +249,7 @@ class ConversationStore {
         )
       ) {
         this.selectedConversation?.messages.push(conversation?.lastMessage);
-        if (conversation?.lastMessage?.from.is_bot) {
+        if (conversation?.lastMessage?.from?.is_bot) {
           this.selectedConversation?.messages.forEach((message) => {
             message.unread = false;
           });
@@ -294,7 +299,7 @@ class ConversationStore {
     this.setStageLoading(true);
     socket.emit('conversation:deleteStage', {
       id,
-     });
+    });
   }
 
   async editStage(socket, id, stage) {

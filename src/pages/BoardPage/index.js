@@ -18,7 +18,6 @@ const Item = styled('div')(({ theme }) => ({
 
 const BoardPage = observer(() => {
   const { stageStore, conversationStore } = useContext(StoreContext);
-  console.log(conversationStore.filter.type);
   const filteredStages =
     conversationStore.filter.type === 'all'
       ? stageStore.stages

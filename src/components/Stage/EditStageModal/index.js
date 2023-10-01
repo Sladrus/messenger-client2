@@ -30,7 +30,6 @@ const style = {
 const EditStageModal = observer(({ show, handleClose, selectedStage }) => {
   const { socket } = useContext(SocketContext);
   const { conversationStore, stageStore } = useContext(StoreContext);
-  console.log(selectedStage);
 
   const [color, setColor] = useState('');
   const [label, setLabel] = useState('');

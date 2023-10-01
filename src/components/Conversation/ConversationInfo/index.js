@@ -7,7 +7,6 @@ const ConversationInfo = ({ conversation }) => {
   async function getClient(chat_id) {
     try {
       //
-      console.log(process.env.API_TOKEN);
       const response = await axios.get(
         `https://api.moneyport.world/getClient?chat_id=${chat_id}`,
         { headers: { 'x-api-key': `${process.env.API_TOKEN}` } }
@@ -20,7 +19,6 @@ const ConversationInfo = ({ conversation }) => {
 
   useEffect(() => {
     const data = getClient(-1001975008285).then((data) => {
-      console.log(data);
     });
   }, []);
 

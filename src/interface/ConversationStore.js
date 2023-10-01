@@ -226,7 +226,6 @@ class ConversationStore {
       conversation?._id &&
       this.selectedConversation?._id
     ) {
-      console.log(conversation);
       this.selectedConversation.stage = conversation?.stage;
       this.selectedConversation.title = conversation?.title;
       this.selectedConversation.user = conversation?.user;

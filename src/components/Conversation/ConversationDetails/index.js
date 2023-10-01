@@ -19,7 +19,6 @@ const ConversationDetails = observer(() => {
   const { conversationStore, userStore } = useContext(StoreContext);
 
   const handleClick = () => {
-    console.log('CLICK');
     conversationStore.sendChat(
       socket,
       conversationStore.selectedConversation?._id,

@@ -27,11 +27,8 @@ const TaskPage = observer(() => {
   const navigate = useNavigate();
 
   const handleDateClick = (arg) => {
-    console.log(arg.event.id);
     conversationStore.setSelectedChatId(Number(arg.event.id));
-
     navigate('/messenger');
-    // setSelectedConversation(Number(arg.event.id));
   };
 
   const renderEventContent = (eventInfo) => {

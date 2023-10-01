@@ -19,7 +19,6 @@ const FilterTags = observer(({ tags, conversationStore }) => {
     tagsStore.setLoading(true);
     conversationStore.removeTag(socket, option._id);
   };
-  console.log(tagsStore.isLoading);
   return (
     <Autocomplete
       disabled={tagsStore.isLoading}

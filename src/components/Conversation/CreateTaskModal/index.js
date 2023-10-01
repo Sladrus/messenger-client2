@@ -71,7 +71,8 @@ const CreateTaskModal = observer(({ show, closeModal }) => {
   };
 
   const onChange = (e) => {
-    setSelectedType({ title: e.target.value });
+    if (e.target.value) setSelectedType({ title: e.target.value });
+    else setSelectedType('');
   };
 
   return (

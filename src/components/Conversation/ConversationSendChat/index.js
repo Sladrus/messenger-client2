@@ -4,7 +4,6 @@ import { observer } from 'mobx-react-lite';
 import React from 'react';
 
 const ConversationSendChat = ({ conversation, isLoading, onClick }) => {
-  console.log(isLoading);
   return (
     <Card sx={{ border: 0, borderRadius: 0 }}>
       <Box sx={{ p: '15px' }}>

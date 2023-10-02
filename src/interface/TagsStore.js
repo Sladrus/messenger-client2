@@ -20,11 +20,6 @@ class TagsStore {
 
   async getTags(socket) {
     this.setLoading(true);
-    await new Promise((resolve) => {
-      setTimeout(() => {
-        resolve();
-      }, 500);
-    });
     socket.emit('tags:get');
   }
 }

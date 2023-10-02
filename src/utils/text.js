@@ -38,3 +38,9 @@ export function isMessageType(type) {
     return 'Документ';
   }
 }
+
+export function gradeType(grade) {
+  if (grade === 'low') return 'Плохо';
+  if (grade === 'middle') return 'Нормально';
+  if (grade === 'high') return 'Хорошо';
+}

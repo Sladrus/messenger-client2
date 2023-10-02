@@ -42,11 +42,13 @@ class ConversationStore {
     this.moneysendLoading = false;
     this.unreadLoading = false;
     this.sendChatIsLoading = false;
+    this.sendGradeIsLoading = false;
 
     this.selectedChatId = null;
     this.selectedConversation = null;
     makeAutoObservable(this, {
       setSendChatLoading: action,
+      setGradeChatLoading: action,
       setStageLoading: action,
       setUnreadLoading: action,
       setMessageLoading: action,
@@ -115,6 +117,10 @@ class ConversationStore {
 
   setSendChatLoading(value) {
     this.sendChatIsLoading = value;
+  }
+
+  setSendGradeLoading(value) {
+    this.sendGradeIsLoading = value;
   }
 
   //MAIN
@@ -229,6 +235,7 @@ class ConversationStore {
       this.selectedConversation.stage = conversation?.stage;
       this.selectedConversation.title = conversation?.title;
       this.selectedConversation.user = conversation?.user;
+      this.selectedConversation.grade = conversation?.grade;
       this.selectedConversation.tags = conversation?.tags;
       this.selectedConversation.tasks = conversation?.tasks;
       this.selectedConversation.members = conversation?.members;
@@ -407,6 +414,14 @@ class ConversationStore {
   async sendChat(socket, id, user) {
     this.setSendChatLoading(true);
     socket.emit('conversation:sendChat', {
+      id,
+      user,
+    });
+  }
+
+  async sendGrade(socket, id, user) {
+    this.setSendGradeLoading(true);
+    socket.emit('conversation:sendGrade', {
       id,
       user,
     });

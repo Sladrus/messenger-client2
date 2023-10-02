@@ -1,9 +1,23 @@
-import { Box, Card, Divider, Stack, Typography } from '@mui/material';
-import React, { useEffect } from 'react';
+import {
+  Box,
+  Card,
+  CircularProgress,
+  Divider,
+  Stack,
+  Typography,
+} from '@mui/material';
+import React, { useContext, useEffect } from 'react';
 import { Telegram, Phone, Mail, Link } from '@mui/icons-material';
 import axios from 'axios';
+import GradeIcon from '@mui/icons-material/Grade';
+import { observer } from 'mobx-react-lite';
+import { SocketContext } from '../../../context/socket';
+import { StoreContext } from '../../../context/store';
+import { gradeType } from '../../../utils/text';
+const ConversationInfo = observer(({ conversation }) => {
+  const { socket } = useContext(SocketContext);
+  const { conversationStore, userStore } = useContext(StoreContext);
 
-const ConversationInfo = ({ conversation }) => {
   async function getClient(chat_id) {
     try {
       //
@@ -18,9 +32,12 @@ const ConversationInfo = ({ conversation }) => {
   }
 
   useEffect(() => {
-    const data = getClient(-1001975008285).then((data) => {
-    });
+    const data = getClient(-1001975008285).then((data) => {});
   }, []);
+
+  const handleGrade = () => {
+    conversationStore.sendGrade(socket, conversation?._id, userStore?.user);
+  };
 
   return (
     <Card sx={{ border: 0, borderRadius: 0 }}>
@@ -34,7 +51,7 @@ const ConversationInfo = ({ conversation }) => {
             variant="body2"
             color="textSecondary"
           >
-            <Telegram sx={{ pr: '15px', fontSize: '18px' }} />
+            <Telegram sx={{ pr: '15px', fontSize: '18px', pb: '2px' }} />
             {conversation?.title}
           </Typography>
           <Typography
@@ -42,7 +59,10 @@ const ConversationInfo = ({ conversation }) => {
             variant="body2"
             color="textSecondary"
           >
-            <Phone fontSize="small" sx={{ pr: '15px', fontSize: '18px' }} />
+            <Phone
+              fontSize="small"
+              sx={{ pr: '15px', fontSize: '18px', pb: '2px' }}
+            />
             Телефон
           </Typography>
           <Typography
@@ -50,7 +70,10 @@ const ConversationInfo = ({ conversation }) => {
             variant="body2"
             color="textSecondary"
           >
-            <Mail fontSize="small" sx={{ pr: '15px', fontSize: '18px' }} />
+            <Mail
+              fontSize="small"
+              sx={{ pr: '15px', fontSize: '18px', pb: '2px' }}
+            />
             Почта
           </Typography>
           <Typography
@@ -58,13 +81,56 @@ const ConversationInfo = ({ conversation }) => {
             variant="body2"
             color="textSecondary"
           >
-            <Link fontSize="small" sx={{ pr: '15px', fontSize: '18px' }} />
+            <Link
+              fontSize="small"
+              sx={{ pr: '15px', fontSize: '18px', pb: '2px' }}
+            />
             {conversation?.link ? (
-              <a href={conversation?.link} target="_blank" rel="noreferrer">
+              <a
+                style={{ color: '#43aff1' }}
+                href={conversation?.link}
+                target="_blank"
+                rel="noreferrer"
+              >
                 {conversation?.link}
               </a>
             ) : (
               <span>Создать ссылку</span>
+            )}
+          </Typography>
+
+          <Typography
+            sx={{ display: 'flex', alignItems: 'center' }}
+            variant="body2"
+            color="textSecondary"
+          >
+            <GradeIcon
+              fontSize="small"
+              sx={{ pr: '15px', fontSize: '18px', pb: '2px' }}
+            />
+            {conversationStore.sendGradeIsLoading ? (
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <CircularProgress size={20} />
+              </Box>
+            ) : conversation?.grade ? (
+              <span>Оценка: {gradeType(conversation?.grade)}</span>
+            ) : (
+              <span
+                style={{
+                  textDecoration: 'underline',
+                  color: '#43aff1',
+                  cursor: 'pointer',
+                }}
+                onClick={handleGrade}
+              >
+                Оценить консультацию
+              </span>
             )}
           </Typography>
         </Stack>
@@ -72,6 +138,6 @@ const ConversationInfo = ({ conversation }) => {
       <Divider />
     </Card>
   );
-};
+});
 
 export default ConversationInfo;

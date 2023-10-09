@@ -14,6 +14,8 @@ import { observer } from 'mobx-react-lite';
 import { SocketContext } from '../../../context/socket';
 import { StoreContext } from '../../../context/store';
 import { gradeType } from '../../../utils/text';
+import env from 'react-dotenv';
+
 const ConversationInfo = observer(({ conversation }) => {
   const { socket } = useContext(SocketContext);
   const { conversationStore, userStore } = useContext(StoreContext);
@@ -23,7 +25,7 @@ const ConversationInfo = observer(({ conversation }) => {
       //
       const response = await axios.get(
         `https://api.moneyport.world/getClient?chat_id=${chat_id}`,
-        { headers: { 'x-api-key': `${process.env.API_TOKEN}` } }
+        { headers: { 'x-api-key': `${env.API_TOKEN}` } }
       );
       return response.data;
     } catch (error) {

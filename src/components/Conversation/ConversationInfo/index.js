@@ -36,7 +36,7 @@ const ConversationInfo = observer(({ conversation }) => {
   }
 
   useEffect(() => {
-    const data = getClient(-1001975008285).then((data) => {
+    const data = getClient(conversation?.chat_id).then((data) => {
       setClient(data);
       console.log(data);
     });

@@ -9,6 +9,7 @@ import {
   Box,
   Card,
   Chip,
+  Divider,
   Stack,
   TextField,
   Typography,
@@ -41,9 +42,13 @@ const ConversationCourse = observer(() => {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get('https://api.moneyport.world/messenger/calculator');
+      const response = await axios.get(
+        'https://api.moneyport.world/messenger/calculator'
+      );
       setWays(response.data);
-      setFromValues(Array.from(new Set(response.data.map((item) => item.from))));
+      setFromValues(
+        Array.from(new Set(response.data.map((item) => item.from)))
+      );
     } catch (error) {
       console.error(error);
     }
@@ -66,7 +71,8 @@ const ConversationCourse = observer(() => {
     let convertedAmount = toCourse;
 
     if (!isNaN(percent)) {
-      convertedAmount += (convertedAmount * (parseFloat(percent) * -1 || 0)) / 100;
+      convertedAmount +=
+        (convertedAmount * (parseFloat(percent) * -1 || 0)) / 100;
     }
 
     if (isNaN(convertedAmount)) return 0;
@@ -84,7 +90,9 @@ const ConversationCourse = observer(() => {
     if (Number.isNaN(finalAmount)) return;
 
     if (finalAmount !== 0 && !isFinalAmountUpdating && !isDifUpdating) {
-      const calculatedAmount = parseFloat(finalAmount / calculateConvertedAmount(difPercentage));
+      const calculatedAmount = parseFloat(
+        finalAmount / calculateConvertedAmount(difPercentage)
+      );
       if (amount !== calculatedAmount.toFixed(0)) {
         setAmount(calculatedAmount);
       }
@@ -95,7 +103,9 @@ const ConversationCourse = observer(() => {
     if (Number.isNaN(amount)) return;
 
     if (amount !== 0 && !isAmountUpdating && !isDifUpdating) {
-      const calculatedFinalAmount = parseFloat(calculateConvertedAmount(difPercentage) * amount);
+      const calculatedFinalAmount = parseFloat(
+        calculateConvertedAmount(difPercentage) * amount
+      );
       if (finalAmount !== calculatedFinalAmount.toFixed(0)) {
         setFinalAmount(calculatedFinalAmount);
       }
@@ -103,13 +113,17 @@ const ConversationCourse = observer(() => {
   }, [amount, difPercentage]);
 
   useEffect(() => {
-    const newFinalAmount = parseFloat(calculateConvertedAmount(difPercentage) * amount);
+    const newFinalAmount = parseFloat(
+      calculateConvertedAmount(difPercentage) * amount
+    );
     setFinalAmount(newFinalAmount);
 
     if (isNaN(newFinalAmount / calculateConvertedAmount(difPercentage))) {
       setAmount(0);
     } else {
-      const newAmount = parseFloat(newFinalAmount / calculateConvertedAmount(difPercentage));
+      const newAmount = parseFloat(
+        newFinalAmount / calculateConvertedAmount(difPercentage)
+      );
       setAmount(newAmount);
     }
   }, [difPercentage]);
@@ -354,6 +368,7 @@ const ConversationCourse = observer(() => {
           </Stack>
         </AccordionDetails>
       </CustomizedAccordion>
+      <Divider />
     </Card>
   );
 });

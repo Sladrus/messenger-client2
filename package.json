@@ -14,7 +14,11 @@
     "@mui/joy": "^5.0.0-beta.4",
     "@mui/lab": "^5.0.0-alpha.143",
     "@mui/material": "^5.14.8",
+    "@mui/styled-engine-sc": "^5.14.12",
+    "@mui/x-data-grid": "^6.16.1",
+    "@mui/x-data-grid-pro": "^6.16.2",
     "@mui/x-date-pickers": "^6.13.0",
+    "@mui/x-license-pro": "^6.10.2",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -36,6 +40,7 @@
     "react-virtualized": "^9.22.5",
     "react-window": "^1.8.9",
     "socket.io-client": "^4.7.2",
+    "styled-components": "^5.3.11",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -68,7 +73,8 @@
       "SERVER_URL",
       "BOT_TOKEN",
       "SERVER_PHOTO_URL",
-      "API_TOKEN"
+      "API_TOKEN",
+      "MUI_KEY"
     ]
   }
 }

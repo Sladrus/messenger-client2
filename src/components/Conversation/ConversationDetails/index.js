@@ -11,6 +11,7 @@ import { observer } from 'mobx-react-lite';
 import ConversationSendChat from '../ConversationSendChat';
 import { SocketContext } from '../../../context/socket';
 import CreateTaskModal from '../CreateTaskModal';
+import ConversationCourse from '../ConversationCourse';
 
 const ConversationDetails = observer(() => {
   const { socket } = useContext(SocketContext);
@@ -48,6 +49,7 @@ const ConversationDetails = observer(() => {
           conversation={conversationStore.selectedConversation}
         />
       )}
+      <ConversationCourse />
       {conversationStore.selectedConversation?.type !== 'private' && (
         <ConversationMembers
           members={conversationStore.selectedConversation?.members}

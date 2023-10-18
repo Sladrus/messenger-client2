@@ -6,8 +6,8 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import React, { useContext, useEffect } from 'react';
-import { Telegram, Phone, Mail, Link } from '@mui/icons-material';
+import React, { useContext, useEffect, useState } from 'react';
+import { Telegram, Phone, Mail, Link, Person } from '@mui/icons-material';
 import axios from 'axios';
 import GradeIcon from '@mui/icons-material/Grade';
 import { observer } from 'mobx-react-lite';
@@ -19,9 +19,11 @@ import env from 'react-dotenv';
 const ConversationInfo = observer(({ conversation }) => {
   const { socket } = useContext(SocketContext);
   const { conversationStore, userStore } = useContext(StoreContext);
+  const [client, setClient] = useState({});
 
   async function getClient(chat_id) {
     try {
+      console.log(env.API_TOKEN);
       //
       const response = await axios.get(
         `https://api.moneyport.world/getClient?chat_id=${chat_id}`,
@@ -34,7 +36,10 @@ const ConversationInfo = observer(({ conversation }) => {
   }
 
   useEffect(() => {
-    const data = getClient(-1001975008285).then((data) => {});
+    const data = getClient(-1001975008285).then((data) => {
+      setClient(data);
+      console.log(data);
+    });
   }, []);
 
   const handleGrade = () => {
@@ -57,6 +62,17 @@ const ConversationInfo = observer(({ conversation }) => {
             {conversation?.title}
           </Typography>
           <Typography
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+            }}
+            variant="body2"
+            color="textSecondary"
+          >
+            <Person sx={{ pr: '15px', fontSize: '18px', pb: '2px' }} />
+            {client?.user?.name}
+          </Typography>
+          <Typography
             sx={{ display: 'flex', alignItems: 'center' }}
             variant="body2"
             color="textSecondary"
@@ -65,7 +81,7 @@ const ConversationInfo = observer(({ conversation }) => {
               fontSize="small"
               sx={{ pr: '15px', fontSize: '18px', pb: '2px' }}
             />
-            Телефон
+            {client?.user?.phone}
           </Typography>
           <Typography
             sx={{ display: 'flex', alignItems: 'center' }}
@@ -76,7 +92,7 @@ const ConversationInfo = observer(({ conversation }) => {
               fontSize="small"
               sx={{ pr: '15px', fontSize: '18px', pb: '2px' }}
             />
-            Почта
+            {client?.user?.email}
           </Typography>
           <Typography
             sx={{ display: 'flex', alignItems: 'center' }}

@@ -1,4 +1,5 @@
 import {
+  ANALYTICS_ROUTE,
   AUTH_ROUTE,
   BOARD_ROUTE,
   MESSENGER_ROUTE,
@@ -13,6 +14,8 @@ import TaskPage from './pages/TaskPage';
 import EmailIcon from '@mui/icons-material/Email';
 import DashboardCustomizeIcon from '@mui/icons-material/DashboardCustomize';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import AnalyticsIcon from '@mui/icons-material/Analytics';
+import AnalyticsPage from './pages/AnalyticsPage';
 
 export const authRoutes = [
   {
@@ -32,6 +35,12 @@ export const authRoutes = [
     Icon: CalendarMonthIcon,
     path: TASKS_ROUTE,
     Component: TaskPage,
+  },
+  {
+    title: 'Аналитика',
+    Icon: AnalyticsIcon,
+    path: ANALYTICS_ROUTE,
+    Component: AnalyticsPage,
   },
 ];
 

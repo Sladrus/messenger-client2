@@ -20,15 +20,16 @@ const ConversationInfo = observer(({ conversation }) => {
   const { socket } = useContext(SocketContext);
   const { conversationStore, userStore } = useContext(StoreContext);
   const [client, setClient] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
 
   async function getClient(chat_id) {
     try {
-      console.log(env.API_TOKEN);
-      //
+      setIsLoading(true);
       const response = await axios.get(
         `https://api.moneyport.world/getClient?chat_id=${chat_id}`,
         { headers: { 'x-api-key': `${env.API_TOKEN}` } }
       );
+      setIsLoading(false);
       return response.data;
     } catch (error) {
       console.log(error);
@@ -36,10 +37,12 @@ const ConversationInfo = observer(({ conversation }) => {
   }
 
   useEffect(() => {
-    const data = getClient(conversation?.chat_id).then((data) => {
-      setClient(data);
-      console.log(data);
-    });
+    getClient(conversation?.chat_id)
+      .then((data) => {
+        setClient(data);
+        console.log(data);
+      })
+      .catch((error) => console.error(error));
   }, []);
 
   const handleGrade = () => {
@@ -70,7 +73,13 @@ const ConversationInfo = observer(({ conversation }) => {
             color="textSecondary"
           >
             <Person sx={{ pr: '15px', fontSize: '18px', pb: '2px' }} />
-            {client?.user?.name}
+            {isLoading ? (
+              <Box>
+                <CircularProgress size={14} />
+              </Box>
+            ) : (
+              client?.user?.name || 'Имя'
+            )}
           </Typography>
           <Typography
             sx={{ display: 'flex', alignItems: 'center' }}
@@ -81,7 +90,13 @@ const ConversationInfo = observer(({ conversation }) => {
               fontSize="small"
               sx={{ pr: '15px', fontSize: '18px', pb: '2px' }}
             />
-            {client?.user?.phone}
+            {isLoading ? (
+              <Box>
+                <CircularProgress size={14} />
+              </Box>
+            ) : (
+              client?.user?.phone || 'Телефон'
+            )}
           </Typography>
           <Typography
             sx={{ display: 'flex', alignItems: 'center' }}
@@ -92,7 +107,13 @@ const ConversationInfo = observer(({ conversation }) => {
               fontSize="small"
               sx={{ pr: '15px', fontSize: '18px', pb: '2px' }}
             />
-            {client?.user?.email}
+            {isLoading ? (
+              <Box>
+                <CircularProgress size={14} />
+              </Box>
+            ) : (
+              client?.user?.email || 'Почта'
+            )}
           </Typography>
           <Typography
             sx={{ display: 'flex', alignItems: 'center' }}

@@ -6,26 +6,26 @@ import { AutoSizer, List } from 'react-virtualized';
 const StageConversationList = ({ conversations }) => {
   const listRef = useRef(null);
 
-  // Function to save the scroll position
-  const saveScrollPosition = () => {
-    if (listRef.current) {
-      const scrollTop = listRef.current.Grid._scrollingContainer.scrollTop;
-      localStorage.setItem('scrollPosition', scrollTop);
-    }
-  };
+  // // Function to save the scroll position
+  // const saveScrollPosition = () => {
+  //   if (listRef.current) {
+  //     const scrollTop = listRef.current.Grid._scrollingContainer.scrollTop;
+  //     localStorage.setItem('scrollPosition', scrollTop);
+  //   }
+  // };
 
-  // Function to restore the scroll position
-  const restoreScrollPosition = () => {
-    const savedScrollPosition = localStorage.getItem('scrollPosition');
+  // // Function to restore the scroll position
+  // const restoreScrollPosition = () => {
+  //   const savedScrollPosition = localStorage.getItem('scrollPosition');
 
-    if (savedScrollPosition && listRef.current) {
-      listRef.current.scrollToPosition(savedScrollPosition);
-    }
-  };
+  //   if (savedScrollPosition && listRef.current) {
+  //     listRef.current.scrollToPosition(savedScrollPosition);
+  //   }
+  // };
 
-  useEffect(() => {
-    restoreScrollPosition();
-  }, []);
+  // useEffect(() => {
+  //   restoreScrollPosition();
+  // }, []);
 
   return (
     <Box sx={{ height: 'calc(100% - 59px)', overflow: 'auto' }}>
@@ -46,7 +46,7 @@ const StageConversationList = ({ conversations }) => {
                 );
               }}
               width={width}
-              onScroll={saveScrollPosition} // Save scroll position while scrolling
+              // onScroll={saveScrollPosition} // Save scroll position while scrolling
               // onMount={restoreScrollPosition} // Restore scroll position when the component mounts
             />
           )}

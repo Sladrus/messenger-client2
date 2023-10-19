@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import axios from 'axios';
 import {
@@ -9,6 +9,7 @@ import {
   Box,
   Card,
   Chip,
+  CircularProgress,
   Divider,
   Stack,
   TextField,
@@ -17,6 +18,7 @@ import {
 import styled from '@emotion/styled';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import env from 'react-dotenv';
+import { StoreContext } from '../../../context/store';
 
 const CustomizedAccordion = styled(Accordion)`
   border: 0 !important;
@@ -25,6 +27,8 @@ const CustomizedAccordion = styled(Accordion)`
 `;
 
 const ConversationCourse = observer(() => {
+  const { conversationStore } = useContext(StoreContext);
+
   const [ways, setWays] = useState([]);
   const [fromValues, setFromValues] = useState([]);
   const PERCENT_STEP = 0.1;
@@ -39,9 +43,12 @@ const ConversationCourse = observer(() => {
   const [isAmountUpdating, setIsAmountUpdating] = useState(false);
   const [isFinalAmountUpdating, setIsFinalAmountUpdating] = useState(false);
   const [isDifUpdating, setIsDifUpdating] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchData = async () => {
     try {
+      setIsLoading(true);
+
       const response = await axios.get(
         'https://api.moneyport.world/messenger/calculator'
       );
@@ -49,14 +56,18 @@ const ConversationCourse = observer(() => {
       setFromValues(
         Array.from(new Set(response.data.map((item) => item.from)))
       );
+
+      setIsLoading(false);
     } catch (error) {
+      setIsLoading(false);
       console.error(error);
     }
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    console.log('Сработал');
+    fetchData().catch((error) => console.log(error));
+  }, [conversationStore.selectedConversation]);
 
   const calculateConvertedAmount = (percent) => {
     if (!selectedWay) return 0;
@@ -137,14 +148,28 @@ const ConversationCourse = observer(() => {
           aria-controls="panel1a-content"
           id="panel1a-header"
         >
-          <Typography variant="subtitle2" fontWeight="bold">
-            Калькулятор курса
+          <Typography
+            sx={{ display: 'flex', alignItems: 'center' }}
+            variant="subtitle2"
+            fontWeight="bold"
+          >
+            <>Калькулятор курса</>
+            {isLoading && (
+              <Box
+                sx={{
+                  pl: '10px',
+                }}
+              >
+                <CircularProgress size={14} />
+              </Box>
+            )}
           </Typography>
         </AccordionSummary>
         <AccordionDetails sx={{ p: 0, borderRadius: 0 }}>
           <Stack spacing={1} sx={{ p: '10px 0' }}>
             <Box sx={{ display: 'flex', p: '0 15px' }}>
               <TextField
+                disabled={isLoading}
                 sx={{ width: '100%' }}
                 size="small"
                 label="Сумма отдачи"
@@ -158,6 +183,7 @@ const ConversationCourse = observer(() => {
             </Box>
             <Box sx={{ display: 'flex', p: '0 15px' }}>
               <Autocomplete
+                disabled={isLoading}
                 sx={{ width: '100%' }}
                 size="small"
                 options={fromValues}
@@ -168,15 +194,23 @@ const ConversationCourse = observer(() => {
                   setSelectedWay();
                   setPercentage(0);
                   setDifPercentage(0);
+                  setAmount(0);
+                  setFinalAmount(0);
+
                   inputRef.current.value = 0;
                 }}
                 renderInput={(params) => (
-                  <TextField {...params} label="Способ отдачи" />
+                  <TextField
+                    {...params}
+                    disabled={isLoading}
+                    label="Способ отдачи"
+                  />
                 )}
               />
             </Box>
             <Box sx={{ display: 'flex', p: '0 15px' }}>
               <Autocomplete
+                disabled={isLoading}
                 sx={{ width: '100%' }}
                 size="small"
                 options={ways.filter((way) => way.from === selectedFromWay)}
@@ -184,6 +218,8 @@ const ConversationCourse = observer(() => {
                 value={selectedWay}
                 onChange={(e, newValue) => {
                   setSelectedWay(newValue);
+                  setAmount(0);
+                  setFinalAmount(0);
                   setPercentage(
                     calculateStockPercentage(
                       newValue?.from_symbol === 'RUB'
@@ -204,13 +240,18 @@ const ConversationCourse = observer(() => {
                   );
                 }}
                 renderInput={(params) => (
-                  <TextField {...params} label="Способ получения" />
+                  <TextField
+                    {...params}
+                    disabled={isLoading}
+                    label="Способ получения"
+                  />
                 )}
               />
             </Box>
             <Box sx={{ display: 'flex', p: '0 15px' }}>
               <TextField
                 ref={finalAmountRef}
+                disabled={isLoading}
                 sx={{ width: '100%' }}
                 size="small"
                 label="Сумма получения"

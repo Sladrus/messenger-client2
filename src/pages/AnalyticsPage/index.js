@@ -11,7 +11,6 @@ import {
 
 import { observer } from 'mobx-react-lite';
 import { DataGrid } from '@mui/x-data-grid';
-import axios from 'axios';
 import { StoreContext } from '../../context/store';
 import { formatDateWithDots } from '../../utils/time';
 import { GridToolbar } from '@mui/x-data-grid';

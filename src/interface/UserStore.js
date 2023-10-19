@@ -35,21 +35,12 @@ class UserStore {
 
   async login(socket, userData) {
     this.setLoading(true);
-    await new Promise((resolve) => {
-      setTimeout(() => {
-        resolve();
-      }, 1500);
-    });
     socket.emit('user:login', userData);
   }
 
   async getUsers(socket) {
     this.setLoading(true);
-    await new Promise((resolve) => {
-      setTimeout(() => {
-        resolve();
-      }, 1500);
-    });
+
     socket.emit('user:get');
   }
 

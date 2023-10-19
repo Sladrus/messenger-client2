@@ -61,15 +61,6 @@ class TaskStore {
     });
   }
 
-  // async createTask(socket, data) {
-  //   this.setTypesLoading(true);
-  //   await new Promise((resolve) => {
-  //     setTimeout(() => {
-  //       resolve();
-  //     }, 500);
-  //   });
-  //   socket.emit('taskTypes:create', data);
-  // }
 }
 
 export default TaskStore;

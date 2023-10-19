@@ -1,9 +1,4 @@
-import {
-  Avatar,
-  Box,
-  Tooltip,
-  Typography,
-} from '@mui/material';
+import { Avatar, Box, Tooltip, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import InfoIcon from '@mui/icons-material/Info';
 import { getByUsername } from '../../Api/ScoreApi';
@@ -92,8 +87,8 @@ const ConversationMember = ({ member }) => {
         onClose={handleTooltipClose}
         open={open}
         title={
-          info?.infos[0]?.info
-            ? info.infos[0].info
+          info?.infos?.length
+            ? info?.infos[0].info
             : 'Данные отсутствуют или еще не загружены'
         }
       >

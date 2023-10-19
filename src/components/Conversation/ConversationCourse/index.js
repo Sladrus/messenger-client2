@@ -210,6 +210,8 @@ const ConversationCourse = observer(() => {
                   setDifPercentage(0);
                   setAmount(0);
                   setFinalAmount(0);
+                  setToCity({});
+                  setFromCity({});
 
                   inputRef.current.value = 0;
                 }}
@@ -256,6 +258,8 @@ const ConversationCourse = observer(() => {
                   setSelectedWay(newValue);
                   setAmount(0);
                   setFinalAmount(0);
+                  setToCity({});
+                  setFromCity({});
                   setPercentage(
                     calculateStockPercentage(
                       newValue?.from_symbol === 'RUB'

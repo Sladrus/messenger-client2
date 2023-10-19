@@ -65,7 +65,6 @@ const ConversationCourse = observer(() => {
   };
 
   useEffect(() => {
-    console.log('Сработал');
     fetchData().catch((error) => console.log(error));
   }, [conversationStore.selectedConversation]);
 

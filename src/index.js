@@ -6,7 +6,6 @@ import { BrowserRouter } from 'react-router-dom';
 import { LicenseInfo } from '@mui/x-license-pro';
 import env from 'react-dotenv';
 
-console.log(env.MUI_KEY);
 LicenseInfo.setLicenseKey(env.MUI_KEY);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

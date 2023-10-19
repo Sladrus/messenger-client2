@@ -35,6 +35,9 @@ const ConversationCourse = observer(() => {
   const inputRef = useRef();
   const finalAmountRef = useRef();
   const [amount, setAmount] = useState(0);
+  const [toCity, setToCity] = useState({});
+  const [fromCity, setFromCity] = useState({});
+
   const [finalAmount, setFinalAmount] = useState(0);
   const [percentage, setPercentage] = useState();
   const [difPercentage, setDifPercentage] = useState(0);
@@ -64,6 +67,8 @@ const ConversationCourse = observer(() => {
     }
   };
 
+  console.log(selectedWay);
+
   useEffect(() => {
     fetchData().catch((error) => console.log(error));
   }, [conversationStore.selectedConversation]);
@@ -83,6 +88,16 @@ const ConversationCourse = observer(() => {
     if (!isNaN(percent)) {
       convertedAmount +=
         (convertedAmount * (parseFloat(percent) * -1 || 0)) / 100;
+    }
+
+    if (toCity?.city) {
+      convertedAmount +=
+        (convertedAmount * (parseFloat(toCity?.commission) || 0)) / 100;
+    }
+
+    if (fromCity?.city) {
+      convertedAmount +=
+        (convertedAmount * (parseFloat(fromCity?.commission) || 0)) / 100;
     }
 
     if (isNaN(convertedAmount)) return 0;
@@ -136,7 +151,7 @@ const ConversationCourse = observer(() => {
       );
       setAmount(newAmount);
     }
-  }, [difPercentage]);
+  }, [difPercentage, toCity, fromCity]);
 
   return (
     <Card sx={{ border: 0, borderRadius: 0 }}>
@@ -207,6 +222,28 @@ const ConversationCourse = observer(() => {
                 )}
               />
             </Box>
+            {selectedWay?.citis?.from?.length > 0 && (
+              <Box sx={{ display: 'flex', p: '0 15px' }}>
+                <Autocomplete
+                  disabled={isLoading}
+                  sx={{ width: '100%' }}
+                  size="small"
+                  options={selectedWay?.citis?.from}
+                  getOptionLabel={(option) => option.city || ''}
+                  value={fromCity}
+                  onChange={(e, newValue) => {
+                    setFromCity(newValue);
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      disabled={isLoading}
+                      label="Город отдачи"
+                    />
+                  )}
+                />
+              </Box>
+            )}
             <Box sx={{ display: 'flex', p: '0 15px' }}>
               <Autocomplete
                 disabled={isLoading}
@@ -247,6 +284,28 @@ const ConversationCourse = observer(() => {
                 )}
               />
             </Box>
+            {selectedWay?.citis?.to?.length > 0 && (
+              <Box sx={{ display: 'flex', p: '0 15px' }}>
+                <Autocomplete
+                  disabled={isLoading}
+                  sx={{ width: '100%' }}
+                  size="small"
+                  options={selectedWay?.citis?.to}
+                  getOptionLabel={(option) => option?.city || ''}
+                  value={toCity}
+                  onChange={(e, newValue) => {
+                    setToCity(newValue);
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      disabled={isLoading}
+                      label="Город получения"
+                    />
+                  )}
+                />
+              </Box>
+            )}
             <Box sx={{ display: 'flex', p: '0 15px' }}>
               <TextField
                 ref={finalAmountRef}
@@ -279,6 +338,36 @@ const ConversationCourse = observer(() => {
                   </div>
                 </Box>
               </Typography>
+              {fromCity?.city && (
+                <Typography fontWeight="500" fontSize="14px">
+                  <Box
+                    sx={{
+                      width: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}
+                  >
+                    <div>Комиссия: {fromCity?.city}</div>
+                    <div>{fromCity?.commission}%</div>
+                  </Box>
+                </Typography>
+              )}
+              {toCity?.city && (
+                <Typography fontWeight="500" fontSize="14px">
+                  <Box
+                    sx={{
+                      width: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}
+                  >
+                    <div>Комиссия: {toCity?.city}</div>
+                    <div>{toCity?.commission}%</div>
+                  </Box>
+                </Typography>
+              )}
               <Typography variant="subtitle2" fontWeight="400">
                 <Box
                   sx={{

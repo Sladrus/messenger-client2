@@ -11,6 +11,7 @@ import {
   Chip,
   CircularProgress,
   Divider,
+  InputAdornment,
   Stack,
   TextField,
   Typography,
@@ -193,6 +194,18 @@ const ConversationCourse = observer(() => {
                   setAmount(e.target.value);
                   setIsAmountUpdating(false);
                 }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      {amount <
+                        parseFloat(
+                          selectedWay?.amount_bellow_commission?.from?.bellow
+                        ) && amount > 0 &&
+                        `+${selectedWay?.amount_bellow_commission?.from?.commission} `}
+                      {selectedWay?.from_symbol}
+                    </InputAdornment>
+                  ),
+                }}
               />
             </Box>
             <Box sx={{ display: 'flex', p: '0 15px' }}>
@@ -323,6 +336,18 @@ const ConversationCourse = observer(() => {
                   setFinalAmount(e.target.value);
                   setIsFinalAmountUpdating(false);
                 }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      {finalAmount <
+                        parseFloat(
+                          selectedWay?.amount_bellow_commission?.to?.bellow
+                        ) && finalAmount > 0 &&
+                        `-${selectedWay?.amount_bellow_commission?.to?.commission} `}
+                      {selectedWay?.to_symbol}
+                    </InputAdornment>
+                  ),
+                }}
               />
             </Box>
             <Box sx={{ textAlign: 'left', p: '0 15px' }}>
@@ -342,6 +367,56 @@ const ConversationCourse = observer(() => {
                   </div>
                 </Box>
               </Typography>
+              {amount <
+                parseFloat(
+                  selectedWay?.amount_bellow_commission?.from?.bellow
+                ) && (
+                <Typography fontWeight="500" fontSize="14px">
+                  <Box
+                    sx={{
+                      width: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    <div>
+                      Комиссия: отдача ({'<'}{' '}
+                      {selectedWay?.amount_bellow_commission.from.bellow})
+                    </div>
+                    <div>
+                      {selectedWay?.amount_bellow_commission.from.commission}{' '}
+                      {selectedWay.from_symbol}
+                    </div>
+                  </Box>
+                </Typography>
+              )}
+              {finalAmount <
+                parseFloat(
+                  selectedWay?.amount_bellow_commission?.to?.bellow
+                ) && (
+                <Typography fontWeight="500" fontSize="14px">
+                  <Box
+                    sx={{
+                      width: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    <div>
+                      Комиссия: получение ({'<'}{' '}
+                      {selectedWay?.amount_bellow_commission.to.bellow})
+                    </div>
+                    <div>
+                      {selectedWay?.amount_bellow_commission.to.commission}{' '}
+                      {selectedWay.to_symbol}
+                    </div>
+                  </Box>
+                </Typography>
+              )}
               {fromCity?.city && (
                 <Typography fontWeight="500" fontSize="14px">
                   <Box

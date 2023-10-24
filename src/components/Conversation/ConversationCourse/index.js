@@ -200,8 +200,18 @@ const ConversationCourse = observer(() => {
                       {amount <
                         parseFloat(
                           selectedWay?.amount_bellow_commission?.from?.bellow
-                        ) && amount > 0 &&
-                        `+${selectedWay?.amount_bellow_commission?.from?.commission} `}
+                        ) && amount > 0
+                        ? '+' +
+                          (
+                            parseFloat(
+                              selectedWay?.amount_bellow_commission?.from
+                                ?.commission
+                            ) + parseFloat(selectedWay?.pp_commission || 0)
+                          ).toFixed(2)
+                        : selectedWay?.pp_commission
+                        ? '+' +
+                          parseFloat(selectedWay?.pp_commission || 0).toFixed(2)
+                        : ''}{' '}
                       {selectedWay?.from_symbol}
                     </InputAdornment>
                   ),
@@ -225,7 +235,6 @@ const ConversationCourse = observer(() => {
                   setFinalAmount(0);
                   setToCity({});
                   setFromCity({});
-
                   inputRef.current.value = 0;
                 }}
                 renderInput={(params) => (
@@ -342,7 +351,8 @@ const ConversationCourse = observer(() => {
                       {finalAmount <
                         parseFloat(
                           selectedWay?.amount_bellow_commission?.to?.bellow
-                        ) && finalAmount > 0 &&
+                        ) &&
+                        finalAmount > 0 &&
                         `-${selectedWay?.amount_bellow_commission?.to?.commission} `}
                       {selectedWay?.to_symbol}
                     </InputAdornment>
@@ -367,6 +377,25 @@ const ConversationCourse = observer(() => {
                   </div>
                 </Box>
               </Typography>
+              {selectedWay?.pp_commission && (
+                <Typography fontWeight="500" fontSize="14px">
+                  <Box
+                    sx={{
+                      width: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    <div>Комиссия: ПП (100 USD)</div>
+                    <div>
+                      {parseFloat(selectedWay?.pp_commission).toFixed(2)}{' '}
+                      {selectedWay?.from_symbol}
+                    </div>
+                  </Box>
+                </Typography>
+              )}
               {amount <
                 parseFloat(
                   selectedWay?.amount_bellow_commission?.from?.bellow

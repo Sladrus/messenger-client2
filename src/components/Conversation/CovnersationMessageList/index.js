@@ -333,7 +333,7 @@ const PhotoMessage = observer(({ message, isSentByMe }) => {
 
   useEffect(() => {
     if (conversationStore?.selectedConversation?.type === 'private') {
-      setPhotoUrl(`http://13.79.115.102/photo/${message?.photo}.jpg`);
+      setPhotoUrl(`${env.SERVER_PHOTO_URL}/photo/${message?.photo}.jpg`);
     } else {
       fetch(
         `https://api.telegram.org/bot${token}/getFile?file_id=${

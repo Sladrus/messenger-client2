@@ -34,7 +34,7 @@ const AnalyticsPage = observer(() => {
       setIsLoading(true);
 
       axios
-        .get(`${env.SERVER_URL}/api/analytics/dynamic/users`, {
+        .get(`${env.SERVER_PHOTO_URL}/api/analytics/dynamic/users`, {
           filter: conversationStore.filter,
         })
         .then((response) => {

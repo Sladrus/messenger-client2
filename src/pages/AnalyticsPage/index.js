@@ -49,6 +49,8 @@ const AnalyticsPage = observer(() => {
       setIsLoading(false);
     }
   }, []);
+  console.log(rows);
+  console.log(columns);
 
   return (
     <Box sx={{ flexGrow: 1, width: { marginLeft: `65px`, marginTop: `65px` } }}>

@@ -8,6 +8,7 @@ import {
   Stack,
   Switch,
 } from '@mui/material';
+import env from 'react-dotenv';
 
 import { observer } from 'mobx-react-lite';
 import { DataGrid } from '@mui/x-data-grid';
@@ -33,7 +34,7 @@ const AnalyticsPage = observer(() => {
       setIsLoading(true);
 
       axios
-        .get('http://localhost:5005/api/analytics/dynamic/users', {
+        .get(`${env.SERVER_URL}/api/analytics/dynamic/users`, {
           filter: conversationStore.filter,
         })
         .then((response) => {

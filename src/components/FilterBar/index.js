@@ -18,7 +18,8 @@ const FilterBar = observer(() => {
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-
+  // console.log(window.location.pathname);
+  // if (window.location.pathname === '/analytics') return;
   return (
     <Box sx={{ ml: '64px' }}>
       <AppBar

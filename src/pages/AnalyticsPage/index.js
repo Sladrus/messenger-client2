@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { Box, Stack } from '@mui/material';
 import { observer } from 'mobx-react-lite';
 import GeneralMetrics from '../../components/Analytics/GeneralMetrics';
-import WeRefusedMetrics from '../../components/Analytics/WeRefusedMetrics';
 import { LocalizationProvider } from '@mui/x-date-pickers-pro';
 import { AdapterDayjs } from '@mui/x-date-pickers-pro/AdapterDayjs';
 import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
 import dayjs from 'dayjs';
+import TagMetrics from '../../components/Analytics/TagMetrics';
 
 const shortcutsItems = [
   {
@@ -77,7 +77,7 @@ const AnalyticsPage = observer(() => {
         </LocalizationProvider>
 
         <GeneralMetrics dateRange={dateRange} />
-        <WeRefusedMetrics dateRange={dateRange} />
+        <TagMetrics dateRange={dateRange} />
       </Stack>
     </Box>
   );

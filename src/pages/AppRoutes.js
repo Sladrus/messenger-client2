@@ -10,7 +10,6 @@ import FilterBar from '../components/FilterBar';
 const AppRoutes = observer(() => {
   useChat();
   const { userStore } = useContext(StoreContext);
-
   return (
     <>
       {window.location.pathname !== '/auth' && <MiniDrawer />}

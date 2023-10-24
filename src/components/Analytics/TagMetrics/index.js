@@ -13,27 +13,26 @@ import { observer } from 'mobx-react-lite';
 import { GridToolbar } from '@mui/x-data-grid';
 import { DataGridPro } from '@mui/x-data-grid-pro';
 import axios from 'axios';
-import { StoreContext } from '../../../context/store';
+import { StoreContext, stageStore } from '../../../context/store';
 
-const WeRefusedMetrics = observer(({ dateRange }) => {
-  const { conversationStore, tagsStore } = useContext(StoreContext);
+const TagMetrics = observer(({ dateRange }) => {
+  const { conversationStore, tagsStore, stageStore } = useContext(StoreContext);
 
   const [rows, setRows] = useState([]);
   const [columns, setColumns] = useState([]);
   const [tags, setTags] = useState([]);
+  const [stage, setStages] = useState({});
 
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     try {
       setIsLoading(true);
-      console.log({
-        filter: conversationStore.filter,
-      });
       axios
-        .post(`${env.SERVER_PHOTO_URL}/api/analytics/dynamic/werefused`, {
+        .post(`${env.SERVER_PHOTO_URL}/api/analytics/dynamic/tags`, {
           tags,
           dateRange,
+          stage,
         })
         .then((response) => {
           console.log(response.data);
@@ -46,7 +45,7 @@ const WeRefusedMetrics = observer(({ dateRange }) => {
       console.log(e);
       setIsLoading(false);
     }
-  }, [tags, dateRange]);
+  }, [tags, dateRange, stage]);
   console.log(rows);
   console.log(columns);
 
@@ -56,7 +55,7 @@ const WeRefusedMetrics = observer(({ dateRange }) => {
         Метрика по тегам
       </Typography>
       <Autocomplete
-        sx={{ p: '10px 0 ' }}
+        sx={{ p: '10px 0 10px 0' }}
         size="small"
         disableCloseOnSelect
         multiple
@@ -67,6 +66,19 @@ const WeRefusedMetrics = observer(({ dateRange }) => {
         }}
         renderInput={(params) => (
           <TextField size="small" {...params} label="Теги" />
+        )}
+      />
+      <Autocomplete
+        sx={{ p: '0 0 10px 0' }}
+        size="small"
+        disableCloseOnSelect
+        getOptionLabel={(option) => option.label}
+        options={stageStore.stages || []}
+        onChange={(e, newValue) => {
+          setStages(newValue);
+        }}
+        renderInput={(params) => (
+          <TextField size="small" {...params} label="Статус" />
         )}
       />
 
@@ -91,4 +103,4 @@ const WeRefusedMetrics = observer(({ dateRange }) => {
   );
 });
 
-export default WeRefusedMetrics;
+export default TagMetrics;

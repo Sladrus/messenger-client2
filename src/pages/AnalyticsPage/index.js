@@ -1,80 +1,83 @@
-import React, { useContext, useEffect, useState } from 'react';
-// import './MessengerPage.css';
-import {
-  Box,
-  Grid,
-  InputLabel,
-  LinearProgress,
-  Stack,
-  Switch,
-} from '@mui/material';
-import env from 'react-dotenv';
-
+import React, { useState } from 'react';
+import { Box, Stack } from '@mui/material';
 import { observer } from 'mobx-react-lite';
-import { DataGrid } from '@mui/x-data-grid';
-import { StoreContext } from '../../context/store';
-import { formatDateWithDots } from '../../utils/time';
-import { GridToolbar } from '@mui/x-data-grid';
-import { FormControl, MenuItem, Select } from '@mui/material';
-import { DataGridPro } from '@mui/x-data-grid-pro';
-import axios from 'axios';
+import GeneralMetrics from '../../components/Analytics/GeneralMetrics';
+import WeRefusedMetrics from '../../components/Analytics/WeRefusedMetrics';
+import { LocalizationProvider } from '@mui/x-date-pickers-pro';
+import { AdapterDayjs } from '@mui/x-date-pickers-pro/AdapterDayjs';
+import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
+import dayjs from 'dayjs';
+
+const shortcutsItems = [
+  {
+    label: 'Эта неделя',
+    getValue: () => {
+      const today = dayjs();
+      return [today.startOf('week'), today.endOf('week')];
+    },
+  },
+  {
+    label: 'Прошлая неделя',
+    getValue: () => {
+      const today = dayjs();
+      const prevWeek = today.subtract(7, 'day');
+      return [prevWeek.startOf('week'), prevWeek.endOf('week')];
+    },
+  },
+  {
+    label: 'Последние 7 дней',
+    getValue: () => {
+      const today = dayjs();
+      return [today.subtract(7, 'day'), today];
+    },
+  },
+  {
+    label: 'Текущий месяц',
+    getValue: () => {
+      const today = dayjs();
+      return [today.startOf('month'), today.endOf('month')];
+    },
+  },
+  {
+    label: 'Следующий месяц',
+    getValue: () => {
+      const today = dayjs();
+      const startOfNextMonth = today.endOf('month').add(1, 'day');
+      return [startOfNextMonth, startOfNextMonth.endOf('month')];
+    },
+  },
+  {
+    label: 'За все время',
+    getValue: () => {
+      const today = dayjs();
+      const start = dayjs('1999-01-01');
+      return [start, today];
+    },
+  },
+];
 
 const AnalyticsPage = observer(() => {
-  // const { socket } = useContext(SocketContext);
-  const { stageStore, conversationStore } = useContext(StoreContext);
-
-  // const [dynamicRecords, setDynamicRecords] = useState([]);
-  const [rows, setRows] = useState([]);
-  const [columns, setColumns] = useState([]);
-
-  const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    try {
-      setIsLoading(true);
-      console.log({
-        filter: conversationStore.filter,
-      });
-      axios
-        .post(
-          `${env.SERVER_PHOTO_URL}/api/analytics/dynamic/users`,
-          conversationStore.filter
-        )
-        .then((response) => {
-          //   console.log(response.data);
-          setRows(response.data.rows);
-          setColumns(response.data.columns);
-          setIsLoading(false);
-          return response;
-        });
-    } catch (e) {
-      console.log(e);
-      setIsLoading(false);
-    }
-  }, [conversationStore.filter.dateRange]);
-  console.log(rows);
-  console.log(columns);
-
+  const [dateRange, setDateRange] = useState([dayjs(), dayjs()]);
   return (
     <Box sx={{ flexGrow: 1, width: { marginLeft: `65px`, marginTop: `65px` } }}>
       <Stack spacing={2} sx={{ p: '20px' }}>
-        <DataGridPro
-          columnBuffer={2}
-          columnThreshold={2}
-          density="compact"
-          treeData
-          autoPageSize
-          getTreeDataPath={(row) => row.path}
-          rows={rows}
-          columns={columns}
-          showCellVerticalBorder={true}
-          autoHeight
-          slots={{
-            toolbar: GridToolbar,
-            loadingOverlay: LinearProgress,
-          }}
-          loading={isLoading}
-        />
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DateRangePicker
+            slotProps={{
+              shortcuts: {
+                items: shortcutsItems,
+              },
+              actionBar: { actions: [] },
+            }}
+            calendars={2}
+            value={dateRange}
+            onChange={(newValue) => setDateRange(newValue)}
+            localeText={{ start: 'Стартовая дата', end: 'Конечная дата' }}
+          />
+        </LocalizationProvider>
+
+        <GeneralMetrics dateRange={dateRange} />
+        <WeRefusedMetrics dateRange={dateRange} />
       </Stack>
     </Box>
   );

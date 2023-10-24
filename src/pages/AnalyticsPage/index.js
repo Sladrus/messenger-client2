@@ -32,11 +32,14 @@ const AnalyticsPage = observer(() => {
   useEffect(() => {
     try {
       setIsLoading(true);
-
+      console.log({
+        filter: conversationStore.filter,
+      });
       axios
-        .get(`${env.SERVER_PHOTO_URL}/api/analytics/dynamic/users`, {
-          filter: conversationStore.filter,
-        })
+        .post(
+          `${env.SERVER_PHOTO_URL}/api/analytics/dynamic/users`,
+          conversationStore.filter
+        )
         .then((response) => {
           //   console.log(response.data);
           setRows(response.data.rows);
@@ -48,7 +51,7 @@ const AnalyticsPage = observer(() => {
       console.log(e);
       setIsLoading(false);
     }
-  }, []);
+  }, [conversationStore.filter.dateRange]);
   console.log(rows);
   console.log(columns);
 

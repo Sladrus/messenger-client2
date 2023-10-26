@@ -6,11 +6,12 @@ import {
   Stack,
   TextField,
   Typography,
+  alpha,
 } from '@mui/material';
 import env from 'react-dotenv';
 
 import { observer } from 'mobx-react-lite';
-import { GridToolbar } from '@mui/x-data-grid';
+import { GridToolbar, gridClasses } from '@mui/x-data-grid';
 import { DataGridPro } from '@mui/x-data-grid-pro';
 import axios from 'axios';
 import { StoreContext, stageStore, userStore } from '../../../context/store';
@@ -18,6 +19,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers-pro';
 import { AdapterDayjs } from '@mui/x-date-pickers-pro/AdapterDayjs';
 import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
 import dayjs from 'dayjs';
+import styled from '@emotion/styled';
 
 const shortcutsItems = [
   {
@@ -66,6 +68,21 @@ const shortcutsItems = [
     },
   },
 ];
+
+const StripedDataGrid = styled(DataGridPro)(({ theme }) => ({
+  [`& .${gridClasses.row}.tag`]: {
+    backgroundColor: '#ffffff',
+    fontWeight: '500',
+  },
+  [`& .${gridClasses.row}.user`]: {
+    backgroundColor: '#ffffff',
+    fontWeight: '400',
+  },
+  [`& .${gridClasses.row}.chat`]: {
+    backgroundColor: '#ffffff',
+    fontWeight: '300',
+  },
+}));
 
 const TagMetrics = observer(() => {
   const { conversationStore, tagsStore, stageStore, userStore } =
@@ -189,7 +206,13 @@ const TagMetrics = observer(() => {
           <TextField size="small" {...params} label="Менеджеры" />
         )}
       />
-      <DataGridPro
+      <StripedDataGrid
+        getRowClassName={(params) => {
+          console.log(params);
+          if (params.row.path.length === 1) return 'tag';
+          if (params.row.path.length === 2) return 'user';
+          return 'chat';
+        }}
         columnBuffer={30}
         columnThreshold={30}
         density="compact"

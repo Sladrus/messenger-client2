@@ -78,7 +78,7 @@ const ConversationCourse = observer(() => {
     if (!selectedWay) return 0;
 
     const toCourse =
-      selectedWay.from_symbol === 'RUB'
+      selectedWay.to_course === '1'
         ? parseFloat(selectedWay.to_course / selectedWay.from_course)
         : parseFloat(selectedWay.to_course);
 
@@ -284,14 +284,14 @@ const ConversationCourse = observer(() => {
                   setFromCity({});
                   setPercentage(
                     calculateStockPercentage(
-                      newValue?.from_symbol === 'RUB'
+                      newValue?.to_course === '1'
                         ? newValue?.to_course / newValue?.from_course
                         : newValue?.to_course,
                       newValue?.referense_course
                     )
                   );
                   inputRef.current.value = calculateStockPercentage(
-                    newValue?.from_symbol === 'RUB'
+                    newValue?.to_course === '1'
                       ? newValue?.to_course / newValue?.from_course
                       : newValue?.to_course,
                     newValue?.referense_course
@@ -515,7 +515,7 @@ const ConversationCourse = observer(() => {
                 >
                   <div>Процент к бирже</div>
                   <div>
-                    {selectedWay?.from_symbol === 'RUB'
+                    {selectedWay?.to_course === '1'
                       ? (
                           selectedWay?.to_course_exchange /
                           selectedWay?.from_course_exchange
@@ -523,7 +523,7 @@ const ConversationCourse = observer(() => {
                       : parseFloat(selectedWay?.to_course_exchange).toFixed(4)}
                     {' -> '}
                     {calculateStockPercentage(
-                      selectedWay?.from_symbol === 'RUB'
+                      selectedWay?.to_course === '1'
                         ? selectedWay?.to_course_exchange /
                             selectedWay?.from_course_exchange
                         : parseFloat(selectedWay?.to_course_exchange),

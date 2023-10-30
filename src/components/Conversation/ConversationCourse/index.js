@@ -287,18 +287,14 @@ const ConversationCourse = observer(() => {
                       newValue?.from_symbol === 'RUB'
                         ? newValue?.to_course / newValue?.from_course
                         : newValue?.to_course,
-                      newValue?.from_symbol === 'RUB'
-                        ? 1 / newValue?.referense_course
-                        : newValue?.referense_course
+                      newValue?.referense_course
                     )
                   );
                   inputRef.current.value = calculateStockPercentage(
                     newValue?.from_symbol === 'RUB'
                       ? newValue?.to_course / newValue?.from_course
                       : newValue?.to_course,
-                    newValue?.from_symbol === 'RUB'
-                      ? 1 / newValue?.referense_course
-                      : newValue?.referense_course
+                    newValue?.referense_course
                   );
                 }}
                 renderInput={(params) => (

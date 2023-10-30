@@ -487,11 +487,7 @@ const ConversationCourse = observer(() => {
                 >
                   <div>Эталонный курс</div>
                   <div>
-                    {selectedWay?.from_symbol === 'RUB'
-                      ? (1 / selectedWay?.referense_course).toFixed(4)
-                      : parseFloat(selectedWay?.referense_course).toFixed(
-                          4
-                        )}{' '}
+                    {parseFloat(selectedWay?.referense_course).toFixed(4)}{' '}
                     {selectedWay?.to_symbol}
                   </div>
                 </Box>

@@ -5,11 +5,12 @@ import {
   LinearProgress,
   TextField,
   Typography,
+  styled,
 } from '@mui/material';
 import env from 'react-dotenv';
 
 import { observer } from 'mobx-react-lite';
-import { GridToolbar } from '@mui/x-data-grid';
+import { GridToolbar, gridClasses } from '@mui/x-data-grid';
 import { DataGridPro } from '@mui/x-data-grid-pro';
 import axios from 'axios';
 import { StoreContext } from '../../../context/store';
@@ -66,7 +67,22 @@ const shortcutsItems = [
   },
 ];
 
-const GeneralMetrics = observer(() => {
+const StripedDataGrid = styled(DataGridPro)(({ theme }) => ({
+  [`& .${gridClasses.row}.tag`]: {
+    backgroundColor: '#ffffff',
+    fontWeight: '500',
+  },
+  [`& .${gridClasses.row}.user`]: {
+    backgroundColor: '#ffffff',
+    fontWeight: '400',
+  },
+  [`& .${gridClasses.row}.chat`]: {
+    backgroundColor: '#ffffff',
+    fontWeight: '300',
+  },
+}));
+
+const GeneralMetricsStatic = observer(() => {
   const { conversationStore } = useContext(StoreContext);
 
   const [dateRange, setDateRange] = useState([dayjs('1999-01-01'), dayjs()]);
@@ -82,7 +98,7 @@ const GeneralMetrics = observer(() => {
     try {
       setIsLoading(true);
       axios
-        .post(`${env.SERVER_PHOTO_URL}/api/analytics/dynamic/users`, {
+        .post(`${env.SERVER_PHOTO_URL}/api/analytics/static/weeks`, {
           dateRange,
           type,
         })
@@ -103,7 +119,7 @@ const GeneralMetrics = observer(() => {
   return (
     <Box>
       <Typography variant="title" fontWeight={400} fontSize={30}>
-        Основной отчет
+        Основной отчет (по смене статуса)
       </Typography>
       <Box sx={{ p: '10px 0 10px 0' }}>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -137,7 +153,13 @@ const GeneralMetrics = observer(() => {
           <TextField size="small" {...params} label="Тип" />
         )}
       />
-      <DataGridPro
+      <StripedDataGrid
+      getRowClassName={(params) => {
+          console.log(params);
+          if (params.row.path.length === 1) return 'tag';
+          if (params.row.path.length === 2) return 'user';
+          return 'chat';
+        }}
         columnBuffer={30}
         columnThreshold={30}
         density="compact"
@@ -158,4 +180,4 @@ const GeneralMetrics = observer(() => {
   );
 });
 
-export default GeneralMetrics;
+export default GeneralMetricsStatic;

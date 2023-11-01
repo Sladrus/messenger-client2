@@ -29,7 +29,7 @@ const shortcutsItems = [
   {
     label: 'Эта неделя',
     getValue: () => {
-      const today = dayjs().utc();
+      const today = dayjs().utc()
       return [today.startOf('week'), today.endOf('week')];
     },
   },
@@ -66,8 +66,8 @@ const shortcutsItems = [
   {
     label: 'За все время',
     getValue: () => {
-      const start = dayjs('1999-01-01').utc();
-      const today = dayjs().utc();
+      const start = dayjs.utc('1999-01-01');
+      const today = dayjs.utc();
       return [start, today];
     },
   },
@@ -95,7 +95,10 @@ const GeneralMetricsDynamic = observer(() => {
 
       axios
         .post(`${env.SERVER_PHOTO_URL}/api/analytics/dynamic/users`, {
-          dateRange: [dateRange[0].toDate(), dateRange[1].toDate()], // Format date objects to string
+          dateRange: [
+            dateRange[0].startOf('day').toDate(),
+            dateRange[1].endOf('day').toDate(),
+          ], // Format date objects to string
           type,
         })
         .then((response) => {

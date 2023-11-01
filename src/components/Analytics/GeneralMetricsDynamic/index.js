@@ -29,14 +29,14 @@ const shortcutsItems = [
   {
     label: 'Эта неделя',
     getValue: () => {
-      const today = dayjs().utc()
+      const today = dayjs();
       return [today.startOf('week'), today.endOf('week')];
     },
   },
   {
     label: 'Прошлая неделя',
     getValue: () => {
-      const today = dayjs().utc();
+      const today = dayjs();
       const prevWeek = today.subtract(7, 'day');
       return [prevWeek.startOf('week'), prevWeek.endOf('week')];
     },
@@ -44,21 +44,21 @@ const shortcutsItems = [
   {
     label: 'Последние 7 дней',
     getValue: () => {
-      const today = dayjs().utc();
+      const today = dayjs();
       return [today.subtract(7, 'day'), today];
     },
   },
   {
     label: 'Текущий месяц',
     getValue: () => {
-      const today = dayjs().utc();
+      const today = dayjs();
       return [today.startOf('month'), today.endOf('month')];
     },
   },
   {
     label: 'Следующий месяц',
     getValue: () => {
-      const today = dayjs().utc();
+      const today = dayjs();
       const startOfNextMonth = today.endOf('month').add(1, 'day');
       return [startOfNextMonth, startOfNextMonth.endOf('month')];
     },
@@ -66,8 +66,8 @@ const shortcutsItems = [
   {
     label: 'За все время',
     getValue: () => {
-      const start = dayjs.utc('1999-01-01');
-      const today = dayjs.utc();
+      const start = dayjs('1999-01-01');
+      const today = dayjs();
       return [start, today];
     },
   },
@@ -77,8 +77,8 @@ const GeneralMetricsDynamic = observer(() => {
   const { conversationStore } = useContext(StoreContext);
 
   const [dateRange, setDateRange] = useState([
-    dayjs.utc('1999-01-01'),
-    dayjs.utc().endOf('day'),
+    dayjs('1999-01-01'),
+    dayjs().endOf('day'),
   ]);
 
   const [rows, setRows] = useState([]);
@@ -98,7 +98,7 @@ const GeneralMetricsDynamic = observer(() => {
           dateRange: [
             dateRange[0].startOf('day').toDate(),
             dateRange[1].endOf('day').toDate(),
-          ], // Format date objects to string
+          ],
           type,
         })
         .then((response) => {

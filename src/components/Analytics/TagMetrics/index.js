@@ -20,6 +20,11 @@ import { AdapterDayjs } from '@mui/x-date-pickers-pro/AdapterDayjs';
 import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
 import dayjs from 'dayjs';
 import styled from '@emotion/styled';
+var utc = require('dayjs/plugin/utc');
+var timezone = require('dayjs/plugin/timezone'); // dependent on utc plugin
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const shortcutsItems = [
   {
@@ -97,15 +102,20 @@ const TagMetrics = observer(() => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const [dateRange, setDateRange] = useState([dayjs('1999-01-01'), dayjs()]);
-
+  const [dateRange, setDateRange] = useState([
+    dayjs('1999-01-01'),
+    dayjs().endOf('day'),
+  ]);
   useEffect(() => {
     try {
       setIsLoading(true);
       axios
         .post(`${env.SERVER_PHOTO_URL}/api/analytics/dynamic/tags`, {
           tags,
-          dateRange,
+          dateRange: [
+            dateRange[0].startOf('day').toDate(),
+            dateRange[1].endOf('day').toDate(),
+          ],
           stages,
           type,
           users,

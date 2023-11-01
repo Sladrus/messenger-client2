@@ -19,6 +19,12 @@ import { LocalizationProvider } from '@mui/x-date-pickers-pro';
 import { AdapterDayjs } from '@mui/x-date-pickers-pro/AdapterDayjs';
 import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
 
+var utc = require('dayjs/plugin/utc');
+var timezone = require('dayjs/plugin/timezone'); // dependent on utc plugin
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
 const shortcutsItems = [
   {
     label: 'Эта неделя',
@@ -85,8 +91,10 @@ const StripedDataGrid = styled(DataGridPro)(({ theme }) => ({
 const GeneralMetricsStatic = observer(() => {
   const { conversationStore } = useContext(StoreContext);
 
-  const [dateRange, setDateRange] = useState([dayjs('1999-01-01'), dayjs()]);
-
+  const [dateRange, setDateRange] = useState([
+    dayjs('1999-01-01'),
+    dayjs().endOf('day'),
+  ]);
   const [rows, setRows] = useState([]);
   const [columns, setColumns] = useState([]);
 
@@ -99,7 +107,10 @@ const GeneralMetricsStatic = observer(() => {
       setIsLoading(true);
       axios
         .post(`${env.SERVER_PHOTO_URL}/api/analytics/static/weeks`, {
-          dateRange,
+          dateRange: [
+            dateRange[0].startOf('day').toDate(),
+            dateRange[1].endOf('day').toDate(),
+          ],
           type,
         })
         .then((response) => {
@@ -154,7 +165,7 @@ const GeneralMetricsStatic = observer(() => {
         )}
       />
       <StripedDataGrid
-      getRowClassName={(params) => {
+        getRowClassName={(params) => {
           console.log(params);
           if (params.row.path.length === 1) return 'tag';
           if (params.row.path.length === 2) return 'user';

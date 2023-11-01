@@ -23,8 +23,6 @@ var timezone = require('dayjs/plugin/timezone'); // dependent on utc plugin
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-const tz = 'Europe/Moscow';
-
 const shortcutsItems = [
   {
     label: 'Эта неделя',

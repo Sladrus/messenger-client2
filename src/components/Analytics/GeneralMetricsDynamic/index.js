@@ -17,6 +17,13 @@ import dayjs from 'dayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers-pro';
 import { AdapterDayjs } from '@mui/x-date-pickers-pro/AdapterDayjs';
 import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
+var utc = require('dayjs/plugin/utc');
+var timezone = require('dayjs/plugin/timezone'); // dependent on utc plugin
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+const tz = 'Europe/Moscow';
 
 const shortcutsItems = [
   {
@@ -81,9 +88,11 @@ const GeneralMetricsDynamic = observer(() => {
   useEffect(() => {
     try {
       setIsLoading(true);
+      console.log(dateRange);
+
       axios
         .post(`${env.SERVER_PHOTO_URL}/api/analytics/dynamic/users`, {
-          dateRange,
+          dateRange: [dateRange[0].tz(tz, true), dateRange[1].tz(tz, true)], // Format date objects to string
           type,
         })
         .then((response) => {
@@ -97,8 +106,8 @@ const GeneralMetricsDynamic = observer(() => {
       setIsLoading(false);
     }
   }, [dateRange, type]);
-  console.log(rows);
-  console.log(columns);
+  // console.log(rows);
+  // console.log(columns);
 
   return (
     <Box>

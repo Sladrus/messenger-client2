@@ -381,10 +381,11 @@ class ConversationStore {
     });
   }
 
-  async readConversation(socket, id) {
+  async readConversation(socket, id, user) {
     this.setUnreadLoading(true);
     socket.emit('conversation:read', {
       id,
+      user,
     });
   }
 

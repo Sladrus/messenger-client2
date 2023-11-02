@@ -19,7 +19,7 @@ import { SocketContext } from '../../../context/socket';
 const ConversationBar = observer(({ handleDrawerOpen, open }) => {
   const { socket } = useContext(SocketContext);
 
-  const { conversationStore } = useContext(StoreContext);
+  const { conversationStore, userStore } = useContext(StoreContext);
 
   const length =
     conversationStore.searchedConversations &&
@@ -34,7 +34,8 @@ const ConversationBar = observer(({ handleDrawerOpen, open }) => {
   const handleReadConversation = () => {
     conversationStore.readConversation(
       socket,
-      conversationStore.selectedConversation._id
+      conversationStore.selectedConversation._id,
+      userStore.user
     );
   };
 

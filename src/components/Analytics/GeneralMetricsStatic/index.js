@@ -101,6 +101,7 @@ const GeneralMetricsStatic = observer(() => {
   const [isLoading, setIsLoading] = useState(false);
 
   const [type, setType] = useState({ label: 'Группа', value: 'group' });
+  const [period, setPeriod] = useState({ label: 'Неделя', value: 'week' });
 
   useEffect(() => {
     try {
@@ -112,6 +113,7 @@ const GeneralMetricsStatic = observer(() => {
             dateRange[1].endOf('day').toDate(),
           ],
           type,
+          period,
         })
         .then((response) => {
           setRows(response.data.rows);
@@ -123,7 +125,7 @@ const GeneralMetricsStatic = observer(() => {
       console.log(e);
       setIsLoading(false);
     }
-  }, [dateRange, type]);
+  }, [dateRange, type, period]);
   console.log(rows);
   console.log(columns);
 
@@ -162,6 +164,22 @@ const GeneralMetricsStatic = observer(() => {
         }}
         renderInput={(params) => (
           <TextField size="small" {...params} label="Тип" />
+        )}
+      />
+      <Autocomplete
+        sx={{ p: '0 0 10px 0' }}
+        size="small"
+        getOptionLabel={(option) => option.label}
+        value={period}
+        options={[
+          { label: 'Неделя', value: 'week' },
+          { label: 'Месяц', value: 'month' },
+        ]}
+        onChange={(e, newValue) => {
+          setPeriod(newValue);
+        }}
+        renderInput={(params) => (
+          <TextField size="small" {...params} label="Период" />
         )}
       />
       <StripedDataGrid

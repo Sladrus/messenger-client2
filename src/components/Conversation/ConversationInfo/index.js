@@ -7,7 +7,14 @@ import {
   Typography,
 } from '@mui/material';
 import React, { useContext, useEffect, useState } from 'react';
-import { Telegram, Phone, Mail, Link, Person } from '@mui/icons-material';
+import {
+  Telegram,
+  Phone,
+  Mail,
+  Link,
+  Person,
+  MoreVert,
+} from '@mui/icons-material';
 import axios from 'axios';
 import GradeIcon from '@mui/icons-material/Grade';
 import { observer } from 'mobx-react-lite';
@@ -113,6 +120,32 @@ const ConversationInfo = observer(({ conversation }) => {
               </Box>
             ) : (
               client?.user?.email || 'Почта'
+            )}
+          </Typography>
+          <Typography
+            sx={{ display: 'flex', alignItems: 'center' }}
+            variant="body2"
+            color="textSecondary"
+          >
+            <MoreVert
+              fontSize="small"
+              sx={{ pr: '15px', fontSize: '18px', pb: '2px' }}
+            />
+            {isLoading ? (
+              <Box>
+                <CircularProgress size={14} />
+              </Box>
+            ) : (
+              <Box>
+                <b>{'UTMS'}:</b>
+                <Box sx={{ pl: '16px' }}>
+                  <div>Campaign: {client?.utms?.campaign || ''}</div>
+                  <div>Content: {client?.utms?.content || ''}</div>
+                  <div>Medium: {client?.utms?.medium || ''}</div>
+                  <div>Source: {client?.utms?.source || ''}</div>
+                  <div>Term: {client?.utms?.term || ''}</div>
+                </Box>
+              </Box>
             )}
           </Typography>
           <Typography

@@ -139,11 +139,21 @@ const ConversationInfo = observer(({ conversation }) => {
               <Box>
                 <b>{'UTMS'}:</b>
                 <Box sx={{ pl: '16px' }}>
-                  <div>Campaign: {client?.utms?.campaign || ''}</div>
-                  <div>Content: {client?.utms?.content || ''}</div>
-                  <div>Medium: {client?.utms?.medium || ''}</div>
-                  <div>Source: {client?.utms?.source || ''}</div>
-                  <div>Term: {client?.utms?.term || ''}</div>
+                  <div>
+                    Campaign: <b>{client?.utms?.campaign || ''}</b>
+                  </div>
+                  <div>
+                    Content: <b>{client?.utms?.content || ''}</b>
+                  </div>
+                  <div>
+                    Medium: <b>{client?.utms?.medium || ''}</b>
+                  </div>
+                  <div>
+                    Source: <b>{client?.utms?.source || ''}</b>
+                  </div>
+                  <div>
+                    Term: <b>{client?.utms?.term || ''}</b>
+                  </div>
                 </Box>
               </Box>
             )}

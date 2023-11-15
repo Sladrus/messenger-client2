@@ -3,7 +3,7 @@ import env from 'react-dotenv';
 
 const scoreApi = axios.create({ baseURL: env.SCORE_URL });
 
-export async function getByUsername(username, type = 'TGNAME') {
+export async function getByUsername(username, type = 'TGID') {
   try {
     const response = await scoreApi.get(`/contact/${username}/${type}`);
     return response.data;

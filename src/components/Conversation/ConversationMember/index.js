@@ -12,7 +12,7 @@ const ConversationMember = ({ member }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const info = await getByUsername(member?.username);
+      const info = await getByUsername(member?.id);
       setInfo(info);
     };
 

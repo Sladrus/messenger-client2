@@ -10,14 +10,14 @@ const ConversationMember = ({ member }) => {
 
   const [info, setInfo] = useState({ infos: [] });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const info = await getByUsername(member?.id);
-      setInfo(info);
-    };
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const info = await getByUsername(member?.id);
+  //     setInfo(info);
+  //   };
 
-    fetchData();
-  }, []);
+  //   fetchData();
+  // }, []);
 
   const handleTooltipClose = () => {
     setOpen(false);

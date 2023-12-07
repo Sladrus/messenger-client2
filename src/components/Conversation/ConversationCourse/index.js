@@ -47,6 +47,7 @@ const ConversationCourse = observer(() => {
   const [toServices, setToServices] = useState(null);
 
   const [course, setCourse] = useState(null);
+  const [reverseCourse, setReverseCourse] = useState(null);
 
   const [markup, setMarkup] = useState(null);
   const [defaultMarkup, setDefaultMarkup] = useState(null);
@@ -134,7 +135,9 @@ const ConversationCourse = observer(() => {
     // console.log(data);
 
     if (data?.error || !data?.course) return setError(data?.error);
-    setCourse(data?.course);
+    setCourse(data?.courses);
+    setReverseCourse(data?.courses_reverse);
+
     setMarkup(data?.default_markup);
     setDefaultMarkup(data?.default_markup);
 
@@ -163,6 +166,8 @@ const ConversationCourse = observer(() => {
     if (data?.error || !data?.course) return setError(data?.error);
 
     setCourse(data?.course);
+    setReverseCourse(data?.courses_reverse);
+
     setMarkup(data?.default_markup);
     setDefaultMarkup(data?.default_markup);
 

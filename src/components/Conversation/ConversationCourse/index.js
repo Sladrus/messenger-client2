@@ -134,7 +134,7 @@ const ConversationCourse = observer(() => {
     });
     // console.log(data);
 
-    if (data?.error || !data?.course) return setError(data?.error);
+    if (data?.error || !data?.courses) return setError(data?.error);
     setCourse(data?.courses);
     setReverseCourse(data?.courses_reverse);
 
@@ -163,9 +163,9 @@ const ConversationCourse = observer(() => {
     });
     // console.log(data);
 
-    if (data?.error || !data?.course) return setError(data?.error);
+    if (data?.error || !data?.courses) return setError(data?.error);
 
-    setCourse(data?.course);
+    setCourse(data?.courses);
     setReverseCourse(data?.courses_reverse);
 
     setMarkup(data?.default_markup);

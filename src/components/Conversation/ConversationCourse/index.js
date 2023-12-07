@@ -26,6 +26,7 @@ import SendMethodSelect from '../../Select/SendMethodSelect';
 import { percentageDifference } from '../../../utils/percentageDifference';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
+import env from 'react-dotenv';
 
 const CustomizedAccordion = styled(Accordion)`
   border: 0 !important;
@@ -66,7 +67,7 @@ const ConversationCourse = observer(() => {
         'https://api.moneyport.world/messenger/methods',
         {
           headers: {
-            'X-Api-Key': '994f4ca3371792beeb727761c6b831dfc410f6a4',
+            'X-Api-Key': `${env.API_TOKEN}`,
           },
         }
       );
@@ -87,7 +88,7 @@ const ConversationCourse = observer(() => {
         data,
         {
           headers: {
-            'X-Api-Key': '994f4ca3371792beeb727761c6b831dfc410f6a4',
+            'X-Api-Key': `${env.API_TOKEN}`,
           },
         }
       );

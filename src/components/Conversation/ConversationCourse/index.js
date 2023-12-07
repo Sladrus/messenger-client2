@@ -20,6 +20,12 @@ import styled from '@emotion/styled';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import env from 'react-dotenv';
 import { StoreContext } from '../../../context/store';
+import CurrencySelect from '../../Select/SendSelect';
+import SendSelect from '../../Select/SendSelect';
+import SendMethodSelect from '../../Select/SendMethodSelect';
+import { percentageDifference } from '../../../utils/percentageDifference';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 
 const CustomizedAccordion = styled(Accordion)`
   border: 0 !important;
@@ -28,137 +34,181 @@ const CustomizedAccordion = styled(Accordion)`
 `;
 
 const ConversationCourse = observer(() => {
-  const { conversationStore } = useContext(StoreContext);
+  const [methods, setMethods] = useState([]);
 
-  const [ways, setWays] = useState([]);
-  const [fromValues, setFromValues] = useState([]);
-  const PERCENT_STEP = 0.1;
-  const inputRef = useRef();
-  const finalAmountRef = useRef();
-  const [amount, setAmount] = useState(0);
-  const [toCity, setToCity] = useState({});
-  const [fromCity, setFromCity] = useState({});
+  const [fromValue, setFromValue] = useState(null);
+  const [fromMethod, setFromMethod] = useState(null);
+  const [fromAmount, setFromAmount] = useState(0);
+  const [fromServices, setFromServices] = useState(null);
 
-  const [finalAmount, setFinalAmount] = useState(0);
-  const [percentage, setPercentage] = useState();
-  const [difPercentage, setDifPercentage] = useState(0);
-  const [selectedFromWay, setSelectedFromWay] = useState(null);
-  const [selectedWay, setSelectedWay] = useState(null);
-  const [isAmountUpdating, setIsAmountUpdating] = useState(false);
-  const [isFinalAmountUpdating, setIsFinalAmountUpdating] = useState(false);
-  const [isDifUpdating, setIsDifUpdating] = useState(false);
+  const [toValue, setToValue] = useState(null);
+  const [toMethod, setToMethod] = useState(null);
+  const [toAmount, setToAmount] = useState(0);
+  const [toServices, setToServices] = useState(null);
+
+  const [course, setCourse] = useState(null);
+
+  const [markup, setMarkup] = useState(null);
+  const [defaultMarkup, setDefaultMarkup] = useState(null);
+
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const fetchData = async () => {
+  const [checked, setChecked] = useState('from');
+
+  const prevMarkup = useRef(markup);
+
+  const getMethods = async () => {
     try {
       setIsLoading(true);
 
       const response = await axios.get(
-        'https://api.moneyport.world/messenger/calculator'
+        'https://api.moneyport.world/messenger/methods',
+        {
+          headers: {
+            'X-Api-Key': '994f4ca3371792beeb727761c6b831dfc410f6a4',
+          },
+        }
       );
-      setWays(response.data);
-      setFromValues(
-        Array.from(new Set(response.data.map((item) => item.from)))
-      );
-
+      setMethods(response.data);
       setIsLoading(false);
     } catch (error) {
-      setIsLoading(false);
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  console.log(selectedWay);
-
-  useEffect(() => {
-    fetchData().catch((error) => console.log(error));
-  }, [conversationStore.selectedConversation]);
-
-  const calculateConvertedAmount = (percent) => {
-    if (!selectedWay) return 0;
-
-    const toCourse =
-      selectedWay.to_course === '1'
-        ? parseFloat(selectedWay.to_course / selectedWay.from_course)
-        : parseFloat(selectedWay.to_course);
-
-    if (isNaN(toCourse)) return 0;
-
-    let convertedAmount = toCourse;
-
-    if (!isNaN(percent)) {
-      convertedAmount +=
-        (convertedAmount * (parseFloat(percent) * -1 || 0)) / 100;
-    }
-
-    if (toCity?.city) {
-      convertedAmount +=
-        (convertedAmount * (parseFloat(toCity?.commission) || 0)) / 100;
-    }
-
-    if (fromCity?.city) {
-      convertedAmount +=
-        (convertedAmount * (parseFloat(fromCity?.commission) || 0)) / 100;
-    }
-
-    if (isNaN(convertedAmount)) return 0;
-
-    return convertedAmount;
-  };
-
-  const calculateStockPercentage = (stock, client) => {
-    const difference = Math.abs(client - stock);
-    const percentageDifference = (difference / stock) * 100;
-    return percentageDifference.toFixed(2);
-  };
-
-  useEffect(() => {
-    if (Number.isNaN(finalAmount)) return;
-
-    if (finalAmount !== 0 && !isFinalAmountUpdating && !isDifUpdating) {
-      const calculatedAmount = parseFloat(
-        finalAmount / calculateConvertedAmount(difPercentage)
+  const calculate = async (data) => {
+    try {
+      setIsLoading(true);
+      const response = await axios.post(
+        'https://api.moneyport.world/messenger/calculation',
+        data,
+        {
+          headers: {
+            'X-Api-Key': '994f4ca3371792beeb727761c6b831dfc410f6a4',
+          },
+        }
       );
-      if (amount !== calculatedAmount.toFixed(0)) {
-        setAmount(calculatedAmount);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      return { error: error?.message };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getMethods();
+  }, []);
+
+  useEffect(() => {
+    if (prevMarkup.current !== null) {
+      if (markup) {
+        const newAmount =
+          checked === 'to'
+            ? calculateClientCourse(course?.basic, markup) * toAmount
+            : fromAmount / calculateClientCourse(course?.basic, markup);
+        checked === 'to'
+          ? setFromAmount(newAmount.toFixed(4))
+          : setToAmount(newAmount.toFixed(4));
       }
+      setIsLoading(false);
     }
-  }, [finalAmount, difPercentage]);
+    prevMarkup.current = markup;
+  }, [markup]);
 
-  useEffect(() => {
-    if (Number.isNaN(amount)) return;
+  const handleSubmitFromAmount = async (e) => {
+    e.preventDefault();
+    setError('');
+    const data = await calculate({
+      from: {
+        currency: fromValue?.currency,
+        method: fromMethod?.code,
+        amount: fromAmount,
+      },
+      to: { currency: toValue?.currency, method: toMethod?.code },
+    });
+    // console.log(data);
 
-    if (amount !== 0 && !isAmountUpdating && !isDifUpdating) {
-      const calculatedFinalAmount = parseFloat(
-        calculateConvertedAmount(difPercentage) * amount
-      );
-      if (finalAmount !== calculatedFinalAmount.toFixed(0)) {
-        setFinalAmount(calculatedFinalAmount);
-      }
-    }
-  }, [amount, difPercentage]);
+    if (data?.error || !data?.course) return setError(data?.error);
+    setCourse(data?.course);
+    setMarkup(data?.default_markup);
+    setDefaultMarkup(data?.default_markup);
 
-  useEffect(() => {
-    const newFinalAmount = parseFloat(
-      calculateConvertedAmount(difPercentage) * amount
-    );
-    setFinalAmount(newFinalAmount);
+    setToAmount(data?.result);
+    setToServices(data?.to?.services);
+    setFromServices(data?.from?.services);
+  };
 
-    if (isNaN(newFinalAmount / calculateConvertedAmount(difPercentage))) {
-      setAmount(0);
-    } else {
-      const newAmount = parseFloat(
-        newFinalAmount / calculateConvertedAmount(difPercentage)
-      );
-      setAmount(newAmount);
-    }
-  }, [difPercentage, toCity, fromCity]);
+  const handleSubmitToAmount = async (e) => {
+    e.preventDefault();
+    setError('');
+
+    const data = await calculate({
+      from: {
+        currency: fromValue?.currency,
+        method: fromMethod?.code,
+      },
+      to: {
+        currency: toValue?.currency,
+        method: toMethod?.code,
+        amount: toAmount,
+      },
+    });
+    // console.log(data);
+
+    if (data?.error || !data?.course) return setError(data?.error);
+
+    setCourse(data?.course);
+    setMarkup(data?.default_markup);
+    setDefaultMarkup(data?.default_markup);
+
+    setFromAmount(data?.result);
+    setToServices(data?.to?.services);
+    setFromServices(data?.from?.services);
+  };
+
+  const handleChecked = (value) => {
+    setChecked(value);
+  };
+
+  const handleFromChange = (value) => {
+    setFromValue(value);
+    setFromAmount(0);
+    setToAmount(0);
+    setMarkup(null);
+    setDefaultMarkup(null);
+    setCourse(null);
+    setToServices(null);
+    setFromServices(null);
+    setError(null);
+  };
+
+  const handleToChange = (value) => {
+    setToValue(value);
+    setFromAmount(0);
+    setToAmount(0);
+    setMarkup(null);
+    setDefaultMarkup(null);
+    setCourse(null);
+    setToServices(null);
+    setFromServices(null);
+    setError(null);
+  };
+
+  const calculateClientCourse = (course, markup) => {
+    const clientCourse = course + (markup * course) / 100;
+    return clientCourse;
+  };
 
   return (
     <Card sx={{ border: 0, borderRadius: 0 }}>
       <CustomizedAccordion defaultExpanded>
         <AccordionSummary
-          sx={{ border: 0, borderRadius: 0, p: '0px 15px' }}
+          sx={{ border: 0, borderRadius: 0, p: '0px 12px' }}
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel1a-content"
           id="panel1a-header"
@@ -181,419 +231,343 @@ const ConversationCourse = observer(() => {
           </Typography>
         </AccordionSummary>
         <AccordionDetails sx={{ p: 0, borderRadius: 0 }}>
-          <Stack spacing={1} sx={{ p: '10px 0' }}>
-            <Box sx={{ display: 'flex', p: '0 15px' }}>
-              <TextField
-                disabled={isLoading}
-                sx={{ width: '100%' }}
-                size="small"
-                label="Сумма отдачи"
-                value={amount}
-                onChange={(e) => {
-                  setIsAmountUpdating(true);
-                  setAmount(e.target.value);
-                  setIsAmountUpdating(false);
-                }}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      {amount <
-                        parseFloat(
-                          selectedWay?.amount_bellow_commission?.from?.bellow
-                        ) && amount > 0
-                        ? '+' +
-                          (
-                            parseFloat(
-                              selectedWay?.amount_bellow_commission?.from
-                                ?.commission
-                            ) + parseFloat(selectedWay?.pp_commission || 0)
-                          ).toFixed(2)
-                        : selectedWay?.pp_commission
-                        ? '+' +
-                          parseFloat(selectedWay?.pp_commission || 0).toFixed(2)
-                        : ''}{' '}
-                      {selectedWay?.from_symbol}
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </Box>
-            <Box sx={{ display: 'flex', p: '0 15px' }}>
-              <Autocomplete
-                disabled={isLoading}
-                sx={{ width: '100%' }}
-                size="small"
-                options={fromValues}
-                getOptionLabel={(option) => option}
-                value={selectedFromWay}
-                onChange={(e, newValue) => {
-                  setSelectedFromWay(newValue);
-                  setSelectedWay();
-                  setPercentage(0);
-                  setDifPercentage(0);
-                  setAmount(0);
-                  setFinalAmount(0);
-                  setToCity({});
-                  setFromCity({});
-                  inputRef.current.value = 0;
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    disabled={isLoading}
-                    label="Способ отдачи"
-                  />
-                )}
-              />
-            </Box>
-            {selectedWay?.citis?.from?.length > 0 && (
-              <Box sx={{ display: 'flex', p: '0 15px' }}>
-                <Autocomplete
-                  disabled={isLoading}
-                  sx={{ width: '100%' }}
-                  size="small"
-                  options={selectedWay?.citis?.from}
-                  getOptionLabel={(option) => option.city || ''}
-                  value={fromCity}
-                  onChange={(e, newValue) => {
-                    setFromCity(newValue);
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      disabled={isLoading}
-                      label="Город отдачи"
-                    />
-                  )}
+          <Stack
+            spacing={1}
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              p: '10px 0',
+              gap: '6px',
+            }}
+          >
+            {error && (
+              <Typography
+                sx={{ p: '0px 12px' }}
+                fontWeight={'500'}
+                fontSize={'14px'}
+                textAlign={'left'}
+                color={'red'}
+              >
+                <span>{error}</span>
+              </Typography>
+            )}
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                p: '0 12px',
+                gap: '6px',
+              }}
+            >
+              <Typography
+                fontWeight={'500'}
+                fontSize={'14px'}
+                textAlign={'left'}
+                color={'#031022'}
+              >
+                Клиент отправляет:
+              </Typography>
+              <Box>
+                <SendSelect
+                  value={fromValue}
+                  onChange={handleFromChange}
+                  setValue={setFromValue}
+                  values={methods?.FROM || []}
+                  defaultValue={methods?.FROM && methods?.FROM[0]}
+                  inputValue={fromAmount}
+                  setInputValue={setFromAmount}
+                  onSubmit={handleSubmitFromAmount}
+                  checked={checked}
+                  checkType={'from'}
+                  handleChecked={handleChecked}
                 />
               </Box>
-            )}
-            <Box sx={{ display: 'flex', p: '0 15px' }}>
-              <Autocomplete
-                disabled={isLoading}
-                sx={{ width: '100%' }}
-                size="small"
-                options={ways.filter((way) => way.from === selectedFromWay)}
-                getOptionLabel={(option) => option.to}
-                value={selectedWay}
-                onChange={(e, newValue) => {
-                  setSelectedWay(newValue);
-                  setAmount(0);
-                  setFinalAmount(0);
-                  setToCity({});
-                  setFromCity({});
-                  setPercentage(
-                    calculateStockPercentage(
-                      newValue?.to_course === '1'
-                        ? newValue?.to_course / newValue?.from_course
-                        : newValue?.to_course,
-                      newValue?.referense_course
-                    )
-                  );
-                  inputRef.current.value = calculateStockPercentage(
-                    newValue?.to_course === '1'
-                      ? newValue?.to_course / newValue?.from_course
-                      : newValue?.to_course,
-                    newValue?.referense_course
-                  );
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    disabled={isLoading}
-                    label="Способ получения"
-                  />
-                )}
+              <SendMethodSelect
+                label={'Способ отправления'}
+                value={fromMethod}
+                setValue={setFromMethod}
+                values={fromValue?.methods}
+                defaultValue={fromValue?.methods && fromValue?.methods[0]}
               />
+              {(fromMethod?.min || fromMethod?.max) && (
+                <Typography
+                  sx={{ display: 'flex', flexDirection: 'column' }}
+                  fontWeight={'400'}
+                  fontSize={'12px'}
+                  textAlign={'left'}
+                  color={'#647081'}
+                >
+                  <span>
+                    {fromMethod?.min !== null &&
+                      `Минимальная сумма ${fromMethod?.min} ${fromMethod?.symbol}`}
+                  </span>
+                  <span>
+                    {fromMethod?.max !== null &&
+                      `Максимальная сумма ${fromMethod?.max} ${fromMethod?.symbol}`}
+                  </span>
+                </Typography>
+              )}
             </Box>
-            {selectedWay?.citis?.to?.length > 0 && (
-              <Box sx={{ display: 'flex', p: '0 15px' }}>
-                <Autocomplete
-                  disabled={isLoading}
-                  sx={{ width: '100%' }}
-                  size="small"
-                  options={selectedWay?.citis?.to}
-                  getOptionLabel={(option) => option?.city || ''}
-                  value={toCity}
-                  onChange={(e, newValue) => {
-                    setToCity(newValue);
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      disabled={isLoading}
-                      label="Город получения"
-                    />
-                  )}
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                p: '0 12px',
+                gap: '6px',
+              }}
+            >
+              <Typography
+                fontWeight={'500'}
+                fontSize={'14px'}
+                textAlign={'left'}
+                color={'#031022'}
+              >
+                Клиент получает:
+              </Typography>
+              <Box>
+                <SendSelect
+                  value={toValue}
+                  setValue={setToValue}
+                  onChange={handleToChange}
+                  values={methods?.TO || []}
+                  defaultValue={methods?.TO && methods?.TO[0]}
+                  inputValue={toAmount}
+                  setInputValue={setToAmount}
+                  onSubmit={handleSubmitToAmount}
+                  checked={checked}
+                  checkType={'to'}
+                  handleChecked={handleChecked}
                 />
               </Box>
-            )}
-            <Box sx={{ display: 'flex', p: '0 15px' }}>
-              <TextField
-                ref={finalAmountRef}
-                disabled={isLoading}
-                sx={{ width: '100%' }}
-                size="small"
-                label="Сумма получения"
-                value={finalAmount}
-                onChange={(e) => {
-                  setIsFinalAmountUpdating(true);
-                  setFinalAmount(e.target.value);
-                  setIsFinalAmountUpdating(false);
-                }}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      {finalAmount <
-                        parseFloat(
-                          selectedWay?.amount_bellow_commission?.to?.bellow
-                        ) &&
-                        finalAmount > 0 &&
-                        `-${selectedWay?.amount_bellow_commission?.to?.commission} `}
-                      {selectedWay?.to_symbol}
-                    </InputAdornment>
-                  ),
-                }}
+              <SendMethodSelect
+                label={'Способ получения'}
+                value={toMethod}
+                setValue={setToMethod}
+                values={toValue?.methods}
+                defaultValue={toValue?.methods && toValue?.methods[0]}
               />
+              {(toMethod?.min || toMethod?.max) && (
+                <Typography
+                  sx={{ display: 'flex', flexDirection: 'column' }}
+                  fontWeight={'400'}
+                  fontSize={'12px'}
+                  textAlign={'left'}
+                  color={'#647081'}
+                >
+                  <span>
+                    {toMethod?.min !== null &&
+                      `Минимальная сумма ${toMethod?.min} ${toMethod?.symbol}`}
+                  </span>
+                  <span>
+                    {toMethod?.max !== null &&
+                      `Максимальная сумма ${toMethod?.max} ${toMethod?.symbol}`}
+                  </span>
+                </Typography>
+              )}
             </Box>
-            <Box sx={{ textAlign: 'left', p: '0 15px' }}>
-              <Typography fontWeight="400" fontSize="14px">
+            {fromServices !== null || toServices !== null ? (
+              <>
+                <Divider />
                 <Box
                   sx={{
-                    width: '100%',
                     display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
+                    flexDirection: 'column',
+                    gap: '8px',
+                    p: '0 12px',
+                    textAlign: 'left',
                   }}
                 >
-                  <div>Базовый курс</div>
-                  <div>
-                    {calculateConvertedAmount(0).toFixed(4)}{' '}
-                    {selectedWay?.to_symbol}
-                  </div>
+                  {fromServices && (
+                    <Typography
+                      fontWeight={'700'}
+                      fontSize={'14px'}
+                      color={'#031022'}
+                    >
+                      Платные доп. услуги: Отправляете
+                    </Typography>
+                  )}
+                  {fromServices?.map((item, index) => {
+                    return (
+                      <Typography
+                        key={index}
+                        fontWeight={'400'}
+                        fontSize={'14px'}
+                        color={'#647081'}
+                      >
+                        {item?.name} {item?.price} {item?.symbol}
+                      </Typography>
+                    );
+                  })}
+                  {toServices && (
+                    <Typography
+                      fontWeight={'700'}
+                      fontSize={'14px'}
+                      color={'#031022'}
+                    >
+                      Платные доп. услуги: Получаете
+                    </Typography>
+                  )}
+                  {toServices?.map((item, index) => {
+                    return (
+                      <Typography
+                        key={index}
+                        fontWeight={'400'}
+                        fontSize={'14px'}
+                        color={'#647081'}
+                      >
+                        {item?.name} {item?.price} {item?.symbol}
+                      </Typography>
+                    );
+                  })}
                 </Box>
-              </Typography>
-              {selectedWay?.pp_commission && (
-                <Typography fontWeight="500" fontSize="14px">
-                  <Box
-                    sx={{
-                      width: '100%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
-                    <div>Комиссия: ПП (100 USD)</div>
-                    <div>
-                      {parseFloat(selectedWay?.pp_commission).toFixed(2)}{' '}
-                      {selectedWay?.from_symbol}
-                    </div>
-                  </Box>
-                </Typography>
-              )}
-              {amount <
-                parseFloat(
-                  selectedWay?.amount_bellow_commission?.from?.bellow
-                ) && (
-                <Typography fontWeight="500" fontSize="14px">
-                  <Box
-                    sx={{
-                      width: '100%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
-                    <div>
-                      Комиссия: отдача ({'<'}{' '}
-                      {selectedWay?.amount_bellow_commission.from.bellow})
-                    </div>
-                    <div>
-                      {selectedWay?.amount_bellow_commission.from.commission}{' '}
-                      {selectedWay.from_symbol}
-                    </div>
-                  </Box>
-                </Typography>
-              )}
-              {finalAmount <
-                parseFloat(
-                  selectedWay?.amount_bellow_commission?.to?.bellow
-                ) && (
-                <Typography fontWeight="500" fontSize="14px">
-                  <Box
-                    sx={{
-                      width: '100%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
-                    <div>
-                      Комиссия: получение ({'<'}{' '}
-                      {selectedWay?.amount_bellow_commission.to.bellow})
-                    </div>
-                    <div>
-                      {selectedWay?.amount_bellow_commission.to.commission}{' '}
-                      {selectedWay.to_symbol}
-                    </div>
-                  </Box>
-                </Typography>
-              )}
-              {fromCity?.city && (
-                <Typography fontWeight="500" fontSize="14px">
-                  <Box
-                    sx={{
-                      width: '100%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                    }}
-                  >
-                    <div>Комиссия: {fromCity?.city}</div>
-                    <div>{fromCity?.commission}%</div>
-                  </Box>
-                </Typography>
-              )}
-              {toCity?.city && (
-                <Typography fontWeight="500" fontSize="14px">
-                  <Box
-                    sx={{
-                      width: '100%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                    }}
-                  >
-                    <div>Комиссия: {toCity?.city}</div>
-                    <div>{toCity?.commission}%</div>
-                  </Box>
-                </Typography>
-              )}
-              <Typography variant="subtitle2" fontWeight="400">
-                <Box
-                  sx={{
-                    width: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                  }}
-                >
-                  <div>Эталонный курс</div>
-                  <div>
-                    {parseFloat(selectedWay?.referense_course).toFixed(4)}{' '}
-                    {selectedWay?.to_symbol}
-                  </div>
-                </Box>
-              </Typography>
-              <Typography variant="subtitle2" fontWeight="400">
-                <Box
-                  sx={{
-                    width: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                  }}
-                >
-                  <div>Курс для клиента</div>
-                  <div>
-                    {calculateConvertedAmount(difPercentage).toFixed(4)}{' '}
-                    {selectedWay?.to_symbol}
-                  </div>
-                </Box>
-              </Typography>
-              <Typography variant="subtitle2" fontWeight="400">
-                <Box
-                  sx={{
-                    width: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                  }}
-                >
-                  <div>Процент к бирже</div>
-                  <div>
-                    {selectedWay?.to_course === '1'
-                      ? (
-                          selectedWay?.to_course_exchange /
-                          selectedWay?.from_course_exchange
-                        ).toFixed(4)
-                      : parseFloat(selectedWay?.to_course_exchange).toFixed(4)}
-                    {' -> '}
-                    {calculateStockPercentage(
-                      selectedWay?.to_course === '1'
-                        ? selectedWay?.to_course_exchange /
-                            selectedWay?.from_course_exchange
-                        : parseFloat(selectedWay?.to_course_exchange),
-                      calculateConvertedAmount(difPercentage)
-                    )}
-                    %
-                  </div>
-                </Box>
-              </Typography>
-              <Typography variant="subtitle2" fontWeight="400">
-                <Box
-                  sx={{
-                    width: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                  }}
-                >
-                  <div>Разница в процентах</div>
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Chip
-                      size="small"
-                      variant="outlined"
-                      label="-"
-                      onClick={(e) => {
-                        setIsDifUpdating(true);
+              </>
+            ) : (
+              ''
+            )}
+            {course && (
+              <>
+                <Divider />
 
-                        inputRef.current.value = (
-                          parseFloat(percentage) +
-                          difPercentage -
-                          PERCENT_STEP
-                        ).toFixed(2);
-                        setDifPercentage((prev) => prev - PERCENT_STEP);
-                        setIsDifUpdating(false);
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '8px',
+                    p: '0 12px',
+                    textAlign: 'left',
+                  }}
+                >
+                  <Typography
+                    fontWeight={'400'}
+                    fontSize={'12px'}
+                    textAlign={'left'}
+                    color={'#647081'}
+                  >
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
                       }}
-                    />
-                    <Box sx={{ p: '0 5px' }}>
-                      <input
-                        ref={inputRef}
-                        style={{
-                          border: 0,
-                          width: '40px',
-                          textAlign: 'center',
-                        }}
-                        onChange={(e) => {
-                          setIsDifUpdating(true);
-                          setDifPercentage((percentage - e.target.value) * -1);
-                          setIsDifUpdating(false);
-                        }}
-                      />
+                    >
+                      <span>Базовый курс</span>
+                      <span>
+                        {course?.basic?.toFixed(4)} {fromMethod?.symbol}
+                      </span>
                     </Box>
-                    <Chip
-                      size="small"
-                      variant="outlined"
-                      label="+"
-                      onClick={(e) => {
-                        setIsDifUpdating(true);
-                        inputRef.current.value = (
-                          parseFloat(percentage) +
-                          difPercentage +
-                          PERCENT_STEP
-                        ).toFixed(2);
-                        setDifPercentage((prev) => prev + PERCENT_STEP);
-                        setIsDifUpdating(false);
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
                       }}
-                    />
-                  </Box>
+                    >
+                      <span>Эталонный курс</span>
+                      <span>
+                        {course?.referense?.toFixed(4)} {fromMethod?.symbol}
+                      </span>
+                    </Box>
+                  </Typography>
+                  <Typography
+                    fontWeight={'400'}
+                    fontSize={'12px'}
+                    textAlign={'left'}
+                    color={'#647081'}
+                  >
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                      }}
+                    >
+                      <span>Курс для клиента</span>
+                      <span style={{ color: '#408EF6', fontWeight: '500' }}>
+                        {/* {course?.client?.toFixed(4)} {fromMethod?.symbol} */}
+                        {calculateClientCourse(course?.basic, markup).toFixed(
+                          4
+                        )}{' '}
+                        {fromMethod?.symbol}
+                      </span>
+                    </Box>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                      }}
+                    >
+                      <span>Процент к бирже</span>
+                      <span>
+                        {course?.exchange?.toFixed(4)} +{' '}
+                        {percentageDifference(
+                          calculateClientCourse(course?.basic, markup),
+                          course?.exchange
+                        )}
+                        %
+                      </span>
+                    </Box>
+                  </Typography>
+                  <Typography
+                    fontWeight={'400'}
+                    fontSize={'12px'}
+                    textAlign={'left'}
+                    color={'#647081'}
+                  >
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'start',
+                        }}
+                      >
+                        <span>Наценка в %</span>
+                        <span
+                          style={{
+                            cursor: 'pointer',
+                            color: '#408EF6',
+                            fontWeight: '500',
+                          }}
+                          onClick={() => setMarkup(defaultMarkup)}
+                        >
+                          Наценка по умолчанию
+                        </span>
+                      </Box>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                        }}
+                      >
+                        <RemoveCircleOutlineIcon
+                          sx={{ color: '#408EF6', cursor: 'pointer' }}
+                          onClick={() => setMarkup((prev) => prev - 0.1)}
+                        />
+                        <Typography
+                          fontWeight={'400'}
+                          fontSize={'14px'}
+                          color={'#031022'}
+                        >
+                          <span>{markup?.toFixed(1)}%</span>
+                        </Typography>
+                        <AddCircleOutlineIcon
+                          sx={{ color: '#408EF6', cursor: 'pointer' }}
+                          onClick={() => setMarkup((prev) => prev + 0.1)}
+                        />
+                      </Box>
+                    </Box>
+                  </Typography>
                 </Box>
-              </Typography>
-            </Box>
+              </>
+            )}
           </Stack>
         </AccordionDetails>
       </CustomizedAccordion>

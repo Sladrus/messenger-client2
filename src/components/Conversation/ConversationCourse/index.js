@@ -26,7 +26,6 @@ import SendMethodSelect from '../../Select/SendMethodSelect';
 import { percentageDifference } from '../../../utils/percentageDifference';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
-import env from 'react-dotenv';
 
 const CustomizedAccordion = styled(Accordion)`
   border: 0 !important;

@@ -548,7 +548,7 @@ const ConversationCourse = observer(() => {
                           1 {fromMethod?.symbol} ={' '}
                           {calculateClientCourse(
                             reverseCourse?.basic,
-                            markup
+                            -markup
                           ).toFixed(4)}{' '}
                           {toMethod?.symbol}
                         </span>

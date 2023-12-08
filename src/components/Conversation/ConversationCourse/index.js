@@ -19,8 +19,6 @@ import {
 import styled from '@emotion/styled';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import env from 'react-dotenv';
-import { StoreContext } from '../../../context/store';
-import CurrencySelect from '../../Select/SendSelect';
 import SendSelect from '../../Select/SendSelect';
 import SendMethodSelect from '../../Select/SendMethodSelect';
 import { percentageDifference } from '../../../utils/percentageDifference';
@@ -550,7 +548,7 @@ const ConversationCourse = observer(() => {
                           1 {fromMethod?.symbol} ={' '}
                           {calculateClientCourse(
                             reverseCourse?.basic,
-                            -markup
+                            markup
                           ).toFixed(4)}{' '}
                           {toMethod?.symbol}
                         </span>

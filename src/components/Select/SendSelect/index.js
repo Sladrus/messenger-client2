@@ -170,7 +170,9 @@ const SendSelect = observer(
               backgroundColor: '#fff',
               borderRadius: '50px',
             }}
-          ></Box> */}
+          >
+            <img src={value?.logo} alt={value?.logo} />
+          </Box> */}
           <Box
             sx={{
               display: 'flex',
@@ -186,9 +188,10 @@ const SendSelect = observer(
                 display: 'flex',
                 alignItems: 'start',
               }}
-              onClick={handleToggle} ref={buttonRef}
+              onClick={handleToggle}
+              ref={buttonRef}
             >
-              <SelectLabelButton >
+              <SelectLabelButton>
                 {value?.currency !== '' ? value?.currency : label}
               </SelectLabelButton>
               <KeyboardArrowDownIcon

@@ -132,7 +132,7 @@ const ConversationCourse = observer(() => {
       },
       to: { currency: toValue?.currency, method: toMethod?.code },
     });
-    // console.log(data);
+    console.log(data);
 
     if (data?.error || !data?.courses) return setError(data?.error);
     setCourse(data?.courses);
@@ -161,7 +161,7 @@ const ConversationCourse = observer(() => {
         amount: toAmount,
       },
     });
-    // console.log(data);
+    console.log(data);
 
     if (data?.error || !data?.courses) return setError(data?.error);
 
@@ -377,32 +377,35 @@ const ConversationCourse = observer(() => {
                   sx={{
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: '8px',
+                    // gap: '8px',
                     p: '0 12px',
                     textAlign: 'left',
                   }}
                 >
                   {fromServices && (
                     <Typography
-                      fontWeight={'700'}
-                      fontSize={'14px'}
-                      color={'#031022'}
+                      sx={{ display: 'flex', flexDirection: 'column' }}
+                      fontWeight={'400'}
+                      fontSize={'12px'}
+                      color={'#647081'}
                     >
                       Платные доп. услуги: Отправляете
                     </Typography>
                   )}
-                  {fromServices?.map((item, index) => {
-                    return (
-                      <Typography
-                        key={index}
-                        fontWeight={'400'}
-                        fontSize={'14px'}
-                        color={'#647081'}
-                      >
-                        {item?.name} {item?.price} {item?.symbol}
-                      </Typography>
-                    );
-                  })}
+                  <Typography
+                    fontWeight={'400'}
+                    fontSize={'12px'}
+                    color={'#647081'}
+                  >
+                    {fromServices?.map((item, index) => {
+                      return (
+                        <span key={index}>
+                          {item?.name} {item?.price} {item?.symbol}
+                        </span>
+                      );
+                    })}
+                  </Typography>
+
                   {toServices && (
                     <Typography
                       fontWeight={'700'}
@@ -417,7 +420,7 @@ const ConversationCourse = observer(() => {
                       <Typography
                         key={index}
                         fontWeight={'400'}
-                        fontSize={'14px'}
+                        fontSize={'12px'}
                         color={'#647081'}
                       >
                         {item?.name} {item?.price} {item?.symbol}
@@ -443,6 +446,11 @@ const ConversationCourse = observer(() => {
                   }}
                 >
                   <Typography
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '8px',
+                    }}
                     fontWeight={'400'}
                     fontSize={'12px'}
                     textAlign={'left'}
@@ -456,9 +464,23 @@ const ConversationCourse = observer(() => {
                       }}
                     >
                       <span>Базовый курс</span>
-                      <span>
-                        {course?.basic?.toFixed(4)} {fromMethod?.symbol}
-                      </span>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'start',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <span>
+                          1 {toMethod?.symbol} = {course?.basic?.toFixed(4)}{' '}
+                          {fromMethod?.symbol}
+                        </span>
+                        <span>
+                          1 {fromMethod?.symbol} ={' '}
+                          {reverseCourse?.basic?.toFixed(4)} {toMethod?.symbol}
+                        </span>
+                      </Box>
                     </Box>
                     <Box
                       sx={{
@@ -468,12 +490,32 @@ const ConversationCourse = observer(() => {
                       }}
                     >
                       <span>Эталонный курс</span>
-                      <span>
-                        {course?.referense?.toFixed(4)} {fromMethod?.symbol}
-                      </span>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'start',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <span>
+                          1 {toMethod?.symbol} = {course?.referense?.toFixed(4)}{' '}
+                          {fromMethod?.symbol}
+                        </span>
+                        <span>
+                          1 {fromMethod?.symbol} ={' '}
+                          {reverseCourse?.referense?.toFixed(4)}{' '}
+                          {toMethod?.symbol}
+                        </span>
+                      </Box>
                     </Box>
                   </Typography>
                   <Typography
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '8px',
+                    }}
                     fontWeight={'400'}
                     fontSize={'12px'}
                     textAlign={'left'}
@@ -487,13 +529,32 @@ const ConversationCourse = observer(() => {
                       }}
                     >
                       <span>Курс для клиента</span>
-                      <span style={{ color: '#408EF6', fontWeight: '500' }}>
-                        {/* {course?.client?.toFixed(4)} {fromMethod?.symbol} */}
-                        {calculateClientCourse(course?.basic, markup).toFixed(
-                          4
-                        )}{' '}
-                        {fromMethod?.symbol}
-                      </span>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'start',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <span style={{ color: '#408EF6', fontWeight: '500' }}>
+                          {/* {course?.client?.toFixed(4)} {fromMethod?.symbol} */}
+                          1 {toMethod?.symbol} ={' '}
+                          {calculateClientCourse(course?.basic, markup).toFixed(
+                            4
+                          )}{' '}
+                          {fromMethod?.symbol}
+                        </span>
+                        <span style={{ color: '#408EF6', fontWeight: '500' }}>
+                          {/* {course?.client?.toFixed(4)} {fromMethod?.symbol} */}
+                          1 {fromMethod?.symbol} ={' '}
+                          {calculateClientCourse(
+                            reverseCourse?.basic,
+                            -markup
+                          ).toFixed(4)}{' '}
+                          {toMethod?.symbol}
+                        </span>
+                      </Box>
                     </Box>
                     <Box
                       sx={{

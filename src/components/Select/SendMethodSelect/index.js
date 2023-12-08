@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Box, FormControl, Typography } from '@mui/material';
+import { Avatar, Box, FormControl, Typography } from '@mui/material';
 import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 import styled, { css } from 'styled-components';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -142,14 +142,16 @@ const SendMethodSelect = ({
             gap: '12px',
           }}
         >
-          {/* <Box
+          <Box
             sx={{
-              width: '39px',
-              height: '39px',
+              width: '40px',
+              height: '40px',
               backgroundColor: '#fff',
               borderRadius: '50px',
             }}
-          ></Box> */}
+          >
+            <Avatar src={value?.logo} alt={value?.logo} />
+          </Box>
           <Box
             sx={{
               display: 'flex',

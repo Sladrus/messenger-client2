@@ -47,6 +47,8 @@ const ConversationCourse = observer(() => {
   const [course, setCourse] = useState(null);
   const [reverseCourse, setReverseCourse] = useState(null);
 
+  const [reverse, setReverse] = useState(null);
+
   const [markup, setMarkup] = useState(null);
   const [defaultMarkup, setDefaultMarkup] = useState(null);
 
@@ -106,13 +108,27 @@ const ConversationCourse = observer(() => {
   useEffect(() => {
     if (prevMarkup.current !== null) {
       if (markup) {
+        console.log(
+          reverse,
+          calculateClientCourse(
+            !reverse ? course?.referense : course?.basic,
+            markup
+          ),
+          toAmount
+        );
         const newAmount =
           checked === 'to'
-            ? calculateClientCourse(course?.basic, markup) * toAmount
-            : fromAmount / calculateClientCourse(course?.basic, markup);
-        checked === 'to'
-          ? setFromAmount(newAmount.toFixed(4))
-          : setToAmount(newAmount.toFixed(4));
+            ? toAmount /
+              calculateClientCourse(
+                !reverse ? course?.referense : course?.basic,
+                -markup
+              )
+            : fromAmount *
+              calculateClientCourse(
+                !reverse ? course?.referense : course?.basic,
+                -markup
+              );
+        checked === 'to' ? setFromAmount(newAmount) : setToAmount(newAmount);
       }
       setIsLoading(false);
     }
@@ -135,6 +151,8 @@ const ConversationCourse = observer(() => {
     if (data?.error || !data?.courses) return setError(data?.error);
     setCourse(data?.courses);
     setReverseCourse(data?.courses_reverse);
+
+    setReverse(data?.reverse);
 
     setMarkup(data?.default_markup);
     setDefaultMarkup(data?.default_markup);
@@ -165,6 +183,8 @@ const ConversationCourse = observer(() => {
 
     setCourse(data?.courses);
     setReverseCourse(data?.courses_reverse);
+
+    setReverse(data?.reverse);
 
     setMarkup(data?.default_markup);
     setDefaultMarkup(data?.default_markup);
@@ -470,13 +490,15 @@ const ConversationCourse = observer(() => {
                           justifyContent: 'center',
                         }}
                       >
+                        {' '}
                         <span>
-                          1 {toMethod?.symbol} = {course?.basic?.toFixed(4)}{' '}
-                          {fromMethod?.symbol}
+                          1 {fromMethod?.symbol} = {course?.basic?.toFixed(4)}{' '}
+                          {toMethod?.symbol}
                         </span>
                         <span>
-                          1 {fromMethod?.symbol} ={' '}
-                          {reverseCourse?.basic?.toFixed(4)} {toMethod?.symbol}
+                          1 {toMethod?.symbol} ={' '}
+                          {reverseCourse?.basic?.toFixed(4)}{' '}
+                          {fromMethod?.symbol}
                         </span>
                       </Box>
                     </Box>
@@ -496,14 +518,15 @@ const ConversationCourse = observer(() => {
                           justifyContent: 'center',
                         }}
                       >
-                        <span>
-                          1 {toMethod?.symbol} = {course?.referense?.toFixed(4)}{' '}
-                          {fromMethod?.symbol}
-                        </span>
+                        {' '}
                         <span>
                           1 {fromMethod?.symbol} ={' '}
+                          {course?.referense?.toFixed(4)} {toMethod?.symbol}
+                        </span>
+                        <span>
+                          1 {toMethod?.symbol} ={' '}
                           {reverseCourse?.referense?.toFixed(4)}{' '}
-                          {toMethod?.symbol}
+                          {fromMethod?.symbol}
                         </span>
                       </Box>
                     </Box>
@@ -536,21 +559,19 @@ const ConversationCourse = observer(() => {
                         }}
                       >
                         <span style={{ color: '#408EF6', fontWeight: '500' }}>
-                          {/* {course?.client?.toFixed(4)} {fromMethod?.symbol} */}
-                          1 {toMethod?.symbol} ={' '}
+                          1 {fromMethod?.symbol} ={' '}
                           {calculateClientCourse(course?.basic, markup).toFixed(
-                            4
+                            5
                           )}{' '}
-                          {fromMethod?.symbol}
+                          {toMethod?.symbol}
                         </span>
                         <span style={{ color: '#408EF6', fontWeight: '500' }}>
-                          {/* {course?.client?.toFixed(4)} {fromMethod?.symbol} */}
-                          1 {fromMethod?.symbol} ={' '}
+                          1 {toMethod?.symbol} ={' '}
                           {calculateClientCourse(
                             reverseCourse?.basic,
-                            -markup
-                          ).toFixed(4)}{' '}
-                          {toMethod?.symbol}
+                            markup
+                          ).toFixed(5)}{' '}
+                          {fromMethod?.symbol}
                         </span>
                       </Box>
                     </Box>

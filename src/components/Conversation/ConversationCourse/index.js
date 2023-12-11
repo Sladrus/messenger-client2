@@ -108,14 +108,7 @@ const ConversationCourse = observer(() => {
   useEffect(() => {
     if (prevMarkup.current !== null) {
       if (markup) {
-        console.log(
-          reverse,
-          calculateClientCourse(
-            !reverse ? course?.referense : course?.basic,
-            markup
-          ),
-          toAmount
-        );
+        console.log(checked, markup);
         const newAmount =
           checked === 'to'
             ? toAmount /
@@ -560,15 +553,18 @@ const ConversationCourse = observer(() => {
                       >
                         <span style={{ color: '#408EF6', fontWeight: '500' }}>
                           1 {fromMethod?.symbol} ={' '}
-                          {calculateClientCourse(course?.basic, markup).toFixed(
-                            5
-                          )}{' '}
+                          {calculateClientCourse(
+                            !reverse ? course?.referense : course?.basic,
+                            -markup
+                          ).toFixed(5)}{' '}
                           {toMethod?.symbol}
                         </span>
                         <span style={{ color: '#408EF6', fontWeight: '500' }}>
                           1 {toMethod?.symbol} ={' '}
                           {calculateClientCourse(
-                            reverseCourse?.basic,
+                            reverse
+                              ? reverseCourse?.basic
+                              : reverseCourse?.referense,
                             markup
                           ).toFixed(5)}{' '}
                           {fromMethod?.symbol}

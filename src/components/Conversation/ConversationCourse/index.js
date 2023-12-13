@@ -108,20 +108,25 @@ const ConversationCourse = observer(() => {
   useEffect(() => {
     if (prevMarkup.current !== null) {
       if (markup) {
-        console.log(checked, markup);
         const newAmount =
           checked === 'to'
-            ? toAmount /
+            ? toAmount *
               calculateClientCourse(
-                !reverse ? course?.referense : course?.basic,
-                -markup
+                !reverse
+                  ? parseFloat(reverseCourse?.referense?.toFixed(5))
+                  : parseFloat(reverseCourse?.basic?.toFixed(5)),
+                markup
               )
             : fromAmount *
               calculateClientCourse(
-                !reverse ? course?.referense : course?.basic,
+                !reverse
+                  ? parseFloat(course?.referense?.toFixed(5))
+                  : parseFloat(course?.basic?.toFixed(5)),
                 -markup
               );
-        checked === 'to' ? setFromAmount(newAmount) : setToAmount(newAmount);
+        checked === 'to'
+          ? setFromAmount(parseFloat(newAmount?.toFixed(4)))
+          : setToAmount(parseFloat(newAmount?.toFixed(4)));
       }
       setIsLoading(false);
     }
@@ -150,7 +155,7 @@ const ConversationCourse = observer(() => {
     setMarkup(data?.default_markup);
     setDefaultMarkup(data?.default_markup);
 
-    setToAmount(data?.result);
+    setToAmount(parseFloat(data?.result?.toFixed(4)));
     setToServices(data?.to?.services);
     setFromServices(data?.from?.services);
   };
@@ -182,7 +187,7 @@ const ConversationCourse = observer(() => {
     setMarkup(data?.default_markup);
     setDefaultMarkup(data?.default_markup);
 
-    setFromAmount(data?.result);
+    setFromAmount(parseFloat(data?.result?.toFixed(4)));
     setToServices(data?.to?.services);
     setFromServices(data?.from?.services);
   };
@@ -395,10 +400,9 @@ const ConversationCourse = observer(() => {
                 >
                   {fromServices && (
                     <Typography
-                      sx={{ display: 'flex', flexDirection: 'column' }}
-                      fontWeight={'400'}
-                      fontSize={'12px'}
-                      color={'#647081'}
+                      fontWeight={'700'}
+                      fontSize={'14px'}
+                      color={'#031022'}
                     >
                       Платные доп. услуги: Отправляете
                     </Typography>

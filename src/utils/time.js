@@ -126,3 +126,9 @@ export const taskColor = (task) => {
     return '#FF1700'; // before yesterday
   }
 };
+
+export const sleep = async () => {
+  console.log('sleep start');
+  await new Promise((resolve) => setTimeout(resolve, 2000));
+  console.log('sleep done');
+};

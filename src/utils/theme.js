@@ -4,7 +4,7 @@ const theme = createTheme({
   overrides: {
     MuiDrawer: {
       paper: {
-        zIndex: 0, // Ваше новое значение z-index
+        zIndex: 0,
       },
     },
   },

@@ -8,7 +8,7 @@ import ConversationDetails from '../ConversationDetails';
 import { observer } from 'mobx-react-lite';
 import { StoreContext } from '../../../context/store';
 
-const drawerWidth = 300;
+const drawerWidth = 350;
 
 const DrawerHeader = styled('div')(({ theme }) => ({
   height: '64px',

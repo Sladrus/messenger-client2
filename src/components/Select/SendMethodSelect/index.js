@@ -3,6 +3,8 @@ import { Avatar, Box, FormControl, Typography } from '@mui/material';
 import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 import styled, { css } from 'styled-components';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 
 const SelectContainer = styled.div`
   width: 100%;
@@ -29,56 +31,6 @@ const SelectLabelButton = styled.span`
   }
 `;
 
-const DropdownStyle = styled.div`
-  position: absolute;
-  z-index: 99999;
-  top: 45px;
-  left: -13px;
-  max-height: 40vmax;
-  min-width: 243px;
-  padding: 0.4rem;
-  display: flex;
-  flex-direction: column;
-  border-radius: 5px;
-  background: #fafafa;
-  border: 1.5px solid slategrey;
-  transition: max-height 0.2s ease;
-  overflow: hidden;
-  ${(p) =>
-    p.isVisible !== true &&
-    css`
-      max-height: 40px;
-      visibility: hidden;
-    `}
-`;
-
-const DropdownItem = styled.div`
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  display: flex;
-  align-items: center;
-  //   width: 90%;
-  margin: 0.15rem 0;
-  padding: 0.3rem 0.5rem;
-  font-size: 0.9rem;
-  font-weight: 400;
-  color: #333;
-  border-radius: 0.3rem;
-  cursor: pointer;
-  background: #fafafa;
-  ${(p) =>
-    p.active &&
-    css`
-      color: #166edc;
-      font-weight: 500;
-    `}
-  &:hover, :focus, :focus:hover {
-    background-color: #166edc;
-    color: #fafafa;
-    outline: none;
-  }
-`;
-
 const SendMethodSelect = ({
   label,
   values,
@@ -87,44 +39,26 @@ const SendMethodSelect = ({
   value,
   setValue,
 }) => {
-  const [open, setOpen] = useState(false);
-  const popupRef = useRef();
-  const buttonRef = useRef();
+  const [anchorEl, setAnchorEl] = useState(null);
 
-  const handleToggle = () => {
-    setOpen((prevOpen) => !prevOpen);
+  const open = Boolean(anchorEl);
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
   };
 
   const handleValueChange = (value) => {
     setValue(value);
-  };
-  const handleChange = (value) => {
-    handleValueChange(value);
-    if (onChange) onChange(value);
-    handleToggle();
+    setAnchorEl(null);
   };
 
   useEffect(() => {
     setValue(defaultValue);
   }, [defaultValue]);
-
-  const handleClickOutside = (event) => {
-    if (
-      popupRef.current &&
-      !popupRef.current.contains(event.target) &&
-      !buttonRef.current.contains(event.target)
-    ) {
-      // Check if the click is outside the button as well
-      setOpen(false);
-    }
-  };
-
-  useEffect(() => {
-    document.addEventListener('click', handleClickOutside, true);
-    return () => {
-      document.removeEventListener('click', handleClickOutside, true);
-    };
-  }, []);
 
   return (
     <Box
@@ -141,16 +75,24 @@ const SendMethodSelect = ({
             display: 'flex',
             gap: '12px',
           }}
+          onClick={handleClick}
         >
           <Box
             sx={{
-              width: '40px',
-              height: '40px',
-              backgroundColor: '#fff',
-              borderRadius: '50px',
+              display: 'flex',
+              alignItems: 'center',
             }}
           >
-            <Avatar src={value?.logo} alt={value?.logo} />
+            <Avatar
+              sx={{
+                width: '28px',
+                height: '28px',
+                backgroundColor: '#fff',
+                borderRadius: '50px',
+              }}
+              src={value?.logo}
+              alt={value?.logo}
+            />
           </Box>
           <Box
             sx={{
@@ -168,13 +110,37 @@ const SendMethodSelect = ({
           </Box>
         </Box>
 
-        <KeyboardArrowDownIcon
-          sx={{ cursor: 'pointer' }}
-          onClick={handleToggle}
-          ref={buttonRef}
-        />
+        {values?.length > 1 && (
+          <KeyboardArrowDownIcon
+            sx={{ cursor: 'pointer' }}
+            onClick={handleClick}
+          />
+        )}
 
-        <DropdownStyle isVisible={open} ref={popupRef}>
+        <Menu
+          MenuListProps={{
+            'aria-labelledby': 'long-button',
+          }}
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleClose}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left',
+          }}
+        >
+          {values?.map((item) => (
+            <MenuItem
+              key={item?.code}
+              selected={item === value?.name}
+              onClick={() => handleValueChange(item)}
+            >
+              {item?.name}
+            </MenuItem>
+          ))}
+        </Menu>
+
+        {/* <DropdownStyle isVisible={open} ref={popupRef}>
           {values?.map((item, index) => (
             <DropdownItem
               onClick={() => handleChange(item)}
@@ -184,7 +150,7 @@ const SendMethodSelect = ({
               {item?.name}
             </DropdownItem>
           ))}
-        </DropdownStyle>
+        </DropdownStyle> */}
       </SelectContainer>
       {/* <InputContainer /> */}
     </Box>

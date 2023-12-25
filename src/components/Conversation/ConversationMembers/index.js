@@ -16,6 +16,7 @@ const CustomizedAccordion = styled(Accordion)(() => ({
   border: '0 !important',
   borderRadius: '0 !important',
   boxShadow: 'none !important',
+  zIndex: 10,
 }));
 
 const ConversationMembers = ({ members }) => {
@@ -31,7 +32,7 @@ const ConversationMembers = ({ members }) => {
         sx={{ border: 0, borderRadius: 0, borderBottomRightRadius: 0 }}
       >
         <AccordionSummary
-          sx={{ border: 0, borderRadius: 0, p: '0px 15px' }}
+          sx={{ border: 0, borderRadius: 0, p: '0px 15px', zIndex: '10' }}
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel1a-content"
           id="panel1a-header"

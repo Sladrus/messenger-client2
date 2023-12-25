@@ -14,6 +14,7 @@ import {
   InputAdornment,
   Stack,
   TextField,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import styled from '@emotion/styled';
@@ -24,6 +25,8 @@ import SendMethodSelect from '../../Select/SendMethodSelect';
 import { percentageDifference } from '../../../utils/percentageDifference';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
+import InfoIcon from '@mui/icons-material/Info';
+import { sleep } from '../../../utils/time';
 
 const CustomizedAccordion = styled(Accordion)`
   border: 0 !important;
@@ -53,6 +56,11 @@ const ConversationCourse = observer(() => {
   const [defaultMarkup, setDefaultMarkup] = useState(null);
 
   const [isLoading, setIsLoading] = useState(false);
+  const [markupIsLoading, setMarkupIsLoading] = useState(false);
+
+  const [toFocused, setToFocused] = useState(false);
+  const [fromFocused, setFromFocused] = useState(false);
+
   const [error, setError] = useState(null);
 
   const [checked, setChecked] = useState('from');
@@ -92,12 +100,12 @@ const ConversationCourse = observer(() => {
           },
         }
       );
+      setIsLoading(false);
       return response.data;
     } catch (error) {
+      setIsLoading(false);
       console.log(error);
       return { error: error?.message };
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -105,36 +113,46 @@ const ConversationCourse = observer(() => {
     getMethods();
   }, []);
 
+  // useEffect(() => {
+  //   setMarkupIsLoading(true);
+  //   if (prevMarkup.current !== null) {
+  //     if (markup) {
+  //       const newAmount =
+  //         checked === 'to'
+  //           ? toAmount /
+  //             calculateClientCourse(
+  //               !reverse
+  //                 ? parseFloat(course?.referense?.toFixed(5))
+  //                 : parseFloat(course?.basic?.toFixed(5)),
+  //               -markup
+  //             )
+  //           : fromAmount *
+  //             calculateClientCourse(
+  //               reverse
+  //                 ? parseFloat(course?.referense?.toFixed(5))
+  //                 : parseFloat(course?.basic?.toFixed(5)),
+  //               -markup
+  //             );
+  //       checked === 'to'
+  //         ? setFromAmount(parseFloat(newAmount?.toFixed(4)))
+  //         : setToAmount(parseFloat(newAmount?.toFixed(4)));
+  //     }
+  //     setIsLoading(false);
+  //   }
+  //   prevMarkup.current = markup;
+  // }, [markup]);
+
   useEffect(() => {
-    if (prevMarkup.current !== null) {
-      if (markup) {
-        const newAmount =
-          checked === 'to'
-            ? toAmount *
-              calculateClientCourse(
-                !reverse
-                  ? parseFloat(reverseCourse?.referense?.toFixed(5))
-                  : parseFloat(reverseCourse?.basic?.toFixed(5)),
-                markup
-              )
-            : fromAmount *
-              calculateClientCourse(
-                !reverse
-                  ? parseFloat(course?.referense?.toFixed(5))
-                  : parseFloat(course?.basic?.toFixed(5)),
-                -markup
-              );
-        checked === 'to'
-          ? setFromAmount(parseFloat(newAmount?.toFixed(4)))
-          : setToAmount(parseFloat(newAmount?.toFixed(4)));
-      }
-      setIsLoading(false);
-    }
-    prevMarkup.current = markup;
-  }, [markup]);
+    console.log(markupIsLoading);
+    if (!toFocused) handleSubmitFromAmount();
+  }, [fromAmount]);
+
+  useEffect(() => {
+    console.log(markupIsLoading);
+    if (!fromFocused) handleSubmitToAmount();
+  }, [toAmount]);
 
   const handleSubmitFromAmount = async (e) => {
-    e.preventDefault();
     setError('');
     const data = await calculate({
       from: {
@@ -154,16 +172,14 @@ const ConversationCourse = observer(() => {
 
     setMarkup(data?.default_markup);
     setDefaultMarkup(data?.default_markup);
-
     setToAmount(parseFloat(data?.result?.toFixed(4)));
     setToServices(data?.to?.services);
     setFromServices(data?.from?.services);
+    setMarkupIsLoading(false);
   };
 
   const handleSubmitToAmount = async (e) => {
-    e.preventDefault();
     setError('');
-
     const data = await calculate({
       from: {
         currency: fromValue?.currency,
@@ -190,6 +206,7 @@ const ConversationCourse = observer(() => {
     setFromAmount(parseFloat(data?.result?.toFixed(4)));
     setToServices(data?.to?.services);
     setFromServices(data?.from?.services);
+    setMarkupIsLoading(false);
   };
 
   const handleChecked = (value) => {
@@ -229,7 +246,7 @@ const ConversationCourse = observer(() => {
     <Card sx={{ border: 0, borderRadius: 0 }}>
       <CustomizedAccordion defaultExpanded>
         <AccordionSummary
-          sx={{ border: 0, borderRadius: 0, p: '0px 12px' }}
+          sx={{ border: 0, borderRadius: 0, p: '0px 12px', zIndex: '10' }}
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel1a-content"
           id="panel1a-header"
@@ -251,7 +268,7 @@ const ConversationCourse = observer(() => {
             )}
           </Typography>
         </AccordionSummary>
-        <AccordionDetails sx={{ p: 0, borderRadius: 0 }}>
+        <AccordionDetails sx={{ p: 0, borderRadius: 0, zIndex: '10' }}>
           <Stack
             spacing={1}
             sx={{
@@ -301,6 +318,7 @@ const ConversationCourse = observer(() => {
                   checked={checked}
                   checkType={'from'}
                   handleChecked={handleChecked}
+                  setFocused={setFromFocused}
                 />
               </Box>
               <SendMethodSelect
@@ -358,6 +376,7 @@ const ConversationCourse = observer(() => {
                   checked={checked}
                   checkType={'to'}
                   handleChecked={handleChecked}
+                  setFocused={setToFocused}
                 />
               </Box>
               <SendMethodSelect
@@ -474,20 +493,38 @@ const ConversationCourse = observer(() => {
                     <Box
                       sx={{
                         display: 'flex',
-                        alignItems: 'center',
+                        alignItems: 'start',
                         justifyContent: 'space-between',
                       }}
                     >
-                      <span>Базовый курс</span>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          gap: '8px',
+                        }}
+                      >
+                        <span>Базовый курс</span>
+                        <Tooltip title="Курс с учетом себестоисмоти и всех комиссий (минимальный курс).">
+                          <InfoIcon
+                            sx={{
+                              width: '20px',
+                              height: '20px',
+                              color: '#A8B1BE',
+                            }}
+                          />
+                        </Tooltip>
+                      </Box>
                       <Box
                         sx={{
                           display: 'flex',
                           flexDirection: 'column',
-                          alignItems: 'start',
+                          alignItems: 'end',
                           justifyContent: 'center',
                         }}
                       >
-                        {' '}
                         <span>
                           1 {fromMethod?.symbol} = {course?.basic?.toFixed(4)}{' '}
                           {toMethod?.symbol}
@@ -502,20 +539,39 @@ const ConversationCourse = observer(() => {
                     <Box
                       sx={{
                         display: 'flex',
-                        alignItems: 'center',
+                        alignItems: 'start',
                         justifyContent: 'space-between',
                       }}
                     >
-                      <span>Эталонный курс</span>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          gap: '8px',
+                        }}
+                      >
+                        <span>Эталонный курс</span>
+                        <Tooltip title="Курс биржи + макс % (эталонный курс).">
+                          <InfoIcon
+                            sx={{
+                              width: '20px',
+                              height: '20px',
+                              color: '#A8B1BE',
+                            }}
+                          />
+                        </Tooltip>
+                      </Box>
+
                       <Box
                         sx={{
                           display: 'flex',
                           flexDirection: 'column',
-                          alignItems: 'start',
+                          alignItems: 'end',
                           justifyContent: 'center',
                         }}
                       >
-                        {' '}
                         <span>
                           1 {fromMethod?.symbol} ={' '}
                           {course?.referense?.toFixed(4)} {toMethod?.symbol}
@@ -542,16 +598,35 @@ const ConversationCourse = observer(() => {
                     <Box
                       sx={{
                         display: 'flex',
-                        alignItems: 'center',
+                        alignItems: 'start',
                         justifyContent: 'space-between',
                       }}
                     >
-                      <span>Курс для клиента</span>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          gap: '8px',
+                        }}
+                      >
+                        <span>Курс для клиента</span>
+                        <Tooltip title="Базовый курс + Наценка в процентах.">
+                          <InfoIcon
+                            sx={{
+                              width: '20px',
+                              height: '20px',
+                              color: '#A8B1BE',
+                            }}
+                          />
+                        </Tooltip>
+                      </Box>
                       <Box
                         sx={{
                           display: 'flex',
                           flexDirection: 'column',
-                          alignItems: 'start',
+                          alignItems: 'end',
                           justifyContent: 'center',
                         }}
                       >
@@ -566,7 +641,7 @@ const ConversationCourse = observer(() => {
                         <span style={{ color: '#408EF6', fontWeight: '500' }}>
                           1 {toMethod?.symbol} ={' '}
                           {calculateClientCourse(
-                            reverse
+                            !reverse
                               ? reverseCourse?.basic
                               : reverseCourse?.referense,
                             markup
@@ -582,7 +657,26 @@ const ConversationCourse = observer(() => {
                         justifyContent: 'space-between',
                       }}
                     >
-                      <span>Процент к бирже</span>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          gap: '8px',
+                        }}
+                      >
+                        <span>% к бирже</span>
+                        <Tooltip title="Курс для клиента относительно курса биржи.">
+                          <InfoIcon
+                            sx={{
+                              width: '20px',
+                              height: '20px',
+                              color: '#A8B1BE',
+                            }}
+                          />
+                        </Tooltip>
+                      </Box>
                       <span>
                         {course?.exchange?.toFixed(4)} +{' '}
                         {percentageDifference(
@@ -613,7 +707,26 @@ const ConversationCourse = observer(() => {
                           alignItems: 'start',
                         }}
                       >
-                        <span>Наценка в %</span>
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            gap: '8px',
+                          }}
+                        >
+                          <span>Наценка в %</span>
+                          <Tooltip title="Разница в % эталонного и базового курса.">
+                            <InfoIcon
+                              sx={{
+                                width: '20px',
+                                height: '20px',
+                                color: '#A8B1BE',
+                              }}
+                            />
+                          </Tooltip>
+                        </Box>
                         <span
                           style={{
                             cursor: 'pointer',

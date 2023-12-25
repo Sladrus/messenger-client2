@@ -153,6 +153,7 @@ const ConversationCourse = observer(() => {
   }, [toAmount]);
 
   const handleSubmitFromAmount = async (e) => {
+    e.preventDefault();
     setError('');
     const data = await calculate({
       from: {
@@ -179,6 +180,7 @@ const ConversationCourse = observer(() => {
   };
 
   const handleSubmitToAmount = async (e) => {
+    e.preventDefault();
     setError('');
     const data = await calculate({
       from: {

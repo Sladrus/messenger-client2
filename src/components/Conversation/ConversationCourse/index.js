@@ -42,6 +42,9 @@ const ConversationCourse = observer(() => {
   const [fromAmount, setFromAmount] = useState(0);
   const [fromServices, setFromServices] = useState(null);
 
+  const [fromCash, setFromCash] = useState(null);
+  const [toCash, setToCash] = useState(null);
+
   const [toValue, setToValue] = useState(null);
   const [toMethod, setToMethod] = useState(null);
   const [toAmount, setToAmount] = useState(0);
@@ -143,25 +146,28 @@ const ConversationCourse = observer(() => {
   // }, [markup]);
 
   useEffect(() => {
-    console.log(markupIsLoading);
+    // setChecked('from');
     if (!toFocused) handleSubmitFromAmount();
   }, [fromAmount]);
 
   useEffect(() => {
-    console.log(markupIsLoading);
+    // setChecked('to');
     if (!fromFocused) handleSubmitToAmount();
   }, [toAmount]);
 
   const handleSubmitFromAmount = async (e) => {
-    e.preventDefault();
+    e?.preventDefault();
     setError('');
     const data = await calculate({
       from: {
         currency: fromValue?.currency,
-        method: fromMethod?.code,
+        method: fromCash ? fromCash?.code : fromMethod?.code,
         amount: fromAmount,
       },
-      to: { currency: toValue?.currency, method: toMethod?.code },
+      to: {
+        currency: toValue?.currency,
+        method: toCash ? toCash?.code : toMethod?.code,
+      },
     });
     console.log(data);
 
@@ -180,16 +186,16 @@ const ConversationCourse = observer(() => {
   };
 
   const handleSubmitToAmount = async (e) => {
-    e.preventDefault();
+    e?.preventDefault();
     setError('');
     const data = await calculate({
       from: {
         currency: fromValue?.currency,
-        method: fromMethod?.code,
+        method: fromCash ? fromCash?.code : fromMethod?.code,
       },
       to: {
         currency: toValue?.currency,
-        method: toMethod?.code,
+        method: toCash ? toCash?.code : toMethod?.code,
         amount: toAmount,
       },
     });
@@ -225,6 +231,7 @@ const ConversationCourse = observer(() => {
     setToServices(null);
     setFromServices(null);
     setError(null);
+    setFromCash(null);
   };
 
   const handleToChange = (value) => {
@@ -237,6 +244,7 @@ const ConversationCourse = observer(() => {
     setToServices(null);
     setFromServices(null);
     setError(null);
+    setToCash(null);
   };
 
   const calculateClientCourse = (course, markup) => {
@@ -327,9 +335,33 @@ const ConversationCourse = observer(() => {
                 label={'Способ отправления'}
                 value={fromMethod}
                 setValue={setFromMethod}
-                values={fromValue?.methods}
+                values={
+                  fromValue?.cash?.length > 0
+                    ? [
+                        ...fromValue?.methods,
+                        { name: 'Наличные', code: 'cash' },
+                      ]
+                    : fromValue?.methods
+                }
                 defaultValue={fromValue?.methods && fromValue?.methods[0]}
               />
+              {fromMethod?.code === 'cash' && (
+                <Autocomplete
+                  size={'small'}
+                  options={fromValue?.cash}
+                  onChange={(e, value) => setFromCash(value)}
+                  groupBy={(option) => option.country}
+                  getOptionLabel={(option) => option.city}
+                  renderInput={(params) => (
+                    <TextField
+                      variant="standard"
+                      {...params}
+                      label="Город"
+                      size={'small'}
+                    />
+                  )}
+                />
+              )}
               {(fromMethod?.min || fromMethod?.max) && (
                 <Typography
                   sx={{ display: 'flex', flexDirection: 'column' }}
@@ -385,9 +417,30 @@ const ConversationCourse = observer(() => {
                 label={'Способ получения'}
                 value={toMethod}
                 setValue={setToMethod}
-                values={toValue?.methods}
+                values={
+                  toValue?.cash?.length > 0
+                    ? [...toValue?.methods, { name: 'Наличные', code: 'cash' }]
+                    : toValue?.methods
+                }
                 defaultValue={toValue?.methods && toValue?.methods[0]}
               />
+              {toMethod?.code === 'cash' && (
+                <Autocomplete
+                  size={'small'}
+                  options={toValue?.cash}
+                  onChange={(e, value) => setToCash(value)}
+                  groupBy={(option) => option.country}
+                  getOptionLabel={(option) => option.city}
+                  renderInput={(params) => (
+                    <TextField
+                      variant="standard"
+                      {...params}
+                      label="Город"
+                      size={'small'}
+                    />
+                  )}
+                />
+              )}
               {(toMethod?.min || toMethod?.max) && (
                 <Typography
                   sx={{ display: 'flex', flexDirection: 'column' }}

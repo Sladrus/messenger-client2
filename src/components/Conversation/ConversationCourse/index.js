@@ -778,7 +778,12 @@ const ConversationCourse = observer(() => {
                           {course?.exchange?.toFixed(4)}{' '}
                           {checked === 'from' ? '-' : '+'}{' '}
                           {percentageDifference(
-                            calculateClientCourse(course?.basic, markup),
+                            calculateClientCourse(
+                              course?.basic,
+                              course?.basic > course?.referense
+                                ? -markup
+                                : markup
+                            ),
                             course?.exchange
                           )}
                           %

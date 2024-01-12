@@ -73,8 +73,6 @@ const SendSelect = observer(
   }) => {
     const [anchorEl, setAnchorEl] = useState(null);
 
-
-
     const open = Boolean(anchorEl);
 
     const handleClose = () => {
@@ -194,7 +192,7 @@ const SendSelect = observer(
             ))}
           </DropdownStyle> */}
           </SelectContainer>
-          <FormContainer onSubmit={onSubmit}>
+          <FormContainer>
             <InputContainer
               value={inputValue}
               onChange={(e) => {

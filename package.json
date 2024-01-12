@@ -26,6 +26,7 @@
     "axios": "^1.5.0",
     "dayjs": "^1.11.9",
     "dotenv": "^16.3.1",
+    "makecancelable": "^1.1.1",
     "mobx": "^6.10.1",
     "mobx-react-lite": "^4.0.4",
     "moment": "^2.29.4",

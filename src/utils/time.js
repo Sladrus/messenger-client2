@@ -132,3 +132,25 @@ export const sleep = async () => {
   await new Promise((resolve) => setTimeout(resolve, 2000));
   console.log('sleep done');
 };
+
+let abortController = null;
+
+export function debounce(func, wait) {
+  let timeout;
+
+  return function (...args) {
+    // Отменяем предыдущий запрос
+    if (abortController) {
+      abortController.abort();
+    }
+
+    // Создаем новый AbortController
+    abortController = new AbortController();
+    const { signal } = abortController;
+
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      func.apply(this, [...args, signal]);
+    }, wait);
+  };
+}

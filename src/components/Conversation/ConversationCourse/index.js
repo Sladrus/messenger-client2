@@ -1,4 +1,10 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { observer } from 'mobx-react-lite';
 import axios from 'axios';
 import {
@@ -26,7 +32,8 @@ import { percentageDifference } from '../../../utils/percentageDifference';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import InfoIcon from '@mui/icons-material/Info';
-import { sleep } from '../../../utils/time';
+import { debounce } from '../../../utils/time';
+import makeCancelable from 'makecancelable';
 
 const CustomizedAccordion = styled(Accordion)`
   border: 0 !important;
@@ -51,9 +58,9 @@ const ConversationCourse = observer(() => {
   const [toServices, setToServices] = useState(null);
 
   const [course, setCourse] = useState(null);
-  const [reverseCourse, setReverseCourse] = useState(null);
+  const [settlementCur, setSettlementCur] = useState(null);
 
-  const [reverse, setReverse] = useState(null);
+  const [services, setServices] = useState(0);
 
   const [markup, setMarkup] = useState(null);
   const [defaultMarkup, setDefaultMarkup] = useState(null);
@@ -64,11 +71,18 @@ const ConversationCourse = observer(() => {
   const [toFocused, setToFocused] = useState(false);
   const [fromFocused, setFromFocused] = useState(false);
 
+  const onFromFocus = () => setFromFocused(true);
+  const onFromBlur = () => setFromFocused(false);
+
+  const onToFocus = () => setToFocused(true);
+  const onToBlur = () => setToFocused(false);
+
   const [error, setError] = useState(null);
 
   const [checked, setChecked] = useState('from');
 
   const prevMarkup = useRef(markup);
+  const cancelTokenSource = useRef();
 
   const getMethods = async () => {
     try {
@@ -91,13 +105,14 @@ const ConversationCourse = observer(() => {
     }
   };
 
-  const calculate = async (data) => {
+  const calculate = async (data, signal) => {
     try {
       setIsLoading(true);
       const response = await axios.post(
         'https://api.moneyport.world/messenger/calculation',
         data,
         {
+          signal,
           headers: {
             'X-Api-Key': `${env.API_TOKEN}`,
           },
@@ -106,6 +121,7 @@ const ConversationCourse = observer(() => {
       setIsLoading(false);
       return response.data;
     } catch (error) {
+      if (error.code === 'ERR_CANCELED') return;
       setIsLoading(false);
       console.log(error);
       return { error: error?.message };
@@ -116,106 +132,119 @@ const ConversationCourse = observer(() => {
     getMethods();
   }, []);
 
-  // useEffect(() => {
-  //   setMarkupIsLoading(true);
-  //   if (prevMarkup.current !== null) {
-  //     if (markup) {
-  //       const newAmount =
-  //         checked === 'to'
-  //           ? toAmount /
-  //             calculateClientCourse(
-  //               !reverse
-  //                 ? parseFloat(course?.referense?.toFixed(5))
-  //                 : parseFloat(course?.basic?.toFixed(5)),
-  //               -markup
-  //             )
-  //           : fromAmount *
-  //             calculateClientCourse(
-  //               reverse
-  //                 ? parseFloat(course?.referense?.toFixed(5))
-  //                 : parseFloat(course?.basic?.toFixed(5)),
-  //               -markup
-  //             );
-  //       checked === 'to'
-  //         ? setFromAmount(parseFloat(newAmount?.toFixed(4)))
-  //         : setToAmount(parseFloat(newAmount?.toFixed(4)));
-  //     }
-  //     setIsLoading(false);
-  //   }
-  //   prevMarkup.current = markup;
-  // }, [markup]);
+  const debouncedSubmitFromAmount = debounce(async (signal) => {
+    if (!fromAmount) return setIsLoading(false);
+    try {
+      const data = await calculate(
+        {
+          from: {
+            currency: fromValue?.currency,
+            method: fromCash ? fromCash?.code : fromMethod?.code,
+            amount: fromAmount,
+          },
+          to: {
+            currency: toValue?.currency,
+            method: toCash ? toCash?.code : toMethod?.code,
+          },
+        },
+        signal
+      );
+      if (data?.error || !data?.courses) return setError(data?.error);
+      console.log(data);
+      setCourse(data?.courses);
+      setMarkup(data?.default_markup);
+      setDefaultMarkup(data?.default_markup);
+      setToAmount(parseFloat(data?.result?.toFixed(4)));
+      setToServices(data?.to?.services);
+      setFromServices(data?.from?.services);
+      setServices(data?.services_result);
+      setSettlementCur(data?.settlement_currency);
+      setMarkupIsLoading(false);
+    } catch (e) {
+      console.log(e);
+    }
+  });
+
+  const debouncedSubmitToAmount = debounce(async (signal) => {
+    if (!toAmount) return setIsLoading(false);
+    try {
+      const data = await calculate(
+        {
+          from: {
+            currency: fromValue?.currency,
+            method: fromCash ? fromCash?.code : fromMethod?.code,
+          },
+          to: {
+            currency: toValue?.currency,
+            method: toCash ? toCash?.code : toMethod?.code,
+            amount: toAmount,
+          },
+        },
+        signal
+      );
+      if (data?.error || !data?.courses) return setError(data?.error);
+      console.log(data);
+      setCourse(data?.courses);
+      setMarkup(data?.default_markup);
+      setDefaultMarkup(data?.default_markup);
+      setFromAmount(parseFloat(data?.result?.toFixed(4)));
+      setToServices(data?.to?.services);
+      setFromServices(data?.from?.services);
+      setServices(data?.services_result);
+      setSettlementCur(data?.settlement_currency);
+      setMarkupIsLoading(false);
+    } catch (e) {
+      console.log(e);
+    }
+  });
 
   useEffect(() => {
-    // setChecked('from');
-    if (!toFocused) handleSubmitFromAmount();
+    if (fromFocused) {
+      setError('');
+      debouncedSubmitFromAmount();
+    }
   }, [fromAmount]);
 
   useEffect(() => {
-    // setChecked('to');
-    if (!fromFocused) handleSubmitToAmount();
+    if (toFocused) {
+      setError('');
+      debouncedSubmitToAmount();
+    }
   }, [toAmount]);
 
-  const handleSubmitFromAmount = async (e) => {
-    e?.preventDefault();
-    setError('');
-    const data = await calculate({
-      from: {
-        currency: fromValue?.currency,
-        method: fromCash ? fromCash?.code : fromMethod?.code,
-        amount: fromAmount,
-      },
-      to: {
-        currency: toValue?.currency,
-        method: toCash ? toCash?.code : toMethod?.code,
-      },
-    });
-    console.log(data);
+  useEffect(() => {
+    if (toFocused || fromFocused) return;
+    if (checked === 'from') {
+      debouncedSubmitFromAmount();
+    } else {
+      debouncedSubmitToAmount();
+    }
+  }, [checked]);
 
-    if (data?.error || !data?.courses) return setError(data?.error);
-    setCourse(data?.courses);
-    setReverseCourse(data?.courses_reverse);
-
-    setReverse(data?.reverse);
-
-    setMarkup(data?.default_markup);
-    setDefaultMarkup(data?.default_markup);
-    setToAmount(parseFloat(data?.result?.toFixed(4)));
-    setToServices(data?.to?.services);
-    setFromServices(data?.from?.services);
-    setMarkupIsLoading(false);
-  };
-
-  const handleSubmitToAmount = async (e) => {
-    e?.preventDefault();
-    setError('');
-    const data = await calculate({
-      from: {
-        currency: fromValue?.currency,
-        method: fromCash ? fromCash?.code : fromMethod?.code,
-      },
-      to: {
-        currency: toValue?.currency,
-        method: toCash ? toCash?.code : toMethod?.code,
-        amount: toAmount,
-      },
-    });
-    console.log(data);
-
-    if (data?.error || !data?.courses) return setError(data?.error);
-
-    setCourse(data?.courses);
-    setReverseCourse(data?.courses_reverse);
-
-    setReverse(data?.reverse);
-
-    setMarkup(data?.default_markup);
-    setDefaultMarkup(data?.default_markup);
-
-    setFromAmount(parseFloat(data?.result?.toFixed(4)));
-    setToServices(data?.to?.services);
-    setFromServices(data?.from?.services);
-    setMarkupIsLoading(false);
-  };
+  useEffect(() => {
+    setMarkupIsLoading(true);
+    if (prevMarkup.current !== null) {
+      if (markup) {
+        const newAmount =
+          checked === 'to'
+            ? toAmount *
+              calculateClientCourse(
+                course?.basic,
+                course?.basic > course?.referense ? -markup : markup
+              )
+            : fromAmount *
+              calculateClientCourse(
+                course?.basic,
+                course?.basic > course?.referense ? -markup : markup
+              );
+        checked === 'to'
+          ? setFromAmount((newAmount + services)?.toFixed(4))
+          : setToAmount((newAmount - services)?.toFixed(4));
+      }
+      setIsLoading(false);
+    }
+    prevMarkup.current = markup;
+  }, [markup]);
 
   const handleChecked = (value) => {
     setChecked(value);
@@ -232,6 +261,15 @@ const ConversationCourse = observer(() => {
     setFromServices(null);
     setError(null);
     setFromCash(null);
+    setServices(0);
+  };
+
+  const handleFromInputChange = (value) => {
+    setChecked('from');
+  };
+
+  const handleToInputChange = (value) => {
+    setChecked('to');
   };
 
   const handleToChange = (value) => {
@@ -245,6 +283,7 @@ const ConversationCourse = observer(() => {
     setFromServices(null);
     setError(null);
     setToCash(null);
+    setServices(0);
   };
 
   const calculateClientCourse = (course, markup) => {
@@ -319,12 +358,15 @@ const ConversationCourse = observer(() => {
                 <SendSelect
                   value={fromValue}
                   onChange={handleFromChange}
+                  inputChange={handleFromInputChange}
+                  onFocus={onFromFocus}
+                  onBlur={onFromBlur}
                   setValue={setFromValue}
                   values={methods?.FROM || []}
                   defaultValue={methods?.FROM && methods?.FROM[0]}
                   inputValue={fromAmount}
                   setInputValue={setFromAmount}
-                  onSubmit={handleSubmitFromAmount}
+                  // onSubmit={handleSubmitFromAmount}
                   checked={checked}
                   checkType={'from'}
                   handleChecked={handleChecked}
@@ -402,11 +444,14 @@ const ConversationCourse = observer(() => {
                   value={toValue}
                   setValue={setToValue}
                   onChange={handleToChange}
+                  inputChange={handleToInputChange}
+                  onFocus={onToFocus}
+                  onBlur={onToBlur}
                   values={methods?.TO || []}
                   defaultValue={methods?.TO && methods?.TO[0]}
                   inputValue={toAmount}
                   setInputValue={setToAmount}
-                  onSubmit={handleSubmitToAmount}
+                  // onSubmit={handleSubmitToAmount}
                   checked={checked}
                   checkType={'to'}
                   handleChecked={handleChecked}
@@ -472,13 +517,13 @@ const ConversationCourse = observer(() => {
                     textAlign: 'left',
                   }}
                 >
-                  {fromServices && (
+                  {(fromServices || toServices) && (
                     <Typography
                       fontWeight={'700'}
                       fontSize={'14px'}
                       color={'#031022'}
                     >
-                      Платные доп. услуги: Отправляете
+                      Платные доп. услуги
                     </Typography>
                   )}
                   <Typography
@@ -494,28 +539,19 @@ const ConversationCourse = observer(() => {
                       );
                     })}
                   </Typography>
-
-                  {toServices && (
-                    <Typography
-                      fontWeight={'700'}
-                      fontSize={'14px'}
-                      color={'#031022'}
-                    >
-                      Платные доп. услуги: Получаете
-                    </Typography>
-                  )}
-                  {toServices?.map((item, index) => {
-                    return (
-                      <Typography
-                        key={index}
-                        fontWeight={'400'}
-                        fontSize={'12px'}
-                        color={'#647081'}
-                      >
-                        {item?.name} {item?.price} {item?.symbol}
-                      </Typography>
-                    );
-                  })}
+                  <Typography
+                    fontWeight={'400'}
+                    fontSize={'12px'}
+                    color={'#647081'}
+                  >
+                    {toServices?.map((item, index) => {
+                      return (
+                        <span key={index}>
+                          {item?.name} {item?.price} {item?.symbol}
+                        </span>
+                      );
+                    })}
+                  </Typography>
                 </Box>
               </>
             ) : (
@@ -581,13 +617,13 @@ const ConversationCourse = observer(() => {
                         }}
                       >
                         <span>
-                          1 {fromMethod?.symbol} = {course?.basic?.toFixed(4)}{' '}
-                          {toMethod?.symbol}
+                          1 {settlementCur?.from} = {course?.basic?.toFixed(4)}{' '}
+                          {settlementCur?.to}
                         </span>
                         <span>
-                          1 {toMethod?.symbol} ={' '}
-                          {reverseCourse?.basic?.toFixed(4)}{' '}
-                          {fromMethod?.symbol}
+                          1 {settlementCur?.to} ={' '}
+                          {(1 / course?.basic)?.toFixed(4)}{' '}
+                          {settlementCur?.from}
                         </span>
                       </Box>
                     </Box>
@@ -628,13 +664,13 @@ const ConversationCourse = observer(() => {
                         }}
                       >
                         <span>
-                          1 {fromMethod?.symbol} ={' '}
-                          {course?.referense?.toFixed(4)} {toMethod?.symbol}
+                          1 {settlementCur?.from} ={' '}
+                          {course?.referense?.toFixed(4)} {settlementCur?.to}
                         </span>
                         <span>
-                          1 {toMethod?.symbol} ={' '}
-                          {reverseCourse?.referense?.toFixed(4)}{' '}
-                          {fromMethod?.symbol}
+                          1 {settlementCur?.to} ={' '}
+                          {(1 / course?.referense)?.toFixed(4)}{' '}
+                          {settlementCur?.from}
                         </span>
                       </Box>
                     </Box>
@@ -686,22 +722,20 @@ const ConversationCourse = observer(() => {
                         }}
                       >
                         <span style={{ color: '#408EF6', fontWeight: '500' }}>
-                          1 {fromMethod?.symbol} ={' '}
+                          1 {settlementCur?.from} ={' '}
                           {calculateClientCourse(
-                            !reverse ? course?.referense : course?.basic,
-                            -markup
-                          ).toFixed(5)}{' '}
-                          {toMethod?.symbol}
+                            course?.basic,
+                            course?.basic > course?.referense ? -markup : markup
+                          ).toFixed(4)}{' '}
+                          {settlementCur?.to}
                         </span>
                         <span style={{ color: '#408EF6', fontWeight: '500' }}>
-                          1 {toMethod?.symbol} ={' '}
+                          1 {settlementCur?.to} ={' '}
                           {calculateClientCourse(
-                            !reverse
-                              ? reverseCourse?.basic
-                              : reverseCourse?.referense,
-                            markup
-                          ).toFixed(5)}{' '}
-                          {fromMethod?.symbol}
+                            1 / course?.basic,
+                            course?.basic > course?.referense ? markup : -markup
+                          ).toFixed(4)}{' '}
+                          {settlementCur?.from}
                         </span>
                       </Box>
                     </Box>
@@ -732,14 +766,33 @@ const ConversationCourse = observer(() => {
                           />
                         </Tooltip>
                       </Box>
-                      <span>
-                        {course?.exchange?.toFixed(4)} +{' '}
-                        {percentageDifference(
-                          calculateClientCourse(course?.basic, markup),
-                          course?.exchange
-                        )}
-                        %
-                      </span>
+                      <div
+                        sx={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'end',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <span>
+                          {course?.exchange?.toFixed(4)}{' '}
+                          {checked === 'from' ? '-' : '+'}{' '}
+                          {percentageDifference(
+                            calculateClientCourse(course?.basic, markup),
+                            course?.exchange
+                          )}
+                          %
+                        </span>
+                        {/* <span>
+                          {1 / course?.exchange?.toFixed(4)}{' '}
+                          {checked === 'from' ? '-' : '+'}{' '}
+                          {percentageDifference(
+                            calculateClientCourse(course?.basic, markup),
+                            course?.exchange
+                          )}
+                          %
+                        </span> */}
+                      </div>
                     </Box>
                   </Typography>
                   <Typography
@@ -811,6 +864,7 @@ const ConversationCourse = observer(() => {
                         >
                           <span>{markup?.toFixed(1)}%</span>
                         </Typography>
+
                         <AddCircleOutlineIcon
                           sx={{ color: '#408EF6', cursor: 'pointer' }}
                           onClick={() => setMarkup((prev) => prev + 0.1)}

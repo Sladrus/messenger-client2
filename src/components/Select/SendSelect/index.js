@@ -58,6 +58,9 @@ const SendSelect = observer(
     values,
     defaultValue,
     onChange,
+    inputChange,
+    onFocus,
+    onBlur,
     value,
     setValue,
     inputValue,
@@ -70,8 +73,7 @@ const SendSelect = observer(
   }) => {
     const [anchorEl, setAnchorEl] = useState(null);
 
-    const onFocus = () => setFocused(true);
-    const onBlur = () => setFocused(false);
+
 
     const open = Boolean(anchorEl);
 
@@ -195,7 +197,10 @@ const SendSelect = observer(
           <FormContainer onSubmit={onSubmit}>
             <InputContainer
               value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
+              onChange={(e) => {
+                inputChange();
+                setInputValue(e.target.value);
+              }}
               onFocus={onFocus}
               onBlur={onBlur}
             />

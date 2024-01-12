@@ -192,10 +192,12 @@ const SendSelect = observer(
             ))}
           </DropdownStyle> */}
           </SelectContainer>
-          <FormContainer>
+          <FormContainer onSubmit={(e) => e.preventDefault()}>
             <InputContainer
               value={inputValue}
+              onSubmit={(e) => e.preventDefault()}
               onChange={(e) => {
+                e.preventDefault();
                 inputChange();
                 setInputValue(e.target.value);
               }}

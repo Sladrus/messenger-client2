@@ -19,6 +19,7 @@ import { getScreeningInfo } from '../../Api/ScoreApi';
 import CloseIcon from '@mui/icons-material/Close';
 const style = {
   position: 'absolute',
+  maxHeight: '80%',
   top: '50%',
   left: '50%',
   width: '600px',

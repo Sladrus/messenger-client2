@@ -19,7 +19,7 @@ const CustomizedAccordion = styled(Accordion)(() => ({
   zIndex: 10,
 }));
 
-const ConversationMembers = ({ members }) => {
+const ConversationMembers = ({ members, openModal, setSelectedMember }) => {
   return (
     <Card
       sx={{
@@ -56,7 +56,14 @@ const ConversationMembers = ({ members }) => {
         >
           <Stack>
             {members?.map((member, index) => {
-              return <ConversationMember key={index} member={member} />;
+              return (
+                <ConversationMember
+                  onClick={openModal}
+                  key={index}
+                  member={member}
+                  setSelectedMember={setSelectedMember}
+                />
+              );
             })}
           </Stack>
         </AccordionDetails>

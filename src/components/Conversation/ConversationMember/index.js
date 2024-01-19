@@ -2,22 +2,18 @@ import { Avatar, Box, Tooltip, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import InfoIcon from '@mui/icons-material/Info';
 import { getByUsername } from '../../Api/ScoreApi';
+import { observer } from 'mobx-react-lite';
 
-const ConversationMember = ({ member }) => {
+const ConversationMember = observer(({ member, onClick, setSelectedMember }) => {
+  console.log(onClick);
   const fullName =
     member.first_name + (member.last_name ? ' ' + member.last_name : '');
   const [open, setOpen] = React.useState(false);
 
-  const [info, setInfo] = useState({ infos: [] });
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const info = await getByUsername(member?.id);
-  //     setInfo(info);
-  //   };
-
-  //   fetchData();
-  // }, []);
+  const handleClick = () => {
+    onClick();
+    setSelectedMember(member);
+  };
 
   const handleTooltipClose = () => {
     setOpen(false);
@@ -29,6 +25,7 @@ const ConversationMember = ({ member }) => {
 
   return (
     <Box
+      onClick={handleClick}
       sx={{
         display: 'flex',
         justifyContent: 'space-between',
@@ -86,11 +83,11 @@ const ConversationMember = ({ member }) => {
         placement="top"
         onClose={handleTooltipClose}
         open={open}
-        title={
-          info?.infos?.length
-            ? info?.infos[0].info
-            : 'Данные отсутствуют или еще не загружены'
-        }
+        // title={
+        //   info?.infos?.length
+        //     ? info?.infos[0].info
+        //     : 'Данные отсутствуют или еще не загружены'
+        // }
       >
         <InfoIcon
           sx={{ color: '#ccc', cursor: 'pointer', mr: '5px' }}
@@ -99,6 +96,6 @@ const ConversationMember = ({ member }) => {
       </Tooltip>
     </Box>
   );
-};
+});
 
 export default ConversationMember;

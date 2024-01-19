@@ -122,7 +122,7 @@ const ConversationInfo = observer(({ conversation }) => {
               client?.user?.email || 'Почта'
             )}
           </Typography>
-          <Typography
+          {/* <Typography
             sx={{ display: 'flex', alignItems: 'center' }}
             variant="body2"
             color="textSecondary"
@@ -158,6 +158,37 @@ const ConversationInfo = observer(({ conversation }) => {
               </Box>
             )}
           </Typography>
+          {conversation?.refLink?.length > 0 && (
+            <Typography
+              sx={{ display: 'flex', alignItems: 'center' }}
+              variant="body2"
+              color="textSecondary"
+            >
+              <MoreVert
+                fontSize="small"
+                sx={{ pr: '15px', fontSize: '18px', pb: '2px' }}
+              />
+              {isLoading ? (
+                <Box>
+                  <CircularProgress size={14} />
+                </Box>
+              ) : (
+                <Box>
+                  <b>Каналы:</b>
+                  {conversation?.refLink?.map((link) => {
+                    console.log(link);
+                    return (
+                      <Box sx={{ pl: '16px' }}>
+                        <div>{link?.chat.chatName || ''}</div>
+                        <div>{link?.name || ''}</div>
+                        <div>{link?.link || ''}</div>
+                      </Box>
+                    );
+                  })}
+                </Box>
+              )}
+            </Typography>
+          )} */}
           <Typography
             sx={{ display: 'flex', alignItems: 'center' }}
             variant="body2"

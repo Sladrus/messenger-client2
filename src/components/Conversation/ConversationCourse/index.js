@@ -505,7 +505,7 @@ const ConversationCourse = observer(() => {
                 </Typography>
               )}
             </Box>
-            {fromServices !== null || toServices !== null ? (
+            {fromServices?.length > 0 || toServices?.length > 0 ? (
               <>
                 <Divider />
                 <Box
@@ -517,15 +517,14 @@ const ConversationCourse = observer(() => {
                     textAlign: 'left',
                   }}
                 >
-                  {(fromServices || toServices) && (
-                    <Typography
-                      fontWeight={'700'}
-                      fontSize={'14px'}
-                      color={'#031022'}
-                    >
-                      Платные доп. услуги
-                    </Typography>
-                  )}
+                  <Typography
+                    fontWeight={'700'}
+                    fontSize={'14px'}
+                    color={'#031022'}
+                  >
+                    Платные доп. услуги
+                  </Typography>
+
                   <Typography
                     fontWeight={'400'}
                     fontSize={'12px'}

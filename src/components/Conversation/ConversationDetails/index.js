@@ -12,10 +12,15 @@ import ConversationSendChat from '../ConversationSendChat';
 import { SocketContext } from '../../../context/socket';
 import CreateTaskModal from '../CreateTaskModal';
 import ConversationCourse from '../ConversationCourse';
+import ConversationSources from '../ConversationSources';
+import InfoModal from '../InfoModal';
 
 const ConversationDetails = observer(() => {
   const { socket } = useContext(SocketContext);
   const [taskModalIsOpen, setTaskModalIsOpen] = useState(false);
+  const [infoModalIsOpen, setInfoModalIsOpen] = useState(false);
+
+  const [selectedMember, setSelectedMember] = useState();
 
   const { conversationStore, userStore } = useContext(StoreContext);
 
@@ -27,12 +32,20 @@ const ConversationDetails = observer(() => {
     );
   };
 
-  const openModal = () => {
+  const openTaskModal = () => {
     setTaskModalIsOpen(true);
   };
 
-  const closeModal = () => {
+  const closeTaskModal = () => {
     setTaskModalIsOpen(false);
+  };
+
+  const openInfoModal = () => {
+    setInfoModalIsOpen(true);
+  };
+
+  const closeInfoModal = () => {
+    setInfoModalIsOpen(false);
   };
 
   return (
@@ -49,15 +62,22 @@ const ConversationDetails = observer(() => {
           conversation={conversationStore.selectedConversation}
         />
       )}
+      {conversationStore.selectedConversation?.type !== 'private' && (
+        <ConversationSources
+          conversation={conversationStore.selectedConversation}
+        />
+      )}
       <ConversationCourse />
       {conversationStore.selectedConversation?.type !== 'private' && (
         <ConversationMembers
           members={conversationStore.selectedConversation?.members}
+          openModal={openInfoModal}
+          setSelectedMember={setSelectedMember}
         />
       )}
       <ConversationTask
         conversation={conversationStore.selectedConversation}
-        openModal={openModal}
+        openModal={openTaskModal}
         isLoading={conversationStore.taskLoading}
       />
       <ConversationNotes
@@ -72,7 +92,12 @@ const ConversationDetails = observer(() => {
         />
       )}
 
-      <CreateTaskModal show={taskModalIsOpen} closeModal={closeModal} />
+      <CreateTaskModal show={taskModalIsOpen} closeModal={closeTaskModal} />
+      <InfoModal
+        show={infoModalIsOpen}
+        closeModal={closeInfoModal}
+        selectedMember={selectedMember}
+      />
     </Box>
   );
 });

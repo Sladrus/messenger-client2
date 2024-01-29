@@ -64,6 +64,7 @@ const ConversationCourse = observer(() => {
 
   const [markup, setMarkup] = useState(null);
   const [defaultMarkup, setDefaultMarkup] = useState(null);
+  const [referensePercent, setReferensePercent] = useState();
 
   const [isLoading, setIsLoading] = useState(false);
   const [markupIsLoading, setMarkupIsLoading] = useState(false);
@@ -159,6 +160,7 @@ const ConversationCourse = observer(() => {
       setFromServices(data?.from?.services);
       setServices(data?.services_result);
       setSettlementCur(data?.settlement_currency);
+      setReferensePercent(data?.referense_percent);
       setMarkupIsLoading(false);
     } catch (e) {
       console.log(e);
@@ -192,6 +194,7 @@ const ConversationCourse = observer(() => {
       setFromServices(data?.from?.services);
       setServices(data?.services_result);
       setSettlementCur(data?.settlement_currency);
+      setReferensePercent(data?.referense_percent);
       setMarkupIsLoading(false);
     } catch (e) {
       console.log(e);
@@ -221,30 +224,30 @@ const ConversationCourse = observer(() => {
     }
   }, [checked]);
 
-  useEffect(() => {
-    setMarkupIsLoading(true);
-    if (prevMarkup.current !== null) {
-      if (markup) {
-        const newAmount =
-          checked === 'to'
-            ? toAmount *
-              calculateClientCourse(
-                course?.basic,
-                course?.basic > course?.referense ? -markup : markup
-              )
-            : fromAmount *
-              calculateClientCourse(
-                course?.basic,
-                course?.basic > course?.referense ? -markup : markup
-              );
-        checked === 'to'
-          ? setFromAmount((newAmount + services)?.toFixed(4))
-          : setToAmount((newAmount - services)?.toFixed(4));
-      }
-      setIsLoading(false);
-    }
-    prevMarkup.current = markup;
-  }, [markup]);
+  // useEffect(() => {
+  //   setMarkupIsLoading(true);
+  //   if (prevMarkup.current !== null) {
+  //     if (markup) {
+  //       const newAmount =
+  //         checked === 'to'
+  //           ? toAmount *
+  //             calculateClientCourse(
+  //               course?.basic,
+  //               course?.basic > course?.referense ? -markup : markup
+  //             )
+  //           : fromAmount *
+  //             calculateClientCourse(
+  //               course?.basic,
+  //               course?.basic > course?.referense ? -markup : markup
+  //             );
+  //       checked === 'to'
+  //         ? setFromAmount((newAmount + services)?.toFixed(4))
+  //         : setToAmount((newAmount - services)?.toFixed(4));
+  //     }
+  //     setIsLoading(false);
+  //   }
+  //   prevMarkup.current = markup;
+  // }, [markup]);
 
   const handleChecked = (value) => {
     setChecked(value);
@@ -291,6 +294,7 @@ const ConversationCourse = observer(() => {
     return clientCourse;
   };
 
+  console.log(toMethod);
   return (
     <Card sx={{ border: 0, borderRadius: 0 }}>
       <CustomizedAccordion defaultExpanded>
@@ -373,6 +377,17 @@ const ConversationCourse = observer(() => {
                   setFocused={setFromFocused}
                 />
               </Box>
+              {checked === 'to' && !isLoading && (
+                <Typography
+                  sx={{ display: 'flex', flexDirection: 'column' }}
+                  fontWeight={'400'}
+                  fontSize={'12px'}
+                  textAlign={'left'}
+                  color={'#647081'}
+                >
+                  <span>Расчет произведен по рекомендованному курсу</span>
+                </Typography>
+              )}
               <SendMethodSelect
                 label={'Способ отправления'}
                 value={fromMethod}
@@ -404,24 +419,26 @@ const ConversationCourse = observer(() => {
                   )}
                 />
               )}
-              {(fromMethod?.min || fromMethod?.max) && (
-                <Typography
-                  sx={{ display: 'flex', flexDirection: 'column' }}
-                  fontWeight={'400'}
-                  fontSize={'12px'}
-                  textAlign={'left'}
-                  color={'#647081'}
-                >
-                  <span>
-                    {fromMethod?.min !== null &&
-                      `Минимальная сумма ${fromMethod?.min} ${fromMethod?.symbol}`}
-                  </span>
-                  <span>
-                    {fromMethod?.max !== null &&
-                      `Максимальная сумма ${fromMethod?.max} ${fromMethod?.symbol}`}
-                  </span>
-                </Typography>
-              )}
+              <Typography
+                sx={{ display: 'flex', flexDirection: 'column' }}
+                fontWeight={'400'}
+                fontSize={'12px'}
+                textAlign={'left'}
+                color={'#647081'}
+              >
+                <span>
+                  {fromMethod?.min &&
+                    `Минимальная сумма: ${fromMethod?.min} ${fromMethod?.symbol}`}
+                </span>
+                <span>
+                  {fromMethod?.max &&
+                    `Максимальная сумма: ${fromMethod?.max} ${fromMethod?.symbol}`}
+                </span>
+                <span>
+                  {fromValue?.partner_rate &&
+                    `Комиссия за перевод безнала: ${fromMethod?.partner_rate?.percent}%`}
+                </span>
+              </Typography>
             </Box>
             <Box
               sx={{
@@ -458,6 +475,17 @@ const ConversationCourse = observer(() => {
                   setFocused={setToFocused}
                 />
               </Box>
+              {checked === 'from' && !isLoading && (
+                <Typography
+                  sx={{ display: 'flex', flexDirection: 'column' }}
+                  fontWeight={'400'}
+                  fontSize={'12px'}
+                  textAlign={'left'}
+                  color={'#647081'}
+                >
+                  <span>Расчет произведен по рекомендованному курсу</span>
+                </Typography>
+              )}
               <SendMethodSelect
                 label={'Способ получения'}
                 value={toMethod}
@@ -486,24 +514,27 @@ const ConversationCourse = observer(() => {
                   )}
                 />
               )}
-              {(toMethod?.min || toMethod?.max) && (
-                <Typography
-                  sx={{ display: 'flex', flexDirection: 'column' }}
-                  fontWeight={'400'}
-                  fontSize={'12px'}
-                  textAlign={'left'}
-                  color={'#647081'}
-                >
-                  <span>
-                    {toMethod?.min !== null &&
-                      `Минимальная сумма ${toMethod?.min} ${toMethod?.symbol}`}
-                  </span>
-                  <span>
-                    {toMethod?.max !== null &&
-                      `Максимальная сумма ${toMethod?.max} ${toMethod?.symbol}`}
-                  </span>
-                </Typography>
-              )}
+
+              <Typography
+                sx={{ display: 'flex', flexDirection: 'column' }}
+                fontWeight={'400'}
+                fontSize={'12px'}
+                textAlign={'left'}
+                color={'#647081'}
+              >
+                <span>
+                  {toMethod?.min &&
+                    `Минимальная сумма: ${toMethod?.min} ${toMethod?.symbol}`}
+                </span>
+                <span>
+                  {toMethod?.max &&
+                    `Максимальная сумма: ${toMethod?.max} ${toMethod?.symbol}`}
+                </span>
+                <span>
+                  {toMethod?.partner_rate &&
+                    `Комиссия за перевод безнала: ${toMethod?.partner_rate?.percent}%`}
+                </span>
+              </Typography>
             </Box>
             {fromServices?.length > 0 || toServices?.length > 0 ? (
               <>
@@ -585,6 +616,7 @@ const ConversationCourse = observer(() => {
                         display: 'flex',
                         alignItems: 'start',
                         justifyContent: 'space-between',
+                        alignItems: 'center',
                       }}
                     >
                       <Box
@@ -596,54 +628,8 @@ const ConversationCourse = observer(() => {
                           gap: '8px',
                         }}
                       >
-                        <span>Базовый курс</span>
-                        <Tooltip title="Курс с учетом себестоисмоти и всех комиссий (минимальный курс).">
-                          <InfoIcon
-                            sx={{
-                              width: '20px',
-                              height: '20px',
-                              color: '#A8B1BE',
-                            }}
-                          />
-                        </Tooltip>
-                      </Box>
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          alignItems: 'end',
-                          justifyContent: 'center',
-                        }}
-                      >
-                        <span>
-                          1 {settlementCur?.from} = {course?.basic?.toFixed(4)}{' '}
-                          {settlementCur?.to}
-                        </span>
-                        <span>
-                          1 {settlementCur?.to} ={' '}
-                          {(1 / course?.basic)?.toFixed(4)}{' '}
-                          {settlementCur?.from}
-                        </span>
-                      </Box>
-                    </Box>
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'start',
-                        justifyContent: 'space-between',
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          flexDirection: 'row',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          gap: '8px',
-                        }}
-                      >
-                        <span>Эталонный курс</span>
-                        <Tooltip title="Курс биржи + макс % (эталонный курс).">
+                        <span>Стандартный курс</span>
+                        <Tooltip title="Наш стандартный курс.">
                           <InfoIcon
                             sx={{
                               width: '20px',
@@ -662,15 +648,184 @@ const ConversationCourse = observer(() => {
                           justifyContent: 'center',
                         }}
                       >
-                        <span>
-                          1 {settlementCur?.from} ={' '}
-                          {course?.referense?.toFixed(4)} {settlementCur?.to}
-                        </span>
-                        <span>
-                          1 {settlementCur?.to} ={' '}
-                          {(1 / course?.referense)?.toFixed(4)}{' '}
-                          {settlementCur?.from}
-                        </span>
+                        {course?.referense > 1 / course?.referense ? (
+                          <>
+                            <span style={{ color: '#408EF6' }}>
+                              % к бирже:{' '}
+                              {course?.exchange > course?.referense ? '-' : '+'}
+                              {Math.abs(referensePercent)?.toFixed(1)}%
+                            </span>
+                            <span>
+                              1 {settlementCur?.from} ={' '}
+                              {course?.referense?.toFixed(4)}{' '}
+                              {settlementCur?.to}
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <span style={{ color: '#408EF6' }}>
+                              % к бирже:{' '}
+                              {1 / course?.exchange > 1 / course?.referense
+                                ? '-'
+                                : '+'}
+                              {Math.abs(referensePercent)?.toFixed(1)}%
+                            </span>
+                            <span>
+                              1 {settlementCur?.to} ={' '}
+                              {(1 / course?.referense)?.toFixed(4)}{' '}
+                              {settlementCur?.from}
+                            </span>
+                          </>
+                        )}
+                      </Box>
+                    </Box>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'start',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          gap: '8px',
+                        }}
+                      >
+                        <span>Рекомендованный курс</span>
+                        <Tooltip title="Рекомендованный курс MoneyPort с учетом всех комиссий, спреда и нашей рекомендованной наценки.">
+                          <InfoIcon
+                            sx={{
+                              width: '20px',
+                              height: '20px',
+                              color: '#A8B1BE',
+                            }}
+                          />
+                        </Tooltip>
+                      </Box>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'end',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        {course?.basic > 1 / course?.basic ? (
+                          <>
+                            <span style={{ color: '#408EF6' }}>
+                              % к бирже:{' '}
+                              {course?.exchange > course?.basic ? '-' : '+'}
+                              {percentageDifference(
+                                course?.exchange,
+                                course?.basic
+                              )}
+                              %
+                            </span>
+                            <span>
+                              1 {settlementCur?.from} ={' '}
+                              {course?.basic?.toFixed(4)} {settlementCur?.to}
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <span style={{ color: '#408EF6' }}>
+                              % к бирже:{' '}
+                              {1 / course?.exchange > 1 / course?.basic
+                                ? '-'
+                                : '+'}
+                              {percentageDifference(
+                                1 / course?.exchange,
+                                1 / course?.basic
+                              )}
+                              %
+                            </span>
+                            <span>
+                              1 {settlementCur?.to} ={' '}
+                              {(1 / course?.basic)?.toFixed(4)}{' '}
+                              {settlementCur?.from}
+                            </span>
+                          </>
+                        )}
+                      </Box>
+                    </Box>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'start',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          gap: '8px',
+                        }}
+                      >
+                        <span>Минимальный курс</span>
+                        <Tooltip title="Минимальный курс MoneyPort. Ниже минимального курса нельзя опускать курс для клиента! Рассчитывается с учетом всех комиссий, спреда и нашей минимальной наценки.">
+                          <InfoIcon
+                            sx={{
+                              width: '20px',
+                              height: '20px',
+                              color: '#A8B1BE',
+                            }}
+                          />
+                        </Tooltip>
+                      </Box>
+
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'end',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        {course?.minimum > 1 / course?.minimum ? (
+                          <>
+                            <span style={{ color: '#408EF6' }}>
+                              % к бирже:{' '}
+                              {course?.exchange > course?.minimum ? '-' : '+'}
+                              {percentageDifference(
+                                course?.exchange,
+                                course?.minimum
+                              )}
+                              %
+                            </span>
+                            <span>
+                              1 {settlementCur?.from} ={' '}
+                              {course?.minimum?.toFixed(4)} {settlementCur?.to}
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <span style={{ color: '#408EF6' }}>
+                              % к бирже:{' '}
+                              {1 / course?.exchange > 1 / course?.minimum
+                                ? '-'
+                                : '+'}
+                              {percentageDifference(
+                                1 / course?.exchange,
+                                1 / course?.minimum
+                              )}
+                              %
+                            </span>
+                            <span>
+                              1 {settlementCur?.to} ={' '}
+                              {(1 / course?.minimum)?.toFixed(4)}{' '}
+                              {settlementCur?.from}
+                            </span>
+                          </>
+                        )}
                       </Box>
                     </Box>
                   </Typography>
@@ -685,7 +840,7 @@ const ConversationCourse = observer(() => {
                     textAlign={'left'}
                     color={'#647081'}
                   >
-                    <Box
+                    {/* <Box
                       sx={{
                         display: 'flex',
                         alignItems: 'start',
@@ -787,19 +942,10 @@ const ConversationCourse = observer(() => {
                           )}
                           %
                         </span>
-                        {/* <span>
-                          {1 / course?.exchange?.toFixed(4)}{' '}
-                          {checked === 'from' ? '-' : '+'}{' '}
-                          {percentageDifference(
-                            calculateClientCourse(course?.basic, markup),
-                            course?.exchange
-                          )}
-                          %
-                        </span> */}
                       </div>
-                    </Box>
+                    </Box> */}
                   </Typography>
-                  <Typography
+                  {/* <Typography
                     fontWeight={'400'}
                     fontSize={'12px'}
                     textAlign={'left'}
@@ -875,7 +1021,7 @@ const ConversationCourse = observer(() => {
                         />
                       </Box>
                     </Box>
-                  </Typography>
+                  </Typography> */}
                 </Box>
               </>
             )}

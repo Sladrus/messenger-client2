@@ -5,7 +5,6 @@ import { getByUsername } from '../../Api/ScoreApi';
 import { observer } from 'mobx-react-lite';
 
 const ConversationMember = observer(({ member, onClick, setSelectedMember }) => {
-  console.log(onClick);
   const fullName =
     member.first_name + (member.last_name ? ' ' + member.last_name : '');
   const [open, setOpen] = React.useState(false);

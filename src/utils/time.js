@@ -128,9 +128,7 @@ export const taskColor = (task) => {
 };
 
 export const sleep = async () => {
-  console.log('sleep start');
   await new Promise((resolve) => setTimeout(resolve, 2000));
-  console.log('sleep done');
 };
 
 let abortController = null;

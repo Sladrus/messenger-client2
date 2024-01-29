@@ -68,7 +68,6 @@ const ConversationSources = observer(({ conversation }) => {
     getClient(conversation?.chat_id)
       .then((data) => {
         setClient(data);
-        console.log(data);
       })
       .catch((error) => console.error(error));
   }, []);
@@ -163,7 +162,6 @@ const ConversationSources = observer(({ conversation }) => {
                   <Box sx={{ textAlign: 'left' }}>
                     <b>Каналы:</b>
                     {conversation?.refLink?.map((link) => {
-                      console.log(link);
                       return (
                         <Box sx={{ pl: '16px' }}>
                           <div>{link?.chat.chatName || ''}</div>

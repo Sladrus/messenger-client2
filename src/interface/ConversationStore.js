@@ -211,7 +211,6 @@ class ConversationStore {
   }
 
   updateConversation(conversation) {
-    console.log(conversation)
     const updatedConversations = this.conversations?.map((conv) => {
       if (conv?._id === conversation?._id) {
         return conversation;

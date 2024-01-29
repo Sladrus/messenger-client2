@@ -82,6 +82,13 @@ const ConversationCourse = observer(() => {
 
   const [checked, setChecked] = useState('from');
 
+  const pairList = [
+    'TO_WIRERUB',
+    'TO_WIRERUBVAT',
+    'FROM_WIRERUB',
+    'FROM_WIRERUBVAT',
+  ];
+
   const prevMarkup = useRef(markup);
   const cancelTokenSource = useRef();
 
@@ -249,6 +256,7 @@ const ConversationCourse = observer(() => {
   //   prevMarkup.current = markup;
   // }, [markup]);
 
+
   const handleChecked = (value) => {
     setChecked(value);
   };
@@ -294,7 +302,6 @@ const ConversationCourse = observer(() => {
     return clientCourse;
   };
 
-  console.log(toMethod);
   return (
     <Card sx={{ border: 0, borderRadius: 0 }}>
       <CustomizedAccordion defaultExpanded>
@@ -434,10 +441,12 @@ const ConversationCourse = observer(() => {
                   {fromMethod?.max &&
                     `Максимальная сумма: ${fromMethod?.max} ${fromMethod?.symbol}`}
                 </span>
-                <span>
-                  {fromValue?.partner_rate &&
-                    `Комиссия за перевод безнала: ${fromMethod?.partner_rate?.percent}%`}
-                </span>
+                {pairList.includes(fromMethod?.code) && (
+                  <span>
+                    {fromMethod?.partner_rate?.percent &&
+                      `Комиссия за перевод безнала: ${fromMethod?.partner_rate?.percent}%`}
+                  </span>
+                )}
               </Typography>
             </Box>
             <Box
@@ -530,10 +539,12 @@ const ConversationCourse = observer(() => {
                   {toMethod?.max &&
                     `Максимальная сумма: ${toMethod?.max} ${toMethod?.symbol}`}
                 </span>
-                <span>
-                  {toMethod?.partner_rate &&
-                    `Комиссия за перевод безнала: ${toMethod?.partner_rate?.percent}%`}
-                </span>
+                {pairList.includes(toMethod?.code) && (
+                  <span>
+                    {toMethod?.partner_rate?.percent &&
+                      `Комиссия за перевод безнала: ${toMethod?.partner_rate?.percent}%`}
+                  </span>
+                )}
               </Typography>
             </Box>
             {fromServices?.length > 0 || toServices?.length > 0 ? (

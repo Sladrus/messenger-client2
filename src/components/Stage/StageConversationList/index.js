@@ -5,7 +5,6 @@ import { AutoSizer, List } from 'react-virtualized';
 
 const StageConversationList = ({ conversations }) => {
   const listRef = useRef(null);
-  console.log(conversations);
   // // Function to save the scroll position
   // const saveScrollPosition = () => {
   //   if (listRef.current) {

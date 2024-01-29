@@ -126,8 +126,6 @@ const GeneralMetricsStatic = observer(() => {
       setIsLoading(false);
     }
   }, [dateRange, type, period]);
-  console.log(rows);
-  console.log(columns);
 
   return (
     <Box>
@@ -184,7 +182,6 @@ const GeneralMetricsStatic = observer(() => {
       />
       <StripedDataGrid
         getRowClassName={(params) => {
-          console.log(params);
           if (params.row.path.length === 1) return 'tag';
           if (params.row.path.length === 2) return 'user';
           return 'chat';

@@ -89,7 +89,6 @@ const GeneralMetricsDynamic = observer(() => {
   useEffect(() => {
     try {
       setIsLoading(true);
-      console.log(dateRange);
 
       axios
         .post(`${env.SERVER_PHOTO_URL}/api/analytics/dynamic/users`, {
@@ -110,8 +109,6 @@ const GeneralMetricsDynamic = observer(() => {
       setIsLoading(false);
     }
   }, [dateRange, type]);
-  // console.log(rows);
-  // console.log(columns);
 
   return (
     <Box>

@@ -121,7 +121,6 @@ const TagMetrics = observer(() => {
           users,
         })
         .then((response) => {
-          console.log(response.data);
           setRows(response.data.rows);
           setColumns(response.data.columns);
           setIsLoading(false);
@@ -132,8 +131,7 @@ const TagMetrics = observer(() => {
       setIsLoading(false);
     }
   }, [tags, dateRange, stages, type, users]);
-  console.log(rows);
-  console.log(columns);
+
 
   return (
     <Box>
@@ -218,7 +216,6 @@ const TagMetrics = observer(() => {
       />
       <StripedDataGrid
         getRowClassName={(params) => {
-          console.log(params);
           if (params.row.path.length === 1) return 'tag';
           if (params.row.path.length === 2) return 'user';
           return 'chat';

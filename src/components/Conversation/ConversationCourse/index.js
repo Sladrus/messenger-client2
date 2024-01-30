@@ -59,6 +59,7 @@ const ConversationCourse = observer(() => {
 
   const [course, setCourse] = useState(null);
   const [settlementCur, setSettlementCur] = useState(null);
+  const [exchangeSource, setExchangeSource] = useState(null);
 
   const [services, setServices] = useState(0);
 
@@ -168,6 +169,7 @@ const ConversationCourse = observer(() => {
       setServices(data?.services_result);
       setSettlementCur(data?.settlement_currency);
       setReferensePercent(data?.referense_percent);
+      setExchangeSource(data?.exchange_source)
       setMarkupIsLoading(false);
     } catch (e) {
       console.log(e);
@@ -201,7 +203,8 @@ const ConversationCourse = observer(() => {
       setFromServices(data?.from?.services);
       setServices(data?.services_result);
       setSettlementCur(data?.settlement_currency);
-      setReferensePercent(data?.referense_percent);
+      setReferensePercent(data?.referense_percent);      
+      setExchangeSource(data?.exchange_source)
       setMarkupIsLoading(false);
     } catch (e) {
       console.log(e);
@@ -662,7 +665,7 @@ const ConversationCourse = observer(() => {
                         {course?.referense > 1 / course?.referense ? (
                           <>
                             <span style={{ color: '#408EF6' }}>
-                              % к бирже:{' '}
+                              % к бирже {exchangeSource}:{' '}
                               {course?.exchange > course?.referense ? '-' : '+'}
                               {Math.abs(referensePercent)?.toFixed(1)}%
                             </span>
@@ -675,7 +678,7 @@ const ConversationCourse = observer(() => {
                         ) : (
                           <>
                             <span style={{ color: '#408EF6' }}>
-                              % к бирже:{' '}
+                              % к бирже {exchangeSource}:{' '}
                               {1 / course?.exchange > 1 / course?.referense
                                 ? '-'
                                 : '+'}
@@ -729,7 +732,7 @@ const ConversationCourse = observer(() => {
                         {course?.basic > 1 / course?.basic ? (
                           <>
                             <span style={{ color: '#408EF6' }}>
-                              % к бирже:{' '}
+                              % к бирже {exchangeSource}:{' '}
                               {course?.exchange > course?.basic ? '-' : '+'}
                               {percentageDifference(
                                 course?.exchange,
@@ -745,7 +748,7 @@ const ConversationCourse = observer(() => {
                         ) : (
                           <>
                             <span style={{ color: '#408EF6' }}>
-                              % к бирже:{' '}
+                              % к бирже {exchangeSource}:{' '}
                               {1 / course?.exchange > 1 / course?.basic
                                 ? '-'
                                 : '+'}
@@ -804,7 +807,7 @@ const ConversationCourse = observer(() => {
                         {course?.minimum > 1 / course?.minimum ? (
                           <>
                             <span style={{ color: '#408EF6' }}>
-                              % к бирже:{' '}
+                              % к бирже {exchangeSource}:{' '}
                               {course?.exchange > course?.minimum ? '-' : '+'}
                               {percentageDifference(
                                 course?.exchange,
@@ -820,7 +823,7 @@ const ConversationCourse = observer(() => {
                         ) : (
                           <>
                             <span style={{ color: '#408EF6' }}>
-                              % к бирже:{' '}
+                              % к бирже {exchangeSource}:{' '}
                               {1 / course?.exchange > 1 / course?.minimum
                                 ? '-'
                                 : '+'}
@@ -931,7 +934,8 @@ const ConversationCourse = observer(() => {
                           />
                         </Tooltip>
                       </Box>
-                      <div
+                      <div 
+
                         sx={{
                           display: 'flex',
                           flexDirection: 'column',

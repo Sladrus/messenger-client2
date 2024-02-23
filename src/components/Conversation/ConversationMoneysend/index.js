@@ -85,53 +85,7 @@ const ConversationMoneysend = observer(({ conversation }) => {
   useEffect(() => {
     getClient(conversation?.chat_id)
       .then((data) => {
-        setClient({
-          group: {
-            title: '[10783] Личный кабинет MoneyPort',
-            date_activated: null,
-            in_chat: '2024-02-22 09:59:28',
-          },
-          counteragents: [
-            {
-              id: 36,
-              userId: 14291,
-              status: 'RECHECK',
-              type: 'small_business',
-              name: 'Общество с ограниченной ответственностью "Хостинг 80"',
-              contactUrl: 'https://hosting80.ru',
-              country: null,
-              directorFullName: null,
-              directorNationality: null,
-              directorDocument: null,
-              shareholders: [
-                {
-                  fullName: 'Баранов Илья Андреевич',
-                },
-              ],
-              businessDescription: null,
-              businessSource: null,
-              attachments: [],
-              recheckReason: 'jjjjjuuuu',
-              failReason: null,
-              created_at: '2024-02-20T06:49:23.000000Z',
-              updated_at: '2024-02-20T07:09:51.000000Z',
-            },
-          ],
-          user: {
-            name: 'Богатырева Оксана Руслановна',
-            phone: 'Anyza$#1108',
-            email: 'oksanabakaeva312@gmail.com',
-            tlg_login: 'LASAGRADA_OKSANA',
-          },
-          utms: {
-            source: 'poisk',
-            medium: 'cpc',
-            campaign: '107609131',
-            term: 'денежный перевод турция контакт',
-            content: 'turke_1',
-            pixel: null,
-          },
-        });
+        setClient(data);
       })
       .catch((error) => console.error(error));
   }, []);

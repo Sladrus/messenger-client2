@@ -46,7 +46,6 @@ const CounteragentSelect = ({ counteragent, options, isLoading, onChange }) => {
     );
   };
 
-  // if (counteragent?.status === 'CHECK') return;
   const counteragentStatus = getStatusIcon(counteragent?.status);
 
   return (
@@ -63,7 +62,6 @@ const CounteragentSelect = ({ counteragent, options, isLoading, onChange }) => {
             height: '45px',
           }}
         >
-          {/* <CheckBoxIcon sx={{ fontSize: '18px', p: '1px 0 5px' }} /> */}
           {counteragentStatus}
           <Select
             labelId="demo-simple-select-standard-label"
@@ -74,9 +72,9 @@ const CounteragentSelect = ({ counteragent, options, isLoading, onChange }) => {
               color: 'grey',
               m: '0px 13px',
             }}
-            defaultValue={'Выберите контрагента'}
             disabled={isLoading}
-            value={counteragent?.name}
+            defaultValue={'Выберите контрагента'}
+            value={counteragent}
             onChange={handleChange}
             size="small"
             startAdornment={
@@ -95,10 +93,13 @@ const CounteragentSelect = ({ counteragent, options, isLoading, onChange }) => {
                 ''
               )
             }
-            renderValue={(value) => (value ? value : 'None')}
+            renderValue={(value) => {
+              console.log(value);
+              return value?.name ? value?.name : 'Выберите контрагента';
+            }}
           >
             {options?.map((item) => (
-              <MenuItem key={item.id} value={item.name} sx={{}}>
+              <MenuItem key={item.id} value={item} sx={{}}>
                 {item.name}
               </MenuItem>
             ))}

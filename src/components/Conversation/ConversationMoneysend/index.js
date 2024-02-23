@@ -156,10 +156,8 @@ const ConversationMoneysend = observer(({ conversation }) => {
                     options={client?.counteragents}
                     isLoading={isLoading}
                     onChange={(e) => {
-                      const fCounteragent = client?.counteragents.find(
-                        (item) => item.name === e.target.value
-                      );
-                      setCounteragent(fCounteragent);
+                      console.log(e.target.value);
+                      setCounteragent(e.target.value);
                     }}
                   />
                 )}

@@ -30,6 +30,7 @@ import axios from 'axios';
 import env from 'react-dotenv';
 import TypeSelect from '../../Select/TypeSelect';
 import CounteragentSelect from '../../Select/CounteragentSelect';
+import PostAddIcon from '@mui/icons-material/PostAdd';
 
 const CustomizedAccordion = styled(Accordion)(() => ({
   border: '0 !important',
@@ -48,6 +49,8 @@ const ConversationMoneysend = observer(({ conversation }) => {
   const [date, setDate] = useState('');
   const [comment, setComment] = useState('');
   const [conditions, setConditions] = useState('');
+  const [requisites, setRequisites] = useState('');
+
   const [type, setType] = useState({
     name: 'Перевод физ лицу ',
     value: 'physical',
@@ -103,6 +106,7 @@ const ConversationMoneysend = observer(({ conversation }) => {
       conditions,
       type,
       counteragent,
+      requisites,
     });
     setVolume('');
     setGive('');
@@ -111,9 +115,13 @@ const ConversationMoneysend = observer(({ conversation }) => {
     setDate('');
     setComment('');
     setConditions('');
+    setRequisites('');
   };
 
-  console.log(counteragent);
+  useEffect(() => {
+    setCounteragent();
+  }, [type]);
+
   return (
     <Card sx={{ border: 0, borderRadius: 0 }}>
       <CustomizedAccordion>
@@ -156,6 +164,12 @@ const ConversationMoneysend = observer(({ conversation }) => {
                   />
                 )}
 
+              <SimpleTextField
+                placeholder={'Введите реквизиты'}
+                Icon={PostAddIcon}
+                onChange={(e) => setRequisites(e.target.value)}
+                value={requisites}
+              />
               <SimpleTextField
                 placeholder={'Введите объем'}
                 Icon={AttachMoneyIcon}

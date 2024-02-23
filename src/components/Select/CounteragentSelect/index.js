@@ -19,31 +19,15 @@ const CounteragentSelect = ({ counteragent, options, isLoading, onChange }) => {
 
   const getStatusIcon = (status) => {
     if (status === 'CHECK')
-      return (
-        <AccessTimeIcon
-          sx={{ color: 'blue', fontSize: '18px', p: '1px 0 5px' }}
-        />
-      );
+      return <AccessTimeIcon sx={{ color: 'blue', fontSize: '18px' }} />;
     if (status === 'RECHECK')
-      return (
-        <FeedbackIcon
-          sx={{ color: 'orange', fontSize: '18px', p: '1px 0 5px' }}
-        />
-      );
+      return <FeedbackIcon sx={{ color: 'orange', fontSize: '18px' }} />;
     if (status === 'ACTIVE')
-      return (
-        <CheckBoxIcon
-          sx={{ color: 'green', fontSize: '18px', p: '1px 0 5px' }}
-        />
-      );
+      return <CheckBoxIcon sx={{ color: 'green', fontSize: '18px' }} />;
     if (status === 'FAIL')
-      return (
-        <CloseIcon sx={{ color: 'red', fontSize: '18px', p: '1px 0 5px' }} />
-      );
+      return <CloseIcon sx={{ color: 'red', fontSize: '18px' }} />;
 
-    return (
-      <FeedbackIcon sx={{ color: 'black', fontSize: '18px', p: '1px 0 5px' }} />
-    );
+    return <FeedbackIcon sx={{ color: 'black', fontSize: '18px' }} />;
   };
 
   const counteragentStatus = getStatusIcon(counteragent?.status);
@@ -64,6 +48,7 @@ const CounteragentSelect = ({ counteragent, options, isLoading, onChange }) => {
         >
           {counteragentStatus}
           <Select
+            disableUnderline
             labelId="demo-simple-select-standard-label"
             sx={{
               textAlign: 'left',
@@ -71,6 +56,7 @@ const CounteragentSelect = ({ counteragent, options, isLoading, onChange }) => {
               fontSize: '14px',
               color: 'grey',
               m: '0px 13px',
+              pt: '5px',
             }}
             disabled={isLoading}
             defaultValue={'Выберите контрагента'}
@@ -99,7 +85,8 @@ const CounteragentSelect = ({ counteragent, options, isLoading, onChange }) => {
             }}
           >
             {options?.map((item) => (
-              <MenuItem key={item.id} value={item} sx={{}}>
+              <MenuItem key={item.id} value={item} sx={{ gap: '12px' }}>
+                {getStatusIcon(item?.status)}
                 {item.name}
               </MenuItem>
             ))}

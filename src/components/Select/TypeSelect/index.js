@@ -27,10 +27,9 @@ const TypeSelect = ({ type, types, isLoading, onChange }) => {
             height: '45px',
           }}
         >
-          <CompareArrowsIcon
-            sx={{ color: 'black', fontSize: '18px', p: '1px 0 5px' }}
-          />
+          <CompareArrowsIcon sx={{ color: 'black', fontSize: '18px' }} />
           <Select
+            disableUnderline
             labelId="demo-simple-select-standard-label"
             sx={{
               textAlign: 'left',
@@ -38,6 +37,8 @@ const TypeSelect = ({ type, types, isLoading, onChange }) => {
               fontSize: '14px',
               color: 'grey',
               m: '0px 13px',
+              height: '45px',
+              pt: '5px',
             }}
             disabled={isLoading}
             value={type?.name}

@@ -80,9 +80,9 @@ const ConversationList = observer(() => {
                   <ConversationItem
                     conversation={conversations[index]}
                     onClick={() =>
-                      handleSelectConversation(conversations[index].chat_id)
+                      handleSelectConversation(conversations[index]?.chat_id)
                     }
-                    dataChatId={conversations[index].chat_id}
+                    dataChatId={conversations[index]?.chat_id}
                   />
                 </div>
               )}

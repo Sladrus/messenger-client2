@@ -47,6 +47,7 @@ const ConversationInfo = observer(({ conversation }) => {
     getClient(conversation?.chat_id)
       .then((data) => {
         setClient(data);
+        console.log(data);
       })
       .catch((error) => console.error(error));
   }, []);

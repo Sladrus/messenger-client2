@@ -106,6 +106,7 @@ const ConversationMoneysend = observer(({ conversation }) => {
       conditions,
       type,
       counteragent,
+      requisites,
     });
     setVolume('');
     setGive('');
@@ -114,6 +115,7 @@ const ConversationMoneysend = observer(({ conversation }) => {
     setDate('');
     setComment('');
     setConditions('');
+    setRequisites('');
   };
 
   useEffect(() => {

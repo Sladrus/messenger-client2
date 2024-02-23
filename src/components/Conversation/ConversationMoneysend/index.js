@@ -161,7 +161,7 @@ const ConversationMoneysend = observer(({ conversation }) => {
               )}
 
               <SimpleTextField
-                placeholder={'Введите реквизиты'}
+                placeholder={'Введите реквизиты получателя'}
                 Icon={PostAddIcon}
                 onChange={(e) => setRequisites(e.target.value)}
                 value={requisites}

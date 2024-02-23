@@ -9,7 +9,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import styled from '@emotion/styled';
 import AddIcon from '@mui/icons-material/Add';
@@ -25,6 +25,11 @@ import ChecklistIcon from '@mui/icons-material/Checklist';
 import { observer } from 'mobx-react-lite';
 import { SocketContext } from '../../../context/socket';
 import { StoreContext } from '../../../context/store';
+import StatusSelect from '../../Select/StatusSelect';
+import axios from 'axios';
+import env from 'react-dotenv';
+import TypeSelect from '../../Select/TypeSelect';
+import CounteragentSelect from '../../Select/CounteragentSelect';
 
 const CustomizedAccordion = styled(Accordion)(() => ({
   border: '0 !important',
@@ -43,6 +48,44 @@ const ConversationMoneysend = observer(({ conversation }) => {
   const [date, setDate] = useState('');
   const [comment, setComment] = useState('');
   const [conditions, setConditions] = useState('');
+  const [type, setType] = useState({
+    name: 'Перевод физ лицу ',
+    value: 'physical',
+  });
+  const [counteragent, setCounteragent] = useState('');
+
+  const [client, setClient] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+
+  const types = [
+    { name: 'Перевод физ лицу ', value: 'physical' },
+    { name: 'Перевод юр лицу ', value: 'company' },
+    { name: 'Прием из-за рубежа ', value: 'from_abroad' },
+    { name: 'Выдача наличных ', value: 'cash' },
+    { name: 'Обмен криптовалюты ', value: 'exchange' },
+  ];
+
+  async function getClient(chat_id) {
+    try {
+      setIsLoading(true);
+      const response = await axios.get(
+        `https://api.moneyport.world/getClient?chat_id=${chat_id}`,
+        { headers: { 'x-api-key': `${env.API_TOKEN}` } }
+      );
+      setIsLoading(false);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    getClient(conversation?.chat_id)
+      .then((data) => {
+        setClient(data);
+      })
+      .catch((error) => console.error(error));
+  }, []);
 
   const handleMoneysend = async (e) => {
     e.preventDefault();
@@ -58,6 +101,8 @@ const ConversationMoneysend = observer(({ conversation }) => {
       date,
       comment,
       conditions,
+      type,
+      counteragent,
     });
     setVolume('');
     setGive('');
@@ -68,6 +113,7 @@ const ConversationMoneysend = observer(({ conversation }) => {
     setConditions('');
   };
 
+  console.log(counteragent);
   return (
     <Card sx={{ border: 0, borderRadius: 0 }}>
       <CustomizedAccordion>
@@ -83,7 +129,33 @@ const ConversationMoneysend = observer(({ conversation }) => {
         </AccordionSummary>
         <AccordionDetails sx={{ p: 0, borderRadius: 0 }}>
           <form onSubmit={handleMoneysend}>
-            <Stack spacing={0} sx={{ p: '10px 0px' }}>
+            <Stack spacing={0} sx={{ p: '10px 0px', gap: '8px' }}>
+              <TypeSelect
+                type={type}
+                types={types}
+                isLoading={isLoading}
+                onChange={(e) => {
+                  const fType = types.find(
+                    (item) => item.value === e.target.value
+                  );
+                  setType(fType);
+                }}
+              />
+              {type?.value === 'from_abroad' &&
+                client?.counteragents?.length > 0 && (
+                  <CounteragentSelect
+                    counteragent={counteragent}
+                    options={client?.counteragents}
+                    isLoading={isLoading}
+                    onChange={(e) => {
+                      const fCounteragent = client?.counteragents.find(
+                        (item) => item.name === e.target.value
+                      );
+                      setCounteragent(fCounteragent);
+                    }}
+                  />
+                )}
+
               <SimpleTextField
                 placeholder={'Введите объем'}
                 Icon={AttachMoneyIcon}

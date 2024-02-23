@@ -149,18 +149,16 @@ const ConversationMoneysend = observer(({ conversation }) => {
                   setType(fType);
                 }}
               />
-              {type?.value === 'from_abroad' &&
-                client?.counteragents?.length > 0 && (
-                  <CounteragentSelect
-                    counteragent={counteragent}
-                    options={client?.counteragents}
-                    isLoading={isLoading}
-                    onChange={(e) => {
-                      console.log(e.target.value);
-                      setCounteragent(e.target.value);
-                    }}
-                  />
-                )}
+              {type?.value === 'from_abroad' && (
+                <CounteragentSelect
+                  counteragent={counteragent}
+                  options={client?.counteragents}
+                  isLoading={isLoading}
+                  onChange={(e) => {
+                    setCounteragent(e.target.value);
+                  }}
+                />
+              )}
 
               <SimpleTextField
                 placeholder={'Введите реквизиты'}

@@ -36,7 +36,7 @@ const CounteragentSelect = ({ counteragent, options, isLoading, onChange }) => {
     <Box sx={{ p: '0 15px' }}>
       <FormControl variant="standard" sx={{ width: '100%' }}>
         <InputLabel sx={{ mb: '12px ' }} shrink>
-          Контрагент
+          Отправитель
         </InputLabel>
         <Box
           sx={{
@@ -47,50 +47,64 @@ const CounteragentSelect = ({ counteragent, options, isLoading, onChange }) => {
           }}
         >
           {counteragentStatus}
-          <Select
-            disableUnderline
-            labelId="demo-simple-select-standard-label"
-            sx={{
-              textAlign: 'left',
-              width: 'calc(100% - 43px)',
-              fontSize: '14px',
-              color: 'grey',
-              m: '0px 13px',
-              pt: '5px',
-            }}
-            disabled={isLoading}
-            defaultValue={'Выберите контрагента'}
-            value={counteragent}
-            onChange={handleChange}
-            size="small"
-            startAdornment={
-              isLoading ? (
-                <Box
-                  sx={{
-                    p: '6px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                  }}
-                >
-                  <CircularProgress size={16} />
-                </Box>
-              ) : (
-                ''
-              )
-            }
-            renderValue={(value) => {
-              console.log(value);
-              return value?.name ? value?.name : 'Выберите контрагента';
-            }}
-          >
-            {options?.map((item) => (
-              <MenuItem key={item.id} value={item} sx={{ gap: '12px' }}>
-                {getStatusIcon(item?.status)}
-                {item.name}
-              </MenuItem>
-            ))}
-          </Select>
+          {options?.length > 0 ? (
+            <Select
+              disableUnderline
+              labelId="demo-simple-select-standard-label"
+              sx={{
+                textAlign: 'left',
+                width: 'calc(100% - 43px)',
+                fontSize: '14px',
+                color: 'grey',
+                m: '0px 13px',
+                pt: '5px',
+              }}
+              disabled={isLoading}
+              defaultValue={'Выберите контрагента'}
+              value={counteragent}
+              onChange={handleChange}
+              size="small"
+              startAdornment={
+                isLoading ? (
+                  <Box
+                    sx={{
+                      p: '6px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <CircularProgress size={16} />
+                  </Box>
+                ) : (
+                  ''
+                )
+              }
+              renderValue={(value) => {
+                console.log(value);
+                return value?.name ? value?.name : 'Выберите контрагента';
+              }}
+            >
+              {options?.map((item) => (
+                <MenuItem key={item.id} value={item} sx={{ gap: '12px' }}>
+                  {getStatusIcon(item?.status)}
+                  {item.name}
+                </MenuItem>
+              ))}
+            </Select>
+          ) : (
+            <Box
+              sx={{
+                textAlign: 'left',
+                fontSize: '14px',
+                color: 'grey',
+                m: '0px 13px',
+                // pt: '5px',
+              }}
+            >
+              <span>Нет контрагентов</span>
+            </Box>
+          )}
         </Box>
       </FormControl>
     </Box>

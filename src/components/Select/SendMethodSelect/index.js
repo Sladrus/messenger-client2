@@ -85,10 +85,12 @@ const SendMethodSelect = ({
           >
             <Avatar
               sx={{
-                width: '28px',
-                height: '28px',
+                p: '5px ',
+                width: '23px',
+                height: '23px',
                 backgroundColor: '#fff',
                 borderRadius: '50px',
+                objectFit: 'contain',
               }}
               src={value?.logo}
               alt={value?.logo}

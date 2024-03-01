@@ -31,6 +31,7 @@ import env from 'react-dotenv';
 import TypeSelect from '../../Select/TypeSelect';
 import CounteragentSelect from '../../Select/CounteragentSelect';
 import PostAddIcon from '@mui/icons-material/PostAdd';
+import { debounce } from '../../../utils/time';
 
 const CustomizedAccordion = styled(Accordion)(() => ({
   border: '0 !important',
@@ -50,6 +51,9 @@ const ConversationMoneysend = observer(({ conversation }) => {
   const [comment, setComment] = useState('');
   const [conditions, setConditions] = useState('');
   const [requisites, setRequisites] = useState('');
+  const [reqsLoading, setReqsLoading] = useState(false);
+
+  const [bPersons, setBPersons] = useState([]);
 
   const [type, setType] = useState({
     name: 'Перевод физ лицу ',
@@ -79,6 +83,19 @@ const ConversationMoneysend = observer(({ conversation }) => {
       return response.data;
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  async function checkReqs(body, signal) {
+    try {
+      const response = await axios.post(
+        `${env.BOT_API_URL}/bperson/check`,
+        body,
+        { headers: { 'x-api-key': `${env.BOT_API_TOKEN}` }, signal }
+      );
+      return response.data;
+    } catch (error) {
+      console.error(error);
     }
   }
 
@@ -122,6 +139,83 @@ const ConversationMoneysend = observer(({ conversation }) => {
     setCounteragent();
   }, [type]);
 
+  useEffect(() => {
+    setBPersons([]);
+    handleReqs();
+  }, [requisites]);
+
+  function identifyRequisites(text) {
+    const requisitesPatterns = {
+      iban: /\b[A-Z]{2}\s?[0-9]{2}(?:\s?[A-Z0-9]){11,30}\b/g,
+      account_number: /\b(\d{20})/g,
+      card: /\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b/g,
+      eth: /\b0x+[A-F,a-f,0-9]{40}/g,
+      btc: /\b(bc1|[13])[a-zA-HJ-NP-Z0-9]{25,39}/g,
+      dash: /\bX[1-9A-HJ-NP-Za-km-z]{33}/g,
+      monero: /\b4[0-9AB][1-9A-HJ-NP-Za-km-z]{93}/g,
+      ada: /\baddr1[a-z0-9]/g,
+      cosmos: /\bcosmos[a-zA-Z0-9_.-]{10,}/g,
+      miota: /\biota[a-z0-9]{10,}/g,
+      lsk: /\b[0-9]{19}L/g,
+      ltc: /\b[LM3][a-km-zA-HJ-NP-Z1-9]{26,33}/g,
+      xem: /\b[N][A-Za-z0-9-]{37,52}/g,
+      neo: /\bN[0-9a-zA-Z]{33}/g,
+      ont: /\bA[0-9a-zA-Z]{33}/g,
+      dot: /\b1[0-9a-zA-Z]{47}/g,
+      xrp: /\b1[0-9a-zA-Z]{47}/g,
+      xlm: /\bG[0-9A-Z]{40,60}/g,
+      tron: /\bT[a-zA-Z0-9]{33}\b/g,
+      swift: /\b[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/g,
+      sol: /\b[1-9A-HJ-NP-Za-km-z]{32,44}/g,
+      zec_z: /\bz[a-zA-Z0-9]{92}/g,
+      zec_t: /\bt[13][a-zA-Z0-9]{32}/g,
+      zaddr: /\bzs[a-z0-9]{76}/g,
+      email: /\b[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g,
+      btccash: /\b(q[0-9a-z]{41})\b/g,
+      bnb: /\b(bnb1)[0-9a-z]{38}/g,
+    };
+
+    let foundRequisites = [];
+
+    for (const [key, regex] of Object.entries(requisitesPatterns)) {
+      const foundTexts = text.matchAll(regex);
+      for (const foundText of foundTexts) {
+        const newText = foundText[0];
+        const isDuplicate = foundRequisites.some((req) => req.text === newText);
+        if (!isDuplicate) {
+          foundRequisites.push({
+            key,
+            text: newText,
+            toString: function () {
+              return `${this.key} — ${this.text}`;
+            },
+          });
+        }
+      }
+    }
+    //2200150935694825
+    return foundRequisites;
+  }
+
+  const handleReqs = debounce(async (signal) => {
+    setReqsLoading(true);
+
+    try {
+      const reqs = identifyRequisites(requisites);
+      for (const req of reqs) {
+        const data = await checkReqs({ value: req?.text }, signal);
+        if (data?.length > 0) {
+          setBPersons(data);
+          break;
+        }
+      }
+    } catch (e) {
+      console.log(e);
+      setReqsLoading(false);
+    }
+    setReqsLoading(false);
+  });
+
   return (
     <Card sx={{ border: 0, borderRadius: 0 }}>
       <CustomizedAccordion>
@@ -137,7 +231,7 @@ const ConversationMoneysend = observer(({ conversation }) => {
         </AccordionSummary>
         <AccordionDetails sx={{ p: 0, borderRadius: 0 }}>
           <form onSubmit={handleMoneysend}>
-            <Stack spacing={0} sx={{ p: '10px 0px', gap: '8px' }}>
+            <Stack spacing={0} sx={{}}>
               <TypeSelect
                 type={type}
                 types={types}
@@ -161,6 +255,12 @@ const ConversationMoneysend = observer(({ conversation }) => {
               )}
 
               <SimpleTextField
+                loading={reqsLoading}
+                error={bPersons?.length > 0 ? true : false}
+                errorText={
+                  bPersons?.length > 0 && 'Реквизиты не прошли проверку'
+                }
+                labelText={!bPersons?.length && 'Реквизиты прошли проверку'}
                 placeholder={'Введите реквизиты получателя'}
                 Icon={PostAddIcon}
                 onChange={(e) => setRequisites(e.target.value)}
@@ -173,13 +273,13 @@ const ConversationMoneysend = observer(({ conversation }) => {
                 value={volume}
               />
               <SimpleTextField
-                placeholder={'Сколько отдают'}
+                placeholder={'Что отдают'}
                 Icon={ArrowBackIcon}
                 onChange={(e) => setGive(e.target.value)}
                 value={give}
               />
               <SimpleTextField
-                placeholder={'Сколько получают'}
+                placeholder={'Что получают'}
                 Icon={ArrowForwardIcon}
                 onChange={(e) => setTake(e.target.value)}
                 value={take}

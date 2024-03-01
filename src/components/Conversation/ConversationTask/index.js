@@ -29,33 +29,10 @@ const CustomizedAccordion = styled(Accordion)(() => ({
 const ConversationTask = observer(({ conversation, openModal, isLoading }) => {
   const { socket } = useContext(SocketContext);
   const { conversationStore } = useContext(StoreContext);
-  // const tasks = [
-  //   {
-  //     text: 'Zadacha N1 Text Longtext long long texttextteadasdasdd adasdas adassdsdsd asdasdasd asdasdasd',
-  //     type: 'Встреча',
-  //     date: new Date(),
-  //   },
-  //   {
-  //     text: 'Zadacha N3 Text L',
-  //     type: 'Перевод',
-  //     date: new Date(),
-  //   },
-  //   {
-  //     text: 'Zadacha N3 Text Longtext long long texttextteadasdasdd adasdas adassdsdsd asdasdasd asdasdasd',
-  //     type: 'Перевод',
-  //     date: new Date(),
-  //   },
-  //   {
-  //     text: 'Zadacha N3 Text L',
-  //     type: 'Перевод',
-  //     date: new Date(),
-  //   },
-  // ];
 
   const handleClickDone = (id) => {
     conversationStore.doneTask(socket, id);
   };
-
   return (
     <Card sx={{ border: 0, borderRadius: 0 }}>
       <CustomizedAccordion>
@@ -79,7 +56,7 @@ const ConversationTask = observer(({ conversation, openModal, isLoading }) => {
         <AccordionDetails sx={{ p: 0, borderRadius: 0 }}>
           <Stack>
             {conversation?.tasks?.length > 0 ? (
-              conversation?.tasks.map((task) => {
+              conversation?.tasks?.map((task) => {
                 const formattedDate = formatDate(task?.endAt);
                 return (
                   <Box

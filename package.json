@@ -77,7 +77,9 @@
       "SERVER_PHOTO_URL",
       "API_TOKEN",
       "MUI_KEY",
-      "SCORE_URL"
+      "SCORE_URL",
+      "BOT_API_URL", 
+      "BOT_API_TOKEN"
     ]
   }
 }

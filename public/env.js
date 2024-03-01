@@ -4,5 +4,7 @@ window.env = {
   "SERVER_PHOTO_URL": "http://localhost:5005",
   "API_TOKEN": "994f4ca3371792beeb727761c6b831dfc410f6a4",
   "MUI_KEY": "9297c0496a4f73f349fcfe8dd4f198a4Tz03NjczMixFPTE3MjkwNjU3NDkwMDAsUz1wcm8sTE09c3Vic2NyaXB0aW9uLEtWPTI=",
-  "SCORE_URL": "http://client.1210059-cn07082.tw1.ru"
+  "SCORE_URL": "https://client.1210059-cn07082.tw1.ru",
+  "BOT_API_URL": "http://20.67.242.227/bot",
+  "BOT_API_TOKEN": "2a801658-2361-4eb7-b754-2002af2d8c38"
 };

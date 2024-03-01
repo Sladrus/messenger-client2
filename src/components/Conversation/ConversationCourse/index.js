@@ -34,6 +34,7 @@ import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import InfoIcon from '@mui/icons-material/Info';
 import { debounce } from '../../../utils/time';
 import makeCancelable from 'makecancelable';
+import { currencyFormat } from '../../../utils/currency';
 
 const CustomizedAccordion = styled(Accordion)`
   border: 0 !important;
@@ -82,6 +83,7 @@ const ConversationCourse = observer(() => {
   const [error, setError] = useState(null);
 
   const [checked, setChecked] = useState('from');
+  const [courseType, setCourseType] = useState('basic');
 
   const pairList = [
     'TO_WIRERUB',
@@ -169,12 +171,12 @@ const ConversationCourse = observer(() => {
       setServices(data?.services_result);
       setSettlementCur(data?.settlement_currency);
       setReferensePercent(data?.referense_percent);
-      setExchangeSource(data?.exchange_source)
+      setExchangeSource(data?.exchange_source);
       setMarkupIsLoading(false);
     } catch (e) {
       console.log(e);
     }
-  });
+  }, 100);
 
   const debouncedSubmitToAmount = debounce(async (signal) => {
     if (!toAmount) return setIsLoading(false);
@@ -203,8 +205,8 @@ const ConversationCourse = observer(() => {
       setFromServices(data?.from?.services);
       setServices(data?.services_result);
       setSettlementCur(data?.settlement_currency);
-      setReferensePercent(data?.referense_percent);      
-      setExchangeSource(data?.exchange_source)
+      setReferensePercent(data?.referense_percent);
+      setExchangeSource(data?.exchange_source);
       setMarkupIsLoading(false);
     } catch (e) {
       console.log(e);
@@ -232,7 +234,7 @@ const ConversationCourse = observer(() => {
     } else {
       debouncedSubmitToAmount();
     }
-  }, [checked]);
+  }, [checked]); 
 
   // useEffect(() => {
   //   setMarkupIsLoading(true);
@@ -258,7 +260,6 @@ const ConversationCourse = observer(() => {
   //   }
   //   prevMarkup.current = markup;
   // }, [markup]);
-
 
   const handleChecked = (value) => {
     setChecked(value);
@@ -438,11 +439,15 @@ const ConversationCourse = observer(() => {
               >
                 <span>
                   {fromMethod?.min &&
-                    `Минимальная сумма: ${fromMethod?.min} ${fromMethod?.symbol}`}
+                    `Минимальная сумма: ${currencyFormat(fromMethod?.min)} ${
+                      fromMethod?.symbol
+                    }`}
                 </span>
                 <span>
                   {fromMethod?.max &&
-                    `Максимальная сумма: ${fromMethod?.max} ${fromMethod?.symbol}`}
+                    `Максимальная сумма: ${currencyFormat(fromMethod?.max)} ${
+                      fromMethod?.symbol
+                    }`}
                 </span>
                 {pairList.includes(fromMethod?.code) && (
                   <span>
@@ -536,11 +541,15 @@ const ConversationCourse = observer(() => {
               >
                 <span>
                   {toMethod?.min &&
-                    `Минимальная сумма: ${toMethod?.min} ${toMethod?.symbol}`}
+                    `Минимальная сумма: ${currencyFormat(toMethod?.min)} ${
+                      toMethod?.symbol
+                    }`}
                 </span>
                 <span>
                   {toMethod?.max &&
-                    `Максимальная сумма: ${toMethod?.max} ${toMethod?.symbol}`}
+                    `Максимальная сумма: ${currencyFormat(toMethod?.max)} ${
+                      toMethod?.symbol
+                    }`}
                 </span>
                 {pairList.includes(toMethod?.code) && (
                   <span>
@@ -578,7 +587,8 @@ const ConversationCourse = observer(() => {
                     {fromServices?.map((item, index) => {
                       return (
                         <span key={index}>
-                          {item?.name} {item?.price} {item?.symbol}
+                          {item?.name}: {currencyFormat(item?.price)}{' '}
+                          {item?.symbol}
                         </span>
                       );
                     })}
@@ -591,7 +601,8 @@ const ConversationCourse = observer(() => {
                     {toServices?.map((item, index) => {
                       return (
                         <span key={index}>
-                          {item?.name} {item?.price} {item?.symbol}
+                          {item?.name}: {currencyFormat(item?.price)}{' '}
+                          {item?.symbol}
                         </span>
                       );
                     })}

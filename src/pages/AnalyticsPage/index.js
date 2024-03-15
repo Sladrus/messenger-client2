@@ -11,7 +11,7 @@ const AnalyticsPage = observer(() => {
     <Box sx={{ flexGrow: 1, width: { marginLeft: `65px`, marginTop: `65px` } }}>
       <Stack spacing={2} sx={{ p: '20px' }}>
         <GeneralMetricsDynamic /> 
-        <GeneralMetricsStatic />
+        {/* <GeneralMetricsStatic /> */}
         <TagMetrics />
       </Stack>
     </Box>

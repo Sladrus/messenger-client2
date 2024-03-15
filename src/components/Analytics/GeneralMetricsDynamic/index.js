@@ -75,7 +75,7 @@ const GeneralMetricsDynamic = observer(() => {
   const { conversationStore } = useContext(StoreContext);
 
   const [dateRange, setDateRange] = useState([
-    dayjs('1999-01-01'),
+    dayjs().startOf('month'),
     dayjs().endOf('day'),
   ]);
 

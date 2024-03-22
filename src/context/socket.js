@@ -1,21 +1,21 @@
-import io from 'socket.io-client';
-import { createContext } from 'react';
-import env from 'react-dotenv';
-import { getLocalItem } from '../utils/localStorage';
+import io from "socket.io-client";
+import { createContext } from "react";
+import env from "react-dotenv";
+import { getLocalItem } from "../utils/localStorage";
 
 const getSocket = () => {
-  const token = getLocalItem('token');
+  const token = getLocalItem("token");
   if (token) {
     return io(env.SERVER_URL, {
-      transports: ['websocket', 'polling'],
+      transports: ["websocket", "polling"],
       auth: { token },
-      path: '/socket',
+      path: "/socket",
       reconnection: true,
     });
   }
   return io(env.SERVER_URL, {
-    transports: ['websocket', 'polling'],
-    path: '/socket',
+    transports: ["websocket", "polling"],
+    path: "/socket",
     reconnection: true,
   });
 };
@@ -31,19 +31,19 @@ export const registerUserHandlers = (
   const setUserData = (userData) => {
     userStore.setUserData(userData);
     enqueueSnackbar(`${userData.user.username} успешно авторизован`, {
-      variant: 'success',
+      variant: "success",
     });
     userStore.setLoading(false);
 
-    navigate('/messenger');
+    navigate("/messenger");
   };
 
   const setUsers = ({ users }) => {
     userStore.setUsers(users);
   };
 
-  socket.on('user', setUserData);
-  socket.on('users', setUsers);
+  socket.on("user", setUserData);
+  socket.on("users", setUsers);
 };
 
 export const registerConversationHandlers = (
@@ -70,9 +70,11 @@ export const registerConversationHandlers = (
   };
 
   const setConversations = ({ conversations }) => {
-    conversationStore.setConversations(conversations);
+    conversationStore.setMetadata(conversations.metadata[0]);
+    conversationStore.setPage(conversations.metadata[0].page);
+    conversationStore.setConversations(conversations.data);
     conversationStore.setLoading(false);
-    stageStore.setConversations(conversations);
+    stageStore.setConversations(conversations.data);
   };
 
   const setConversation = ({ conversation }) => {
@@ -96,11 +98,11 @@ export const registerConversationHandlers = (
     conversationStore.setLoading(false);
   };
 
-  socket.on('conversation:update', updateConversation);
+  socket.on("conversation:update", updateConversation);
 
-  socket.on('conversations:set', setConversations);
-  socket.on('conversations:setSearch', setSearchConversations);
-  socket.on('conversations:setOne', setConversation);
+  socket.on("conversations:set", setConversations);
+  socket.on("conversations:setSearch", setSearchConversations);
+  socket.on("conversations:setOne", setConversation);
 };
 
 export const registerStageHandlers = (socket, stageStore) => {
@@ -109,7 +111,7 @@ export const registerStageHandlers = (socket, stageStore) => {
     stageStore.setLoading(false);
   };
 
-  socket.on('stages:set', setStages);
+  socket.on("stages:set", setStages);
 };
 
 export const registerTagsHandlers = (socket, tagsStore) => {
@@ -118,7 +120,7 @@ export const registerTagsHandlers = (socket, tagsStore) => {
     tagsStore.setLoading(false);
   };
 
-  socket.on('tags:set', setTags);
+  socket.on("tags:set", setTags);
 };
 
 export const registerTaskHandlers = (socket, taskStore) => {
@@ -137,10 +139,10 @@ export const registerTaskHandlers = (socket, taskStore) => {
     taskStore.setTasksLoading(false);
   };
 
-  socket.on('task:update', updateTask);
+  socket.on("task:update", updateTask);
 
-  socket.on('taskTypes:set', setTaskTypes);
-  socket.on('tasks:set', setTasks);
+  socket.on("taskTypes:set", setTaskTypes);
+  socket.on("tasks:set", setTasks);
 };
 
 export const registerErrorHandlers = (
@@ -152,16 +154,16 @@ export const registerErrorHandlers = (
   stageStore,
   enqueueSnackbar
 ) => {
-  socket.on('jwt_error', (error) => {
+  socket.on("jwt_error", (error) => {
     console.log(error);
-    enqueueSnackbar(error.message, { variant: 'warning' });
+    enqueueSnackbar(error.message, { variant: "warning" });
     userStore.setLoading(false);
     // userStore.logout();
   });
 
-  socket.on('error', (error) => {
+  socket.on("error", (error) => {
     console.log(error);
-    enqueueSnackbar(error.message, { variant: 'warning' });
+    enqueueSnackbar(error.message, { variant: "warning" });
 
     //TODO: СДЕЛАТЬ НОРМАЛЬНУЮ СИСТЕМУ ОБРАБОТКИ ОШИБОК
     userStore.setLoading(false);
@@ -184,15 +186,15 @@ export const registerErrorHandlers = (
     stageStore.setLoading(false);
   });
 
-  socket.on('connect_error', (error) => {
+  socket.on("connect_error", (error) => {
     console.log(error);
-    enqueueSnackbar(error.message, { variant: 'error' });
+    enqueueSnackbar(error.message, { variant: "error" });
     userStore.setLoading(false);
   });
 
-  socket.on('reconnect', (error) => {
+  socket.on("reconnect", (error) => {
     console.log(error);
-    enqueueSnackbar(error.message, { variant: 'warning ' });
+    enqueueSnackbar(error.message, { variant: "warning " });
     userStore.setLoading(false);
   });
 };

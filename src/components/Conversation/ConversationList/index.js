@@ -1,22 +1,24 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import { styled } from '@mui/material/styles';
-import ConversationSearch from '../ConversationSearch';
-import { Box, CircularProgress, Typography } from '@mui/material';
-import ConversationItem from '../ConversationItem';
-import { StoreContext } from '../../../context/store';
-import { observer } from 'mobx-react-lite';
-import { List, AutoSizer } from 'react-virtualized';
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { styled } from "@mui/material/styles";
+import ConversationSearch from "../ConversationSearch";
+import { Box, Button, Card, CircularProgress, Typography } from "@mui/material";
+import ConversationItem from "../ConversationItem";
+import { StoreContext } from "../../../context/store";
+import { observer } from "mobx-react-lite";
+import { List, AutoSizer, InfiniteLoader } from "react-virtualized";
+import { SocketContext } from "../../../context/socket";
 
-const Item = styled('div')(({ theme }) => ({
-  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+const Item = styled("div")(({ theme }) => ({
+  backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
   padding: theme.spacing(0),
-  height: 'calc(100vh - 65px)',
-  textAlign: 'center',
+  height: "calc(100vh - 65px)",
+  textAlign: "center",
 }));
 
 const ConversationList = observer(() => {
   const scrollRef = useRef(null);
   const { conversationStore } = useContext(StoreContext);
+  const { socket } = useContext(SocketContext);
 
   const conversations =
     conversationStore.searchedConversations && conversationStore.searchInput
@@ -43,55 +45,90 @@ const ConversationList = observer(() => {
           rect.left < 0
         ) {
           selectedConversation.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start',
-            inline: 'nearest',
+            behavior: "smooth",
+            block: "start",
+            inline: "nearest",
           });
         }
       }
     }
   }, [conversationStore.selectedChatId, conversationStore.selectedIsLoading]);
 
+  const rowCount = conversations?.length || 0;
+
+  // Only load 1 page of items at a time.
+  // Pass an empty callback to InfiniteLoader in case it asks us to load more than once.
+  const loadMoreRows = conversationStore.isLoading
+    ? () => {
+        console.log("NE LOAD");
+      }
+    : () => {
+        // conversationStore.setPage(conversationStore.page + 1);
+        if (!conversationStore.isLoading) console.log("LOAD");
+
+        // conversationStore.loadNextPage(socket);
+      };
+
+  // Every row is loaded except for our loading indicator row.
+  const isRowLoaded = ({ index }) => {
+    return index < conversations.length;
+  };
+
+  // Render a list item or a loading indicator.
+  const rowRenderer = ({ index, key, style }) => {
+    if (index === rowCount - 1)
+      return (
+        <div key={key} style={style}>
+          <Card
+            data-chat-id={key}
+            onClick={() => conversationStore.loadNextPage(socket)}
+            sx={{
+              background: "white",
+
+              padding: "10px",
+              borderRadius: 0,
+              height: "44px",
+              cursor: "pointer",
+              "&:hover": {
+                backgroundColor: "#f9f9f9",
+              },
+            }}
+          >
+            <Button variant="contained" disabled={conversationStore.isLoading}>Загрузить еще</Button>
+          </Card>
+        </div>
+      );
+    return (
+      <div key={key} style={style}>
+        <ConversationItem
+          conversation={conversations[index]}
+          onClick={() =>
+            handleSelectConversation(conversations[index]?.chat_id)
+          }
+          dataChatId={conversations[index]?.chat_id}
+        />
+      </div>
+    );
+  };
+
   return (
     <Item>
       <ConversationSearch />
-      {conversationStore.isLoading ? (
-        <Box
-          sx={{
-            height: 'calc(100% - 65px)',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <CircularProgress />
-        </Box>
-      ) : (
+
+      <Box sx={{ height: "calc(100% - 65px)" }}>
         <AutoSizer>
-          {({ height, width }) => (
+          {({ width, height }) => (
             <List
-              height={height - 65}
-              rowCount={conversations.length}
+              rowCount={rowCount}
               rowHeight={60} // Высота каждого элемента списка
-              rowRenderer={({ index, key, style }) => (
-                <div key={key} style={style}>
-                  {/* Рендеринг элемента списка */}
-                  <ConversationItem
-                    conversation={conversations[index]}
-                    onClick={() =>
-                      handleSelectConversation(conversations[index]?.chat_id)
-                    }
-                    dataChatId={conversations[index]?.chat_id}
-                  />
-                </div>
-              )}
+              rowRenderer={rowRenderer}
               overscanRowCount={10} // Количество предварительно отображаемых элементов сверху и снизу
+              height={height}
               width={width}
             />
           )}
         </AutoSizer>
-      )}
+      </Box>
     </Item>
   );
 });

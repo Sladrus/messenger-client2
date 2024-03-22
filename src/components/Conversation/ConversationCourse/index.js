@@ -18,6 +18,7 @@ import {
   CircularProgress,
   Divider,
   InputAdornment,
+  Radio,
   Stack,
   TextField,
   Tooltip,
@@ -63,6 +64,7 @@ const ConversationCourse = observer(() => {
   const [exchangeSource, setExchangeSource] = useState(null);
 
   const [services, setServices] = useState(0);
+  const [result, setResult] = useState(null);
 
   const [markup, setMarkup] = useState(null);
   const [defaultMarkup, setDefaultMarkup] = useState(null);
@@ -165,13 +167,20 @@ const ConversationCourse = observer(() => {
       setCourse(data?.courses);
       setMarkup(data?.default_markup);
       setDefaultMarkup(data?.default_markup);
-      setToAmount(parseFloat(data?.result?.toFixed(4)));
+      // setToAmount(parseFloat(data?.result?.toFixed(4)));
+      if (courseType === "referense")
+        setToAmount(parseFloat(data?.result?.standart?.result?.toFixed(4)));
+      if (courseType === "minimum")
+        setToAmount(parseFloat(data?.result?.minimum?.result?.toFixed(4)));
+      if (courseType === "basic")
+        setToAmount(parseFloat(data?.result?.basic?.result?.toFixed(4)));
       setToServices(data?.to?.services);
       setFromServices(data?.from?.services);
       setServices(data?.services_result);
       setSettlementCur(data?.settlement_currency);
       setReferensePercent(data?.referense_percent);
       setExchangeSource(data?.exchange_source);
+      setResult(data?.result);
       setMarkupIsLoading(false);
     } catch (e) {
       console.log(e);
@@ -200,13 +209,19 @@ const ConversationCourse = observer(() => {
       setCourse(data?.courses);
       setMarkup(data?.default_markup);
       setDefaultMarkup(data?.default_markup);
-      setFromAmount(parseFloat(data?.result?.toFixed(4)));
+      if (courseType === "referense")
+        setFromAmount(parseFloat(data?.result?.standart?.result?.toFixed(4)));
+      if (courseType === "minimum")
+        setFromAmount(parseFloat(data?.result?.minimum?.result?.toFixed(4)));
+      if (courseType === "basic")
+        setFromAmount(parseFloat(data?.result?.basic?.result?.toFixed(4)));
       setToServices(data?.to?.services);
       setFromServices(data?.from?.services);
       setServices(data?.services_result);
       setSettlementCur(data?.settlement_currency);
       setReferensePercent(data?.referense_percent);
       setExchangeSource(data?.exchange_source);
+      setResult(data?.result);
       setMarkupIsLoading(false);
     } catch (e) {
       console.log(e);
@@ -218,32 +233,14 @@ const ConversationCourse = observer(() => {
       setError("");
       debouncedSubmitFromAmount();
     }
-  }, [fromAmount, fromMethod]);
-
-  useEffect(() => {
-    setError("");
-    if (checked === "from") {
-      debouncedSubmitFromAmount();
-    } else {
-      debouncedSubmitToAmount();
-    }
-  }, [fromMethod]);
+  }, [fromAmount]);
 
   useEffect(() => {
     if (toFocused) {
       setError("");
       debouncedSubmitToAmount();
     }
-  }, [toAmount, toMethod]);
-
-  useEffect(() => {
-    setError("");
-    if (checked === "from") {
-      debouncedSubmitFromAmount();
-    } else {
-      debouncedSubmitToAmount();
-    }
-  }, [toMethod]);
+  }, [toAmount]);
 
   useEffect(() => {
     if (toFocused || fromFocused) return;
@@ -252,7 +249,32 @@ const ConversationCourse = observer(() => {
     } else {
       debouncedSubmitToAmount();
     }
-  }, [checked]);
+  }, [checked, courseType, toMethod, fromMethod]);
+
+  // useEffect(() => {
+  //   setMarkupIsLoading(true);
+  //   if (prevMarkup.current !== null) {
+  //     if (markup) {
+  //       const newAmount =
+  //         checked === 'to'
+  //           ? toAmount *
+  //             calculateClientCourse(
+  //               course?.basic,
+  //               course?.basic > course?.referense ? -markup : markup
+  //             )
+  //           : fromAmount *
+  //             calculateClientCourse(
+  //               course?.basic,
+  //               course?.basic > course?.referense ? -markup : markup
+  //             );
+  //       checked === 'to'
+  //         ? setFromAmount((newAmount + services)?.toFixed(4))
+  //         : setToAmount((newAmount - services)?.toFixed(4));
+  //     }
+  //     setIsLoading(false);
+  //   }
+  //   prevMarkup.current = markup;
+  // }, [markup]);
 
   const handleChecked = (value) => {
     setChecked(value);
@@ -270,6 +292,7 @@ const ConversationCourse = observer(() => {
     setError(null);
     setFromCash(null);
     setServices(0);
+    setResult(null);
   };
 
   const handleFromInputChange = (value) => {
@@ -292,12 +315,15 @@ const ConversationCourse = observer(() => {
     setError(null);
     setToCash(null);
     setServices(0);
+    setResult(null);
   };
 
   const calculateClientCourse = (course, markup) => {
     const clientCourse = course + (markup * course) / 100;
     return clientCourse;
   };
+
+  console.log(result);
 
   return (
     <Card sx={{ border: 0, borderRadius: 0 }}>
@@ -573,6 +599,7 @@ const ConversationCourse = observer(() => {
                   </Typography>
 
                   <Typography
+                    sx={{ display: "flex", flexDirection: "column" }}
                     fontWeight={"400"}
                     fontSize={"12px"}
                     color={"#647081"}
@@ -587,6 +614,7 @@ const ConversationCourse = observer(() => {
                     })}
                   </Typography>
                   <Typography
+                    sx={{ display: "flex", flexDirection: "column" }}
                     fontWeight={"400"}
                     fontSize={"12px"}
                     color={"#647081"}
@@ -605,7 +633,7 @@ const ConversationCourse = observer(() => {
             ) : (
               ""
             )}
-            {course && (
+            {result && (
               <>
                 <Divider />
 
@@ -634,8 +662,12 @@ const ConversationCourse = observer(() => {
                         display: "flex",
                         alignItems: "start",
                         justifyContent: "space-between",
-                        alignItems: "center",
+                        borderRadius: "20px",
+                        border: "1px solid var(--Primary-Primary, #408EF6)",
+                        background: "#FFF",
+                        padding: "12px 16px",
                       }}
+                      onClick={() => setCourseType("referense")}
                     >
                       <Box
                         sx={{
@@ -646,6 +678,11 @@ const ConversationCourse = observer(() => {
                           gap: "8px",
                         }}
                       >
+                        <Radio
+                          sx={{ p: 0 }}
+                          size="small"
+                          checked={courseType === "referense"}
+                        />
                         <span>Стандартный курс</span>
                         <Tooltip title="Наш стандартный курс.">
                           <InfoIcon
@@ -666,16 +703,17 @@ const ConversationCourse = observer(() => {
                           justifyContent: "center",
                         }}
                       >
-                        {course?.referense > 1 / course?.referense ? (
+                        {result?.standart?.course >
+                        1 / result?.standart?.course ? (
                           <>
                             <span style={{ color: "#408EF6" }}>
                               % к бирже {exchangeSource}:{" "}
-                              {course?.exchange > course?.referense ? "-" : "+"}
-                              {Math.abs(referensePercent)?.toFixed(1)}%
+                              {Number(result?.standart?.percent) > 0 ? "+" : ""}
+                              {Number(result?.standart?.percent)?.toFixed(1)}%
                             </span>
                             <span>
                               1 {settlementCur?.from} ={" "}
-                              {course?.referense?.toFixed(4)}{" "}
+                              {Number(result?.standart?.course)?.toFixed(4)}{" "}
                               {settlementCur?.to}
                             </span>
                           </>
@@ -683,14 +721,12 @@ const ConversationCourse = observer(() => {
                           <>
                             <span style={{ color: "#408EF6" }}>
                               % к бирже {exchangeSource}:{" "}
-                              {1 / course?.exchange > 1 / course?.referense
-                                ? "-"
-                                : "+"}
-                              {Math.abs(referensePercent)?.toFixed(1)}%
+                              {Number(result?.standart?.percent) > 0 ? "+" : ""}
+                              {Number(result?.standart?.percent)?.toFixed(1)}%
                             </span>
                             <span>
                               1 {settlementCur?.to} ={" "}
-                              {(1 / course?.referense)?.toFixed(4)}{" "}
+                              {Number(1 / result?.standart?.course)?.toFixed(4)}{" "}
                               {settlementCur?.from}
                             </span>
                           </>
@@ -702,8 +738,12 @@ const ConversationCourse = observer(() => {
                         display: "flex",
                         alignItems: "start",
                         justifyContent: "space-between",
-                        alignItems: "center",
+                        borderRadius: "20px",
+                        border: "1px solid var(--Primary-Primary, #408EF6)",
+                        background: "#FFF",
+                        padding: "12px 16px",
                       }}
+                      onClick={() => setCourseType("basic")}
                     >
                       <Box
                         sx={{
@@ -714,6 +754,11 @@ const ConversationCourse = observer(() => {
                           gap: "8px",
                         }}
                       >
+                        <Radio
+                          sx={{ p: 0 }}
+                          size="small"
+                          checked={courseType === "basic"}
+                        />
                         <span>Рекомендованный курс</span>
                         <Tooltip title="Рекомендованный курс MoneyPort с учетом всех комиссий, спреда и нашей рекомендованной наценки.">
                           <InfoIcon
@@ -733,38 +778,29 @@ const ConversationCourse = observer(() => {
                           justifyContent: "center",
                         }}
                       >
-                        {course?.basic > 1 / course?.basic ? (
+                        {result?.basic?.course > 1 / result?.basic?.course ? (
                           <>
                             <span style={{ color: "#408EF6" }}>
                               % к бирже {exchangeSource}:{" "}
-                              {course?.exchange > course?.basic ? "-" : "+"}
-                              {percentageDifference(
-                                course?.basic,
-                                course?.exchange
-                              )}
-                              %
+                              {Number(result?.basic?.percent) > 0 ? "+" : ""}
+                              {Number(result?.basic?.percent)?.toFixed(1)}%
                             </span>
                             <span>
                               1 {settlementCur?.from} ={" "}
-                              {course?.basic?.toFixed(4)} {settlementCur?.to}
+                              {Number(result?.basic?.course)?.toFixed(4)}{" "}
+                              {settlementCur?.to}
                             </span>
                           </>
                         ) : (
                           <>
                             <span style={{ color: "#408EF6" }}>
                               % к бирже {exchangeSource}:{" "}
-                              {1 / course?.exchange > 1 / course?.basic
-                                ? "-"
-                                : "+"}
-                              {percentageDifference(
-                                1 / course?.basic,
-                                1 / course?.exchange
-                              )}
-                              %
+                              {Number(result?.basic?.percent) > 0 ? "+" : ""}
+                              {Number(result?.basic?.percent)?.toFixed(1)}%
                             </span>
                             <span>
                               1 {settlementCur?.to} ={" "}
-                              {(1 / course?.basic)?.toFixed(4)}{" "}
+                              {Number(1 / result?.basic?.course)?.toFixed(4)}{" "}
                               {settlementCur?.from}
                             </span>
                           </>
@@ -776,8 +812,12 @@ const ConversationCourse = observer(() => {
                         display: "flex",
                         alignItems: "start",
                         justifyContent: "space-between",
-                        alignItems: "center",
+                        borderRadius: "20px",
+                        border: "1px solid var(--Primary-Primary, #408EF6)",
+                        background: "#FFF",
+                        padding: "12px 16px",
                       }}
+                      onClick={() => setCourseType("minimum")}
                     >
                       <Box
                         sx={{
@@ -788,6 +828,11 @@ const ConversationCourse = observer(() => {
                           gap: "8px",
                         }}
                       >
+                        <Radio
+                          sx={{ p: 0 }}
+                          size="small"
+                          checked={courseType === "minimum"}
+                        />
                         <span>Минимальный курс</span>
                         <Tooltip title="Минимальный курс MoneyPort. Ниже минимального курса нельзя опускать курс для клиента! Рассчитывается с учетом всех комиссий, спреда и нашей минимальной наценки.">
                           <InfoIcon
@@ -808,38 +853,36 @@ const ConversationCourse = observer(() => {
                           justifyContent: "center",
                         }}
                       >
-                        {course?.minimum > 1 / course?.minimum ? (
+                        {result?.minimum?.course >
+                        1 / result?.minimum?.course ? (
                           <>
                             <span style={{ color: "#408EF6" }}>
                               % к бирже {exchangeSource}:{" "}
-                              {course?.exchange > course?.minimum ? "-" : "+"}
-                              {percentageDifference(
-                                course?.minimum,
-                                course?.exchange
-                              )}
-                              %
+                              {Number(result?.minimum?.percent) > 0 ? "+" : ""}
+                              {Number(result?.minimum?.percent)?.toFixed(1)}%
                             </span>
                             <span>
                               1 {settlementCur?.from} ={" "}
-                              {course?.minimum?.toFixed(4)} {settlementCur?.to}
+                              {Number(result?.minimum?.course)?.toFixed(4)}{" "}
+                              {settlementCur?.to}
                             </span>
                           </>
                         ) : (
                           <>
                             <span style={{ color: "#408EF6" }}>
                               % к бирже {exchangeSource}:{" "}
-                              {1 / course?.exchange > 1 / course?.minimum
-                                ? "-"
-                                : "+"}
+                              {Number(result?.minimum?.percent) > 0 ? "+" : ""}
                               {percentageDifference(
-                                1 / course?.minimum,
-                                1 / course?.exchange
+                                1 / course?.exchange,
+                                1 / result?.minimum?.course
                               )}
                               %
                             </span>
                             <span>
                               1 {settlementCur?.to} ={" "}
-                              {(1 / course?.minimum)?.toFixed(4)}{" "}
+                              {(1 / Number(result?.minimum?.course))?.toFixed(
+                                4
+                              )}{" "}
                               {settlementCur?.from}
                             </span>
                           </>
@@ -847,6 +890,21 @@ const ConversationCourse = observer(() => {
                       </Box>
                     </Box>
                   </Typography>
+                  {exchangeSource && (
+                    <Typography
+                      sx={{ display: "flex", flexDirection: "column" }}
+                      fontWeight={"400"}
+                      fontSize={"12px"}
+                      textAlign={"left"}
+                      color={"#647081"}
+                    >
+                      <span>
+                        Курс биржи {exchangeSource}: 1 {settlementCur.to} ={" "}
+                        {Number(course?.exchange)?.toFixed(4)}{" "}
+                        {settlementCur.from}
+                      </span>
+                    </Typography>
+                  )}
                 </Box>
               </>
             )}

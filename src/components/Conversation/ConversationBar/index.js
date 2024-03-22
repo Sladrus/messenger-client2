@@ -1,5 +1,5 @@
 import {
-  AppBar,
+  // AppBar,
   Box,
   CircularProgress,
   Fab,
@@ -7,23 +7,46 @@ import {
   LinearProgress,
   Toolbar,
   Typography,
-} from '@mui/material';
-import React, { useContext } from 'react';
-import MenuIcon from '@mui/icons-material/Menu';
-import { observer } from 'mobx-react-lite';
-import { StoreContext } from '../../../context/store';
-import { chatCount } from '../../../utils/text';
-import ClearIcon from '@mui/icons-material/Clear';
-import { SocketContext } from '../../../context/socket';
+  styled,
+  useTheme,
+} from "@mui/material";
+import React, { useContext } from "react";
+import MenuIcon from "@mui/icons-material/Menu";
+import { observer } from "mobx-react-lite";
+import { StoreContext } from "../../../context/store";
+import { chatCount } from "../../../utils/text";
+import ClearIcon from "@mui/icons-material/Clear";
+import { SocketContext } from "../../../context/socket";
+import MuiAppBar from "@mui/material/AppBar";
+
+const drawerWidth = 400;
+
+const AppBar = styled(MuiAppBar, {
+  shouldForwardProp: (prop) => prop !== "open",
+})(({ theme, open }) => ({
+  transition: theme.transitions.create(["margin", "width"], {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  ...(open && {
+    width: `calc(100% - ${drawerWidth}px)`,
+    transition: theme.transitions.create(["margin", "width"], {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+    marginRight: drawerWidth,
+  }),
+}));
 
 const ConversationBar = observer(({ handleDrawerOpen, open }) => {
   const { socket } = useContext(SocketContext);
+
 
   const { conversationStore, userStore } = useContext(StoreContext);
 
   const length =
     conversationStore.searchedConversations &&
-    conversationStore.searchInput !== ''
+    conversationStore.searchInput !== ""
       ? conversationStore.searchedConversations?.length
       : conversationStore.conversations?.length;
 
@@ -43,7 +66,7 @@ const ConversationBar = observer(({ handleDrawerOpen, open }) => {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar
         position="relative"
-        sx={{ height: '64px', background: 'white' }}
+        sx={{ height: "64px", background: "white" }}
         open={open}
       >
         <Toolbar>
@@ -51,33 +74,33 @@ const ConversationBar = observer(({ handleDrawerOpen, open }) => {
           conversationStore.selectedIsLoading ? (
             <Box
               sx={{
-                textAlign: 'left',
-                color: 'black',
-                width: '100%',
+                textAlign: "left",
+                color: "black",
+                width: "100%",
               }}
             >
               <LinearProgress />
             </Box>
           ) : (
             <>
-              <Box sx={{ textAlign: 'left', color: 'black', width: '100%' }}>
+              <Box sx={{ textAlign: "left", color: "black", width: "100%" }}>
                 {conversationStore.selectedConversation ? (
                   <Box
                     sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
                     }}
                   >
                     <Box
                       sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
                       }}
                     >
                       <ClearIcon
-                        sx={{ pr: '25px', cursor: 'pointer' }}
+                        sx={{ pr: "25px", cursor: "pointer" }}
                         onClick={clearSelectedConversation}
                       />
                       <Box>
@@ -85,7 +108,7 @@ const ConversationBar = observer(({ handleDrawerOpen, open }) => {
                           {conversationStore.selectedConversation.title}
                         </Typography>
                         <Typography variant="body2" color="textSecondary">
-                          Кол-во сообщений:{' '}
+                          Кол-во сообщений:{" "}
                           {
                             conversationStore.selectedConversation.messages
                               ?.length
@@ -94,7 +117,7 @@ const ConversationBar = observer(({ handleDrawerOpen, open }) => {
                       </Box>
                     </Box>
 
-                    <Box sx={{ p: '0 10px' }}>
+                    <Box sx={{ p: "0 10px" }}>
                       {conversationStore?.selectedChatId !== null &&
                         conversationStore.selectedConversation?.unreadCount >
                           0 && (
@@ -103,13 +126,13 @@ const ConversationBar = observer(({ handleDrawerOpen, open }) => {
                             size="medium"
                             color="primary"
                             onClick={handleReadConversation}
-                            sx={{ width: '250px' }}
+                            sx={{ width: "250px" }}
                           >
                             {!conversationStore.unreadLoading ? (
-                              'Пометить как прочитано'
+                              "Пометить как прочитано"
                             ) : (
                               <CircularProgress
-                                sx={{ color: 'white' }}
+                                sx={{ color: "white" }}
                                 size={16}
                               />
                             )}
@@ -120,9 +143,9 @@ const ConversationBar = observer(({ handleDrawerOpen, open }) => {
                 ) : (
                   <Typography variant="subtitle2" fontWeight="bold">
                     {conversationStore.searchedConversations
-                      ? 'Найдено'
-                      : 'Загружено'}{' '}
-                    {length} {chatCount(length)}
+                      ? "Найдено"
+                      : `Загружено`}{" "}
+                    {length} {chatCount(length)} из {conversationStore?.metadata?.total}
                   </Typography>
                 )}
               </Box>
@@ -135,7 +158,7 @@ const ConversationBar = observer(({ handleDrawerOpen, open }) => {
                 aria-label="open drawer"
                 edge="end"
                 onClick={handleDrawerOpen}
-                sx={{ ...(open && { display: 'none' }) }}
+                sx={{ ...(open && { display: "none" }) }}
               >
                 <MenuIcon />
               </IconButton>

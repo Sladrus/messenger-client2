@@ -1,14 +1,14 @@
-import { makeAutoObservable, action } from 'mobx';
+import { makeAutoObservable, action } from "mobx";
 
 class ConversationStore {
   constructor() {
     this.filter = {
-      user: 'all',
-      type: 'all',
-      unread: 'all',
-      stage: 'all',
+      user: "all",
+      type: "all",
+      unread: "all",
+      stage: "all",
       tags: [],
-      task: 'all',
+      task: "all",
       dateRange: {
         startDate: null,
         endDate: new Date(
@@ -23,10 +23,11 @@ class ConversationStore {
     };
 
     this.conversations = null;
+    this.metadata = null;
     this.page = 1;
-    this.limit = 100;
+    this.limit = 1000;
     this.searchedConversations = null;
-    this.searchInput = '';
+    this.searchInput = "";
     this.searchIsLoading = false;
 
     this.isLoading = false;
@@ -141,6 +142,14 @@ class ConversationStore {
     this.conversations = value;
   }
 
+  setMetadata(value) {
+    this.metadata = value;
+  }
+
+  setPage(value) {
+    this.page = value;
+  }
+
   setSearchedConversations(value) {
     this.searchedConversations = value;
   }
@@ -153,7 +162,7 @@ class ConversationStore {
   isConversationMatchingFilter(conversation) {
     // Check user
     if (
-      this.filter.user !== 'all' &&
+      this.filter.user !== "all" &&
       conversation?.user?._id !== this.filter.user
     ) {
       return false;
@@ -161,7 +170,7 @@ class ConversationStore {
 
     // Check unread
     if (
-      this.filter.unread !== 'all' &&
+      this.filter.unread !== "all" &&
       conversation?.unread !== this.filter.unread
     ) {
       return false;
@@ -169,14 +178,14 @@ class ConversationStore {
 
     // Check stage
     if (
-      this.filter.stage !== 'all' &&
+      this.filter.stage !== "all" &&
       conversation?.stage._id !== this.filter.stage
     ) {
       return false;
     }
 
     // Check type
-    if (this.filter.type !== 'all' && conversation?.type !== this.filter.type) {
+    if (this.filter.type !== "all" && conversation?.type !== this.filter.type) {
       return false;
     }
 
@@ -303,14 +312,14 @@ class ConversationStore {
 
   async deleteStage(socket, id) {
     this.setStageLoading(true);
-    socket.emit('conversation:deleteStage', {
+    socket.emit("conversation:deleteStage", {
       id,
     });
   }
 
   async editStage(socket, id, stage) {
     this.setStageLoading(true);
-    socket.emit('conversation:editStage', {
+    socket.emit("conversation:editStage", {
       id,
       stage,
     });
@@ -318,7 +327,7 @@ class ConversationStore {
 
   async moveStage(socket, id, position) {
     this.setStageLoading(true);
-    socket.emit('conversation:moveStage', {
+    socket.emit("conversation:moveStage", {
       id,
       position,
     });
@@ -326,7 +335,7 @@ class ConversationStore {
 
   async changeStage(socket, id, stageId) {
     this.setStageLoading(true);
-    socket.emit('conversation:updateStage', {
+    socket.emit("conversation:updateStage", {
       id,
       stageId,
     });
@@ -334,7 +343,7 @@ class ConversationStore {
 
   async changeUser(socket, id, userId) {
     this.setUserLoading(true);
-    socket.emit('conversation:updateUser', {
+    socket.emit("conversation:updateUser", {
       id,
       userId,
     });
@@ -342,7 +351,7 @@ class ConversationStore {
 
   async changeTags(socket, id, value) {
     this.setTagsLoading(true);
-    socket.emit('conversation:updateTags', {
+    socket.emit("conversation:updateTags", {
       id,
       tags: value,
     });
@@ -350,7 +359,7 @@ class ConversationStore {
 
   async createTag(socket, id, value) {
     this.setTagsLoading(true);
-    socket.emit('conversation:createTag', {
+    socket.emit("conversation:createTag", {
       id,
       value: value,
     });
@@ -358,14 +367,14 @@ class ConversationStore {
 
   async removeTag(socket, id) {
     this.setTagsLoading(true);
-    socket.emit('conversation:removeTag', {
+    socket.emit("conversation:removeTag", {
       id,
     });
   }
 
   async createComment(socket, id, value) {
     this.setCommentLoading(true);
-    socket.emit('conversation:createComment', {
+    socket.emit("conversation:createComment", {
       id,
       value: value,
     });
@@ -373,7 +382,7 @@ class ConversationStore {
 
   async sendMessage(socket, { id, text, type, user }) {
     this.setMessageLoading(true);
-    socket.emit('message:sendMessage', {
+    socket.emit("message:sendMessage", {
       id,
       text,
       type,
@@ -383,7 +392,7 @@ class ConversationStore {
 
   async readConversation(socket, id, user) {
     this.setUnreadLoading(true);
-    socket.emit('conversation:read', {
+    socket.emit("conversation:read", {
       id,
       user,
     });
@@ -391,7 +400,7 @@ class ConversationStore {
 
   async createMoneysend(socket, id, data) {
     this.setMoneysendLoading(true);
-    socket.emit('conversation:createMoneysend', {
+    socket.emit("conversation:createMoneysend", {
       id,
       data,
     });
@@ -399,7 +408,7 @@ class ConversationStore {
 
   async createTask(socket, id, data) {
     this.setTaskLoading(true);
-    socket.emit('conversation:createTask', {
+    socket.emit("conversation:createTask", {
       id,
       data,
     });
@@ -407,14 +416,14 @@ class ConversationStore {
 
   async doneTask(socket, id) {
     this.setTaskLoading(true);
-    socket.emit('conversation:doneTask', {
+    socket.emit("conversation:doneTask", {
       id,
     });
   }
 
   async sendChat(socket, id, user) {
     this.setSendChatLoading(true);
-    socket.emit('conversation:sendChat', {
+    socket.emit("conversation:sendChat", {
       id,
       user,
     });
@@ -422,29 +431,41 @@ class ConversationStore {
 
   async sendGrade(socket, id, user) {
     this.setSendGradeLoading(true);
-    socket.emit('conversation:sendGrade', {
+    socket.emit("conversation:sendGrade", {
       id,
       user,
     });
   }
 
-  //
-
   async getConversations(socket) {
     this.setLoading(true);
-    socket.emit('conversations:get', { filter: this.filter });
+    socket.emit("conversations:get", {
+      filter: this.filter,
+      page: this.page,
+      limit: this.limit,
+    });
+  }
+
+  async loadNextPage(socket) {
+    this.setLoading(true);
+    this.page = this.page + 1;
+    socket.emit("conversations:get", {
+      filter: this.filter,
+      page: this.page,
+      limit: this.limit,
+    });
   }
 
   async getSelectedConversation(socket) {
     this.setSelectedLoading(true);
-    socket.emit('conversations:getOne', {
+    socket.emit("conversations:getOne", {
       selectedChatId: this.selectedChatId,
     });
   }
 
   async getSearchedConversations(socket) {
     this.setLoading(true);
-    socket.emit('conversations:getSearch', { searchInput: this.searchInput });
+    socket.emit("conversations:getSearch", { searchInput: this.searchInput });
   }
 }
 

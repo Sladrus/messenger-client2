@@ -14,7 +14,7 @@ import { observer } from 'mobx-react-lite';
 
 const SelectContainer = styled.div`
   height: 40px;
-
+  // width: 350px;
   position: relative;
   display: flex;
   align-items: center;
@@ -50,6 +50,7 @@ const InputContainer = styled.input`
 
 const FormContainer = styled.form`
   display: flex;
+  width: 100%
 `;
 
 const SendSelect = observer(

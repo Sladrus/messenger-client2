@@ -76,7 +76,7 @@ const ConversationList = observer(() => {
 
   // Render a list item or a loading indicator.
   const rowRenderer = ({ index, key, style }) => {
-    if (index === rowCount - 1)
+    if (index === rowCount - 1 && rowCount !== conversationStore?.metadata?.total)
       return (
         <div key={key} style={style}>
           <Card

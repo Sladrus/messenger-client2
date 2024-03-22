@@ -70,9 +70,9 @@ export const registerConversationHandlers = (
   };
 
   const setConversations = ({ conversations }) => {
-    conversationStore.setMetadata(conversations.metadata[0]);
-    conversationStore.setPage(conversations.metadata[0].page);
-    conversationStore.setConversations(conversations.data);
+    conversationStore.setMetadata(conversations?.metadata[0]);
+    conversationStore.setPage(conversations?.metadata[0]?.page || 1);
+    conversationStore.setConversations(conversations?.data);
     conversationStore.setLoading(false);
     stageStore.setConversations(conversations.data);
   };

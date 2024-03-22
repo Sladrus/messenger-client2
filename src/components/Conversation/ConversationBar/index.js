@@ -145,7 +145,7 @@ const ConversationBar = observer(({ handleDrawerOpen, open }) => {
                     {conversationStore.searchedConversations
                       ? "Найдено"
                       : `Загружено`}{" "}
-                    {length} {chatCount(length)} из {conversationStore?.metadata?.total}
+                    {length} {chatCount(length)} из {conversationStore?.metadata?.total || 0}
                   </Typography>
                 )}
               </Box>

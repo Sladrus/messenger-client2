@@ -54,29 +54,16 @@ const ConversationList = observer(() => {
     }
   }, [conversationStore.selectedChatId, conversationStore.selectedIsLoading]);
 
-  const rowCount = conversations?.length || 0;
+  const rowCount =
+    conversationStore.searchedConversations && conversationStore.searchInput
+      ? conversationStore.searchedConversations?.length || 0
+      : conversationStore.conversations?.length || 0;
 
-  // Only load 1 page of items at a time.
-  // Pass an empty callback to InfiniteLoader in case it asks us to load more than once.
-  const loadMoreRows = conversationStore.isLoading
-    ? () => {
-        console.log("NE LOAD");
-      }
-    : () => {
-        // conversationStore.setPage(conversationStore.page + 1);
-        if (!conversationStore.isLoading) console.log("LOAD");
-
-        // conversationStore.loadNextPage(socket);
-      };
-
-  // Every row is loaded except for our loading indicator row.
-  const isRowLoaded = ({ index }) => {
-    return index < conversations.length;
-  };
-
-  // Render a list item or a loading indicator.
   const rowRenderer = ({ index, key, style }) => {
-    if (index === rowCount - 1 && rowCount !== conversationStore?.metadata?.total)
+    if (
+      index === rowCount - 1 &&
+      rowCount !== conversationStore?.metadata?.total && !conversationStore.searchInput
+    )
       return (
         <div key={key} style={style}>
           <Card
@@ -84,7 +71,6 @@ const ConversationList = observer(() => {
             onClick={() => conversationStore.loadNextPage(socket)}
             sx={{
               background: "white",
-
               padding: "10px",
               borderRadius: 0,
               height: "44px",
@@ -94,7 +80,9 @@ const ConversationList = observer(() => {
               },
             }}
           >
-            <Button variant="contained" disabled={conversationStore.isLoading}>Загрузить еще</Button>
+            <Button variant="contained" disabled={conversationStore.isLoading}>
+              Загрузить еще
+            </Button>
           </Card>
         </div>
       );
@@ -114,7 +102,6 @@ const ConversationList = observer(() => {
   return (
     <Item>
       <ConversationSearch />
-
       <Box sx={{ height: "calc(100% - 65px)" }}>
         <AutoSizer>
           {({ width, height }) => (

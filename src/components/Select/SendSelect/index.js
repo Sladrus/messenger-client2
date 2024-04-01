@@ -199,9 +199,7 @@ const SendSelect = observer(
           </SelectContainer>
           <FormContainer onSubmit={(e) => e.preventDefault()}>
             <InputContainer
-              value={formatter.format(
-                inputValue?.toString()?.replace(/,/g, "")
-              )}
+              value={inputValue}
               onSubmit={(e) => e.preventDefault()}
               onChange={(e) => {
                 e.preventDefault();

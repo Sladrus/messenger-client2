@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from "react";
 import {
   Box,
   FormControl,
@@ -6,11 +6,11 @@ import {
   MenuItem,
   Radio,
   Typography,
-} from '@mui/material';
-import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
-import styled, { css } from 'styled-components';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import { observer } from 'mobx-react-lite';
+} from "@mui/material";
+import { ExpandMore as ExpandMoreIcon } from "@mui/icons-material";
+import styled, { css } from "styled-components";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import { observer } from "mobx-react-lite";
 
 const SelectContainer = styled.div`
   height: 40px;
@@ -50,12 +50,12 @@ const InputContainer = styled.input`
 
 const FormContainer = styled.form`
   display: flex;
-  width: 100%
+  width: 100%;
 `;
 
 const SendSelect = observer(
   ({
-    label = 'label',
+    label = "label",
     values,
     defaultValue,
     onChange,
@@ -93,10 +93,14 @@ const SendSelect = observer(
       setValue(defaultValue);
     }, [defaultValue]);
 
+    var formatter = new Intl.NumberFormat("en-US");
+    console.log(formatter.format(inputValue?.toString()?.replace(/,/g, "")));
+    console.log(formatter.format(inputValue?.toString()));
+
     return (
-      <Box sx={{ gap: '6px', display: 'flex', flexDirection: 'column' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Typography fontSize={'12px'} fontWeight={'400'} color={'#647081'}>
+      <Box sx={{ gap: "6px", display: "flex", flexDirection: "column" }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <Typography fontSize={"12px"} fontWeight={"400"} color={"#647081"}>
             Зафиксировать сумму
           </Typography>
           <Radio
@@ -108,65 +112,65 @@ const SendSelect = observer(
         </Box>
         <Box
           sx={{
-            display: 'flex',
-            borderRadius: '20px',
-            padding: '14px',
-            background: '#F3F4F6',
+            display: "flex",
+            borderRadius: "20px",
+            padding: "14px",
+            background: "#F3F4F6",
           }}
         >
           <SelectContainer>
             <Box
               sx={{
-                width: '28px',
-                height: '28px',
-                backgroundColor: '#fff',
-                borderRadius: '50px',
+                width: "28px",
+                height: "28px",
+                backgroundColor: "#fff",
+                borderRadius: "50px",
               }}
             >
               <img src={value?.logo} alt={value?.logo} />
             </Box>
             <Box
               sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'start',
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "start",
               }}
             >
               <Typography
-                fontSize={'12px'}
-                fontWeight={'400'}
-                color={'#647081'}
+                fontSize={"12px"}
+                fontWeight={"400"}
+                color={"#647081"}
               >
                 Сумма
               </Typography>
               <Box
                 sx={{
-                  display: 'flex',
-                  alignItems: 'start',
+                  display: "flex",
+                  alignItems: "start",
                 }}
                 onClick={handleClick}
               >
                 <SelectLabelButton>
-                  {value?.currency !== '' ? value?.currency : label}
+                  {value?.currency !== "" ? value?.currency : label}
                 </SelectLabelButton>
-                <KeyboardArrowDownIcon sx={{ cursor: 'pointer' }} />
+                <KeyboardArrowDownIcon sx={{ cursor: "pointer" }} />
               </Box>
             </Box>
             <Menu
               MenuListProps={{
-                'aria-labelledby': 'long-button',
+                "aria-labelledby": "long-button",
               }}
               anchorEl={anchorEl}
               open={open}
               onClose={handleClose}
               anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
+                vertical: "bottom",
+                horizontal: "left",
               }}
               PaperProps={{
                 style: {
                   maxHeight: 45 * 4.5,
-                  width: '20ch',
+                  width: "20ch",
                 },
               }}
             >
@@ -195,7 +199,9 @@ const SendSelect = observer(
           </SelectContainer>
           <FormContainer onSubmit={(e) => e.preventDefault()}>
             <InputContainer
-              value={inputValue}
+              value={formatter.format(
+                inputValue?.toString()?.replace(/,/g, "")
+              )}
               onSubmit={(e) => e.preventDefault()}
               onChange={(e) => {
                 e.preventDefault();

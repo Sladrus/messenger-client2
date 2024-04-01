@@ -94,9 +94,6 @@ const ConversationCourse = observer(() => {
     "FROM_WIRERUBVAT",
   ];
 
-  const prevMarkup = useRef(markup);
-  const cancelTokenSource = useRef();
-
   const getMethods = async () => {
     try {
       setIsLoading(true);
@@ -152,22 +149,21 @@ const ConversationCourse = observer(() => {
         {
           from: {
             currency: fromValue?.currency,
-            method: fromCash ? fromCash?.code : fromMethod?.code,
+            method:
+              fromMethod?.code === "cash" ? fromCash?.code : fromMethod?.code,
             amount: fromAmount,
           },
           to: {
             currency: toValue?.currency,
-            method: toCash ? toCash?.code : toMethod?.code,
+            method: toMethod?.code === "cash" ? toCash?.code : toMethod?.code,
           },
         },
         signal
       );
       if (data?.error || !data?.courses) return setError(data?.error);
-      console.log(data);
       setCourse(data?.courses);
       setMarkup(data?.default_markup);
       setDefaultMarkup(data?.default_markup);
-      // setToAmount(parseFloat(data?.result?.toFixed(4)));
       if (courseType === "referense")
         setToAmount(parseFloat(data?.result?.standart?.result?.toFixed(4)));
       if (courseType === "minimum")
@@ -194,18 +190,18 @@ const ConversationCourse = observer(() => {
         {
           from: {
             currency: fromValue?.currency,
-            method: fromCash ? fromCash?.code : fromMethod?.code,
+            method:
+              fromMethod?.code === "cash" ? fromCash?.code : fromMethod?.code,
           },
           to: {
             currency: toValue?.currency,
-            method: toCash ? toCash?.code : toMethod?.code,
+            method: toMethod?.code === "cash" ? toCash?.code : toMethod?.code,
             amount: toAmount,
           },
         },
         signal
       );
       if (data?.error || !data?.courses) return setError(data?.error);
-      console.log(data);
       setCourse(data?.courses);
       setMarkup(data?.default_markup);
       setDefaultMarkup(data?.default_markup);
@@ -243,38 +239,22 @@ const ConversationCourse = observer(() => {
   }, [toAmount]);
 
   useEffect(() => {
+    setError(null);
+
+    if (!toCash && toMethod?.code === "cash") return;
+    if (!fromCash && fromMethod?.code === "cash") return;
+
     if (toFocused || fromFocused) return;
     if (checked === "from") {
       debouncedSubmitFromAmount();
     } else {
       debouncedSubmitToAmount();
     }
-  }, [checked, courseType, toMethod, fromMethod]);
+  }, [checked, courseType, toMethod, fromMethod, toCash, fromCash]);
 
-  // useEffect(() => {
-  //   setMarkupIsLoading(true);
-  //   if (prevMarkup.current !== null) {
-  //     if (markup) {
-  //       const newAmount =
-  //         checked === 'to'
-  //           ? toAmount *
-  //             calculateClientCourse(
-  //               course?.basic,
-  //               course?.basic > course?.referense ? -markup : markup
-  //             )
-  //           : fromAmount *
-  //             calculateClientCourse(
-  //               course?.basic,
-  //               course?.basic > course?.referense ? -markup : markup
-  //             );
-  //       checked === 'to'
-  //         ? setFromAmount((newAmount + services)?.toFixed(4))
-  //         : setToAmount((newAmount - services)?.toFixed(4));
-  //     }
-  //     setIsLoading(false);
-  //   }
-  //   prevMarkup.current = markup;
-  // }, [markup]);
+  useEffect(() => {
+    console.log(toCash, fromCash);
+  }, [toCash, fromCash]);
 
   const handleChecked = (value) => {
     setChecked(value);
@@ -316,11 +296,6 @@ const ConversationCourse = observer(() => {
     setToCash(null);
     setServices(0);
     setResult(null);
-  };
-
-  const calculateClientCourse = (course, markup) => {
-    const clientCourse = course + (markup * course) / 100;
-    return clientCourse;
   };
 
   const getCourseTypeText = () => {
@@ -439,6 +414,7 @@ const ConversationCourse = observer(() => {
               {fromMethod?.code === "cash" && (
                 <Autocomplete
                   size={"small"}
+                  defaultValue={fromCash}
                   options={fromValue?.cash}
                   onChange={(e, value) => setFromCash(value)}
                   groupBy={(option) => option.country}
@@ -539,7 +515,9 @@ const ConversationCourse = observer(() => {
               />
               {toMethod?.code === "cash" && (
                 <Autocomplete
+                
                   size={"small"}
+                  defaultValue={toCash}
                   options={toValue?.cash}
                   onChange={(e, value) => setToCash(value)}
                   groupBy={(option) => option.country}
@@ -875,8 +853,10 @@ const ConversationCourse = observer(() => {
                             <span style={{ color: "#408EF6" }}>
                               % к бирже {exchangeSource}:{" "}
                               {Number(result?.minimum?.percent) > 0 ? "" : ""}
-                              {Number(Math.abs(result?.minimum?.percent))?.toFixed(1)}%
-
+                              {Number(
+                                Math.abs(result?.minimum?.percent)
+                              )?.toFixed(1)}
+                              %
                             </span>
                             <span>
                               1 {settlementCur?.from} ={" "}
@@ -889,7 +869,10 @@ const ConversationCourse = observer(() => {
                             <span style={{ color: "#408EF6" }}>
                               % к бирже {exchangeSource}:{" "}
                               {Number(result?.minimum?.percent) > 0 ? "" : ""}
-                              {Number(Math.abs(result?.minimum?.percent))?.toFixed(1)}%
+                              {Number(
+                                Math.abs(result?.minimum?.percent)
+                              )?.toFixed(1)}
+                              %
                             </span>
                             <span>
                               1 {settlementCur?.to} ={" "}

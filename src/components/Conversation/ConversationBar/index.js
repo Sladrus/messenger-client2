@@ -38,7 +38,7 @@ const AppBar = styled(MuiAppBar, {
   }),
 }));
 
-const ConversationBar = observer(({ handleDrawerOpen, open }) => {
+const ConversationBar = observer(({ handleDrawerOpen, open, close }) => {
   const { socket } = useContext(SocketContext);
 
 
@@ -99,10 +99,10 @@ const ConversationBar = observer(({ handleDrawerOpen, open }) => {
                         justifyContent: "center",
                       }}
                     >
-                      <ClearIcon
+                      {!close && <ClearIcon
                         sx={{ pr: "25px", cursor: "pointer" }}
                         onClick={clearSelectedConversation}
-                      />
+                      />}
                       <Box>
                         <Typography variant="subtitle2" fontWeight="bold">
                           {conversationStore.selectedConversation.title}

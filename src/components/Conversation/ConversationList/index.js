@@ -15,9 +15,9 @@ const Item = styled("div")(({ theme }) => ({
   textAlign: "center",
 }));
 
-const ConversationList = observer(() => {
+const ConversationList = observer(({ isOrderFilter }) => {
   const scrollRef = useRef(null);
-  const { conversationStore } = useContext(StoreContext);
+  const { conversationStore, ordersStore } = useContext(StoreContext);
   const { socket } = useContext(SocketContext);
 
   const conversations =
@@ -27,6 +27,10 @@ const ConversationList = observer(() => {
 
   const handleSelectConversation = (chat_id) => {
     conversationStore.setSelectedChatId(chat_id);
+  };
+
+  const handleFilterOrders = (chat_id) => {
+    ordersStore.filterOrders(chat_id);
   };
 
   useEffect(() => {
@@ -62,7 +66,8 @@ const ConversationList = observer(() => {
   const rowRenderer = ({ index, key, style }) => {
     if (
       index === rowCount - 1 &&
-      rowCount !== conversationStore?.metadata?.total && !conversationStore.searchInput
+      rowCount !== conversationStore?.metadata?.total &&
+      !conversationStore.searchInput
     )
       return (
         <div key={key} style={style}>
@@ -90,9 +95,20 @@ const ConversationList = observer(() => {
       <div key={key} style={style}>
         <ConversationItem
           conversation={conversations[index]}
-          onClick={() =>
-            handleSelectConversation(conversations[index]?.chat_id)
-          }
+          onClick={() => {
+            if (isOrderFilter) {
+              if (
+                conversationStore?.selectedChatId ===
+                conversations[index]?.chat_id
+              ) {
+                handleSelectConversation(0);
+                handleFilterOrders(0);
+              } else {
+                handleSelectConversation(conversations[index]?.chat_id);
+                handleFilterOrders(conversations[index]?.chat_id);
+              }
+            } else handleSelectConversation(conversations[index]?.chat_id);
+          }}
           dataChatId={conversations[index]?.chat_id}
         />
       </div>

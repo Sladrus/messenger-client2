@@ -114,6 +114,23 @@ export const registerStageHandlers = (socket, stageStore) => {
   socket.on("stages:set", setStages);
 };
 
+export const registerOrdersHandlers = (socket, ordersStore) => {
+  const setOrderStages = ({ stages, orders }) => {
+    ordersStore.setOrders(orders);
+    ordersStore.setOrderStages(stages);
+    ordersStore.setFullStages(orders);
+    ordersStore.setLoading(false);
+  };
+
+  const updateOrder = ({ order }) => {
+    console.log(order);
+    ordersStore.updateOrder(order);
+  };
+
+  socket.on("orders:set", setOrderStages);
+  socket.on("order:update", updateOrder);
+};
+
 export const registerTagsHandlers = (socket, tagsStore) => {
   const setTags = ({ tags }) => {
     tagsStore.setTags(tags);

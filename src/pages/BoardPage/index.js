@@ -12,7 +12,7 @@ import EditStageModal from '../../components/Stage/EditStageModal';
 const Item = styled('div')(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
   padding: theme.spacing(0),
-  height: 'calc(100vh - 82px)',
+  height: 'calc(100% - 66px)',
   textAlign: 'left',
 }));
 

@@ -8,68 +8,68 @@ import {
   Divider,
   Stack,
   Typography,
-} from '@mui/material';
-import React, { useContext, useEffect, useState } from 'react';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import styled from '@emotion/styled';
-import AddIcon from '@mui/icons-material/Add';
-import SimpleTextField from '../../TextField/SimpleTextField';
-import TaskButton from '../../Button/TaskButton';
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import HistoryToggleOffIcon from '@mui/icons-material/HistoryToggleOff';
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import CommentIcon from '@mui/icons-material/Comment';
-import ChecklistIcon from '@mui/icons-material/Checklist';
-import { observer } from 'mobx-react-lite';
-import { SocketContext } from '../../../context/socket';
-import { StoreContext } from '../../../context/store';
-import StatusSelect from '../../Select/StatusSelect';
-import axios from 'axios';
-import env from 'react-dotenv';
-import TypeSelect from '../../Select/TypeSelect';
-import CounteragentSelect from '../../Select/CounteragentSelect';
-import PostAddIcon from '@mui/icons-material/PostAdd';
-import { debounce } from '../../../utils/time';
+} from "@mui/material";
+import React, { useContext, useEffect, useState } from "react";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import styled from "@emotion/styled";
+import AddIcon from "@mui/icons-material/Add";
+import SimpleTextField from "../../TextField/SimpleTextField";
+import TaskButton from "../../Button/TaskButton";
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import HistoryToggleOffIcon from "@mui/icons-material/HistoryToggleOff";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import CommentIcon from "@mui/icons-material/Comment";
+import ChecklistIcon from "@mui/icons-material/Checklist";
+import { observer } from "mobx-react-lite";
+import { SocketContext } from "../../../context/socket";
+import { StoreContext } from "../../../context/store";
+import StatusSelect from "../../Select/StatusSelect";
+import axios from "axios";
+import env from "react-dotenv";
+import TypeSelect from "../../Select/TypeSelect";
+import CounteragentSelect from "../../Select/CounteragentSelect";
+import PostAddIcon from "@mui/icons-material/PostAdd";
+import { debounce } from "../../../utils/time";
 
 const CustomizedAccordion = styled(Accordion)(() => ({
-  border: '0 !important',
-  borderRadius: '0 !important',
-  boxShadow: 'none !important',
+  border: "0 !important",
+  borderRadius: "0 !important",
+  boxShadow: "none !important",
 }));
 
 const ConversationMoneysend = observer(({ conversation }) => {
   const { socket } = useContext(SocketContext);
   const { conversationStore, userStore } = useContext(StoreContext);
 
-  const [volume, setVolume] = useState('');
-  const [give, setGive] = useState('');
-  const [take, setTake] = useState('');
-  const [regularity, setRegularity] = useState('');
-  const [date, setDate] = useState('');
-  const [comment, setComment] = useState('');
-  const [conditions, setConditions] = useState('');
-  const [requisites, setRequisites] = useState('');
+  const [amount, setAmount] = useState("");
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
+  const [regularity, setRegularity] = useState("");
+  const [date, setDate] = useState("");
+  const [comment, setComment] = useState("");
+  const [conditions, setConditions] = useState("");
+  const [requisites, setRequisites] = useState("");
   const [reqsLoading, setReqsLoading] = useState(false);
 
   const [bPersons, setBPersons] = useState([]);
 
   const [type, setType] = useState({
-    name: 'Перевод физ лицу ',
-    value: 'physical',
+    name: "Перевод физ лицу ",
+    value: "physical",
   });
-  const [counteragent, setCounteragent] = useState('');
+  const [counteragent, setCounteragent] = useState("");
 
   const [client, setClient] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
   const types = [
-    { name: 'Перевод физ лицу ', value: 'physical' },
-    { name: 'Перевод юр лицу ', value: 'company' },
-    { name: 'Прием из-за рубежа ', value: 'from_abroad' },
-    { name: 'Выдача наличных ', value: 'cash' },
-    { name: 'Обмен криптовалюты ', value: 'exchange' },
+    { name: "Перевод физ лицу ", value: "physical" },
+    { name: "Перевод юр лицу ", value: "company" },
+    { name: "Прием из-за рубежа ", value: "from_abroad" },
+    { name: "Выдача наличных ", value: "cash" },
+    { name: "Обмен криптовалюты ", value: "exchange" },
   ];
 
   async function getClient(chat_id) {
@@ -77,7 +77,7 @@ const ConversationMoneysend = observer(({ conversation }) => {
       setIsLoading(true);
       const response = await axios.get(
         `https://api.moneyport.world/getClient?chat_id=${chat_id}`,
-        { headers: { 'x-api-key': `${env.API_TOKEN}` } }
+        { headers: { "x-api-key": `${env.API_TOKEN}` } }
       );
       setIsLoading(false);
       return response.data;
@@ -91,7 +91,7 @@ const ConversationMoneysend = observer(({ conversation }) => {
       const response = await axios.post(
         `${env.BOT_API_URL}/bperson/check`,
         body,
-        { headers: { 'x-api-key': `${env.BOT_API_TOKEN}` }, signal }
+        { headers: { "x-api-key": `${env.BOT_API_TOKEN}` }, signal }
       );
       return response.data;
     } catch (error) {
@@ -113,26 +113,27 @@ const ConversationMoneysend = observer(({ conversation }) => {
     await conversationStore.createMoneysend(socket, conversation._id, {
       title: conversation.title,
       link: conversation?.link,
+      conversation: conversation?._id,
       user: userStore.user,
-      volume,
-      give,
-      take,
+      amount,
+      from,
+      to,
       regularity,
       date,
       comment,
       conditions,
-      type,
+      type: type?.value,
       counteragent,
       requisites,
     });
-    setVolume('');
-    setGive('');
-    setTake('');
-    setRegularity('');
-    setDate('');
-    setComment('');
-    setConditions('');
-    setRequisites('');
+    setAmount("");
+    setFrom("");
+    setTo("");
+    setRegularity("");
+    setDate("");
+    setComment("");
+    setConditions("");
+    setRequisites("");
   };
 
   useEffect(() => {
@@ -220,13 +221,13 @@ const ConversationMoneysend = observer(({ conversation }) => {
     <Card sx={{ border: 0, borderRadius: 0 }}>
       <CustomizedAccordion>
         <AccordionSummary
-          sx={{ border: 0, borderRadius: 0, p: '0px 15px' }}
+          sx={{ border: 0, borderRadius: 0, p: "0px 15px" }}
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel1a-content"
           id="panel1a-header"
         >
           <Typography variant="subtitle2" fontWeight="bold">
-            Moneysend
+            Создать заявку
           </Typography>
         </AccordionSummary>
         <AccordionDetails sx={{ p: 0, borderRadius: 0 }}>
@@ -243,7 +244,7 @@ const ConversationMoneysend = observer(({ conversation }) => {
                   setType(fType);
                 }}
               />
-              {type?.value === 'from_abroad' && (
+              {type?.value === "from_abroad" && (
                 <CounteragentSelect
                   counteragent={counteragent}
                   options={client?.counteragents}
@@ -258,52 +259,52 @@ const ConversationMoneysend = observer(({ conversation }) => {
                 loading={reqsLoading}
                 error={bPersons?.length > 0 ? true : false}
                 errorText={
-                  bPersons?.length > 0 && 'Реквизиты не прошли проверку'
+                  bPersons?.length > 0 && "Реквизиты не прошли проверку"
                 }
-                labelText={!bPersons?.length && 'Реквизиты прошли проверку'}
-                placeholder={'Введите реквизиты получателя'}
+                labelText={!bPersons?.length && "Реквизиты прошли проверку"}
+                placeholder={"Введите реквизиты получателя"}
                 Icon={PostAddIcon}
                 onChange={(e) => setRequisites(e.target.value)}
                 value={requisites}
               />
               <SimpleTextField
-                placeholder={'Введите объем'}
+                placeholder={"Введите объем"}
                 Icon={AttachMoneyIcon}
-                onChange={(e) => setVolume(e.target.value)}
-                value={volume}
+                onChange={(e) => setAmount(e.target.value)}
+                value={amount}
               />
               <SimpleTextField
-                placeholder={'Что отдают'}
+                placeholder={"Что отдают"}
                 Icon={ArrowBackIcon}
-                onChange={(e) => setGive(e.target.value)}
-                value={give}
+                onChange={(e) => setFrom(e.target.value)}
+                value={from}
               />
               <SimpleTextField
-                placeholder={'Что получают'}
+                placeholder={"Что получают"}
                 Icon={ArrowForwardIcon}
-                onChange={(e) => setTake(e.target.value)}
-                value={take}
+                onChange={(e) => setTo(e.target.value)}
+                value={to}
               />
               <SimpleTextField
-                placeholder={'Введите регулярность'}
+                placeholder={"Введите регулярность"}
                 Icon={HistoryToggleOffIcon}
                 onChange={(e) => setRegularity(e.target.value)}
                 value={regularity}
               />
               <SimpleTextField
-                placeholder={'Сроки'}
+                placeholder={"Сроки"}
                 Icon={CalendarMonthIcon}
                 onChange={(e) => setDate(e.target.value)}
                 value={date}
               />
               <SimpleTextField
-                placeholder={'Введите комментарий'}
+                placeholder={"Введите комментарий"}
                 Icon={CommentIcon}
                 onChange={(e) => setComment(e.target.value)}
                 value={comment}
               />
               <SimpleTextField
-                placeholder={'Введите условия'}
+                placeholder={"Введите условия"}
                 Icon={ChecklistIcon}
                 onChange={(e) => setConditions(e.target.value)}
                 value={conditions}
@@ -311,17 +312,17 @@ const ConversationMoneysend = observer(({ conversation }) => {
               {conversationStore.moneysendLoading ? (
                 <Box
                   sx={{
-                    width: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
+                    width: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
                   }}
                 >
                   <CircularProgress />
                 </Box>
               ) : (
                 <TaskButton
-                  text={'Создать'}
+                  text={"Создать"}
                   Icon={AddIcon}
                   // onClick={handleMoneysend}
                 />

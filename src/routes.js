@@ -3,6 +3,7 @@ import {
   AUTH_ROUTE,
   BOARD_ROUTE,
   MESSENGER_ROUTE,
+  ORDERS_ROUTE,
   TASKS_ROUTE,
 } from './utils/consts';
 
@@ -15,7 +16,11 @@ import EmailIcon from '@mui/icons-material/Email';
 import DashboardCustomizeIcon from '@mui/icons-material/DashboardCustomize';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+
 import AnalyticsPage from './pages/AnalyticsPage';
+import OrderPage from './pages/OrdersPage';
+import OrdersPage from './pages/OrdersPage';
 
 export const authRoutes = [
   {
@@ -29,6 +34,12 @@ export const authRoutes = [
     Icon: DashboardCustomizeIcon,
     path: BOARD_ROUTE,
     Component: BoardPage,
+  },
+  {
+    title: 'Заявки',
+    Icon: AssignmentIcon,
+    path: ORDERS_ROUTE,
+    Component: OrdersPage,
   },
   {
     title: 'Задачи',

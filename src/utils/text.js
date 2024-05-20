@@ -9,6 +9,18 @@ export function chatCount(num) {
   }
 }
 
+export function orderCount(num) {
+  const lastDigit = num % 10;
+  if (lastDigit === 1 && num !== 11) {
+    return 'заявка';
+  } else if ([2, 3, 4].includes(lastDigit) && (num < 10 || num > 20)) {
+    return 'заявки';
+  } else {
+    return 'заявок';
+  }
+}
+
+
 export function unreadCount(array) {
   const filteredArray = array?.filter((item) => item.unreadCount > 0);
   return filteredArray?.length || 0;

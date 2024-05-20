@@ -1,13 +1,13 @@
 import React, { useContext, useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
-import ConversationBar from "../ConversationBar";
 import { Box, CircularProgress } from "@mui/material";
-import ConversationMessageList from "../CovnersationMessageList";
-import ConversationDrawer from "../ConversationDrawer";
-import ConversationInput from "../ConversationInput";
 import { observer } from "mobx-react-lite";
-import { StoreContext } from "../../../context/store";
+import ConversationBar from "../../Conversation/ConversationBar";
+import ConversationDrawer from "../../Conversation/ConversationDrawer";
 import { SocketContext } from "../../../context/socket";
+import { StoreContext } from "../../../context/store";
+import ConversationMessageList from "../../Conversation/CovnersationMessageList";
+import ConversationInput from "../../Conversation/ConversationInput";
 
 const drawerWidth = 400;
 
@@ -39,7 +39,7 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   })
 );
 
-const ConversationDialog = observer(() => {
+const OrderConversationDialog = observer(() => {
   const { socket } = useContext(SocketContext);
   const { conversationStore, userStore } = useContext(StoreContext);
   const [open, setOpen] = useState(false);
@@ -59,7 +59,7 @@ const ConversationDialog = observer(() => {
 
   return (
     <Item>
-      <ConversationBar open={open} handleDrawerOpen={handleDrawerOpen} />
+      <ConversationBar open={open} handleDrawerOpen={handleDrawerOpen} close={true}/>
       <ConversationDrawer open={open} handleDrawerClose={handleDrawerClose} />
       <Main
         sx={{
@@ -89,7 +89,9 @@ const ConversationDialog = observer(() => {
             <CircularProgress />
           </Box>
         ) : (
+          // <Main open={open}>
             <ConversationMessageList />
+          // </Main>
         )}
         {conversationStore?.selectedChatId !== null &&
           !conversationStore.selectedIsLoading && <ConversationInput />}
@@ -98,4 +100,4 @@ const ConversationDialog = observer(() => {
   );
 });
 
-export default ConversationDialog;
+export default OrderConversationDialog;

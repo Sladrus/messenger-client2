@@ -8,6 +8,7 @@ import {
   stageStore,
   tagsStore,
   taskStore,
+  ordersStore
 } from './context/store';
 import React from 'react';
 import { SnackbarProvider } from 'notistack';
@@ -22,6 +23,7 @@ function App() {
           stageStore,
           tagsStore,
           taskStore,
+          ordersStore
         }}
       >
         <SnackbarProvider

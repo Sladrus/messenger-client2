@@ -1,21 +1,28 @@
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect } from "react";
 import {
   SocketContext,
   registerConversationHandlers,
   registerErrorHandlers,
   registerStageHandlers,
   registerTagsHandlers,
+  registerOrdersHandlers,
   registerTaskHandlers,
   registerUserHandlers,
-} from '../context/socket';
-import { StoreContext } from '../context/store';
-import { useSnackbar } from 'notistack';
-import { useNavigate } from 'react-router-dom';
+} from "../context/socket";
+import { StoreContext } from "../context/store";
+import { useSnackbar } from "notistack";
+import { useNavigate } from "react-router-dom";
 
 export const useChat = () => {
   const { socket } = useContext(SocketContext);
-  const { userStore, conversationStore, stageStore, tagsStore, taskStore } =
-    useContext(StoreContext);
+  const {
+    userStore,
+    conversationStore,
+    stageStore,
+    tagsStore,
+    taskStore,
+    ordersStore,
+  } = useContext(StoreContext);
   const { enqueueSnackbar } = useSnackbar();
 
   const navigate = useNavigate();
@@ -38,11 +45,13 @@ export const useChat = () => {
       enqueueSnackbar
     ); // eslint-disable-next-line
     registerStageHandlers(socket, stageStore); // eslint-disable-next-line
+    registerOrdersHandlers(socket, ordersStore); // eslint-disable-next-line
     registerTagsHandlers(socket, tagsStore); // eslint-disable-next-line
     registerTaskHandlers(socket, taskStore); // eslint-disable-next-line
     // conversationStore.getConversations(socket);
     userStore.getUsers(socket);
     stageStore.getStages(socket); // eslint-disable-next-line
+    ordersStore.getOrderStages(socket); // eslint-disable-next-line
     tagsStore.getTags(socket); // eslint-disable-next-line
     taskStore.getTasks(socket); // eslint-disable-next-line
     taskStore.getTaskTypes(socket); // eslint-disable-next-line

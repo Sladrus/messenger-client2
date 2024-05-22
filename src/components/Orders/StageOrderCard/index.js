@@ -1,15 +1,9 @@
 import { Avatar, Badge, Box, Card, Chip, Typography } from "@mui/material";
 import React, { useContext } from "react";
-import { isToday } from "../../../utils/time";
 import { styled } from "@mui/material/styles";
 import LinkIcon from "@mui/icons-material/Link";
 import { observer } from "mobx-react-lite";
 import { StoreContext } from "../../../context/store";
-import { useNavigate } from "react-router-dom";
-import GroupsOutlinedIcon from "@mui/icons-material/GroupsOutlined";
-import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
-import GroupsIcon from "@mui/icons-material/Groups";
-import PersonIcon from "@mui/icons-material/Person";
 
 const types = [
   { name: "Перевод физ лицу ", value: "physical" },
@@ -30,12 +24,6 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 
 const StageOrderCard = observer(({ order }) => {
   const { conversationStore } = useContext(StoreContext);
-  const renderType = (type) => {
-    if (type === "supergroup" || type === "group")
-      return <GroupsOutlinedIcon sx={{ fontSize: "20px" }} />;
-    if (type === "private")
-      return <AccountCircleOutlinedIcon sx={{ fontSize: "20px" }} />;
-  };
 
   return (
     <Card

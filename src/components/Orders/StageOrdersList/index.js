@@ -8,7 +8,7 @@ const StageOrdersList = ({ orders, handleOpenOrder, setSelectedOrder }) => {
   const { conversationStore } = useContext(StoreContext);
   const listRef = useRef(null);
 
-  const filteredOrders = orders?.reverse();
+  const filteredOrders = orders;
   console.log(filteredOrders);
 
   return (

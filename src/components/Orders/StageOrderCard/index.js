@@ -167,27 +167,29 @@ const StageOrderCard = observer(({ order }) => {
               Объем: {order.amount}
             </Typography>
           </Box>
-          {/* <Box
+          <Box
             sx={{
               width: "100%",
               display: "flex",
-              justifyContent: "start",
-              gap: "8px",
+              alignItems: "center",
+              justifyContent: "end",
             }}
           >
+            <LinkIcon sx={{ fontSize: "18px" }} />
             <Typography
               sx={{
-                // textOverflow: "ellipsis",
-                // whiteSpace: "nowrap",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
                 overflow: "hidden",
-                // width: "100%",
+                textAlign: "right",
+                pl: "5px",
               }}
               variant="body2"
               color="textSecondary"
             >
-              {order.conditions}
+              {order?.responsible?.username}
             </Typography>
-          </Box> */}
+          </Box>
         </Box>
       </Box>
       {/* <Box

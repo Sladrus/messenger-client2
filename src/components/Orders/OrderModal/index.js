@@ -1,28 +1,11 @@
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CircularProgress,
-  FormControl,
-  IconButton,
-  InputLabel,
-  MenuItem,
-  Modal,
-  Select,
-  Stack,
-  TextField,
-  Toolbar,
-  Typography,
-} from "@mui/material";
+import { Box, Card, Modal, Typography } from "@mui/material";
 import { observer } from "mobx-react-lite";
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { StoreContext } from "../../../context/store";
 import { SocketContext } from "../../../context/socket";
-import { TwitterPicker } from "react-color";
-import ConversationDialog from "../../Conversation/ConversationDialog";
 import OrderConversationDialog from "../OrderConversationDialog";
+import OrderStatusSelect from "../OrderStatusSelect";
+import OrderUserSelect from "../OrderUserSelect";
 
 const types = [
   { name: "Перевод физ лицу ", value: "physical" },
@@ -44,10 +27,32 @@ const style = {
   p: 0,
 };
 
-const OrderModal = observer(({ show, handleClose, selectedOrder }) => {
+const OrderModal = observer(({ show, handleClose }) => {
   const { socket } = useContext(SocketContext);
-  //   const { orderStore } = useContext(StoreContext);
-  console.log(selectedOrder?.conversation);
+  const { ordersStore, userStore } = useContext(StoreContext);
+
+  const changeStage = (e) => {
+    console.log(ordersStore?.selectedOrder);
+
+    ordersStore.changeStage(
+      socket,
+      ordersStore?.selectedOrder?._id,
+      e?.target?.value
+    );
+  };
+
+  const changeUser = (e) => {
+    ordersStore.changeUser(
+      socket,
+      ordersStore?.selectedOrder?._id,
+      e?.target?.value
+    );
+  };
+
+  const clearUser = (e) => {
+    ordersStore.changeUser(socket, ordersStore?.selectedOrder?._id, null);
+  };
+
   return (
     <>
       <Modal
@@ -59,7 +64,7 @@ const OrderModal = observer(({ show, handleClose, selectedOrder }) => {
         <Box sx={style}>
           <Card sx={{ p: 0 }}>
             <Box sx={{ p: 0, ":last-child": { p: 0 } }}>
-              {selectedOrder && (
+              {ordersStore?.selectedOrder && (
                 <Box sx={{ display: "flex" }}>
                   <Card sx={{ minWidth: "300px" }}>
                     <Box sx={{ borderBottom: "1px solid #ccc" }}>
@@ -86,13 +91,20 @@ const OrderModal = observer(({ show, handleClose, selectedOrder }) => {
                             }}
                           >
                             <Box>
-                              <Typography whiteSpace={'nowrap'} textOverflow={'ellipsis'} variant="subtitle2" fontWeight="bold">
-                                Заявка: {selectedOrder?.title}
+                              <Typography
+                                whiteSpace={"nowrap"}
+                                textOverflow={"ellipsis"}
+                                variant="subtitle2"
+                                fontWeight="bold"
+                              >
+                                Заявка: {ordersStore?.selectedOrder?.title}
                               </Typography>
                               <Typography variant="body2" color="textSecondary">
                                 {
                                   types?.find(
-                                    (item) => item.value === selectedOrder?.type
+                                    (item) =>
+                                      item.value ===
+                                      ordersStore?.selectedOrder?.type
                                   )?.name
                                 }
                               </Typography>
@@ -120,16 +132,31 @@ const OrderModal = observer(({ show, handleClose, selectedOrder }) => {
                         <Typography variant="subtitle2" fontWeight="bold">
                           Статус заявки
                         </Typography>
-                        <Typography variant="body2" color="textSecondary">
-                          {selectedOrder?.stage?.label || "-"}
+                        <OrderStatusSelect
+                          stage={ordersStore?.selectedOrder?.stage}
+                          stages={ordersStore?.orderStages}
+                          isLoading={ordersStore.stageLoading}
+                          onChange={changeStage}
+                        />
+                      </Box>
+                      <Box>
+                        <Typography variant="subtitle2" fontWeight="bold">
+                          Ответственный по заявке
                         </Typography>
+                        <OrderUserSelect
+                          user={ordersStore?.selectedOrder?.responsible}
+                          users={userStore?.users}
+                          isLoading={ordersStore.userLoading}
+                          onChange={changeUser}
+                          onClear={clearUser}
+                        />
                       </Box>
                       <Box>
                         <Typography variant="subtitle2" fontWeight="bold">
                           Отдают
                         </Typography>
                         <Typography variant="body2" color="textSecondary">
-                          {selectedOrder?.from || "-"}
+                          {ordersStore?.selectedOrder?.from || "-"}
                         </Typography>
                       </Box>
                       <Box>
@@ -137,7 +164,7 @@ const OrderModal = observer(({ show, handleClose, selectedOrder }) => {
                           Получают
                         </Typography>
                         <Typography variant="body2" color="textSecondary">
-                          {selectedOrder?.to || "-"}
+                          {ordersStore?.selectedOrder?.to || "-"}
                         </Typography>
                       </Box>
                       <Box>
@@ -145,7 +172,7 @@ const OrderModal = observer(({ show, handleClose, selectedOrder }) => {
                           Объем
                         </Typography>
                         <Typography variant="body2" color="textSecondary">
-                          {selectedOrder?.amount || "-"}
+                          {ordersStore?.selectedOrder?.amount || "-"}
                         </Typography>
                       </Box>
                       <Box>
@@ -153,7 +180,7 @@ const OrderModal = observer(({ show, handleClose, selectedOrder }) => {
                           Условия
                         </Typography>
                         <Typography variant="body2" color="textSecondary">
-                          {selectedOrder?.conditions || "-"}
+                          {ordersStore?.selectedOrder?.conditions || "-"}
                         </Typography>
                       </Box>
                       <Box>
@@ -161,7 +188,7 @@ const OrderModal = observer(({ show, handleClose, selectedOrder }) => {
                           Дата
                         </Typography>
                         <Typography variant="body2" color="textSecondary">
-                          {selectedOrder?.date || "-"}
+                          {ordersStore?.selectedOrder?.date || "-"}
                         </Typography>
                       </Box>
                       <Box>
@@ -169,7 +196,7 @@ const OrderModal = observer(({ show, handleClose, selectedOrder }) => {
                           Регулярность
                         </Typography>
                         <Typography variant="body2" color="textSecondary">
-                          {selectedOrder?.regularity || "-"}
+                          {ordersStore?.selectedOrder?.regularity || "-"}
                         </Typography>
                       </Box>
                       <Box>
@@ -177,7 +204,7 @@ const OrderModal = observer(({ show, handleClose, selectedOrder }) => {
                           Реквизиты
                         </Typography>
                         <Typography variant="body2" color="textSecondary">
-                          {selectedOrder?.requisites || "-"}
+                          {ordersStore?.selectedOrder?.requisites || "-"}
                         </Typography>
                       </Box>
                       <Box>
@@ -185,7 +212,7 @@ const OrderModal = observer(({ show, handleClose, selectedOrder }) => {
                           Комментарий
                         </Typography>
                         <Typography variant="body2" color="textSecondary">
-                          {selectedOrder?.conditions || "-"}
+                          {ordersStore?.selectedOrder?.conditions || "-"}
                         </Typography>
                       </Box>
                     </Box>

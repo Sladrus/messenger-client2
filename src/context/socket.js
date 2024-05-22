@@ -123,8 +123,9 @@ export const registerOrdersHandlers = (socket, ordersStore) => {
   };
 
   const updateOrder = ({ order }) => {
-    console.log(order);
     ordersStore.updateOrder(order);
+    ordersStore.setUserLoading(false);
+    ordersStore.setStageLoading(false);
   };
 
   socket.on("orders:set", setOrderStages);

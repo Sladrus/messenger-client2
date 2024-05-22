@@ -2,7 +2,10 @@ import { makeAutoObservable, action } from "mobx";
 
 class OrdersStore {
   constructor() {
+    this.selectedOrder = null;
     this.isLoading = false;
+    this.stageLoading = false;
+    this.userLoading = false;
     this.orderStages = null;
     this.orders = null;
     this.filteredOrders = null;
@@ -13,8 +16,20 @@ class OrdersStore {
     });
   }
 
+  setSelectedOrder(value) {
+    this.selectedOrder = value;
+  }
+
   setLoading(value) {
     this.isLoading = value;
+  }
+
+  setStageLoading(value) {
+    this.stageLoading = value;
+  }
+
+  setUserLoading(value) {
+    this.userLoading = value;
   }
 
   setOrderStages(value) {
@@ -61,7 +76,7 @@ class OrdersStore {
       this.setFullStages(this.orders);
     } else {
       this.filteredOrders = this.orders?.filter(
-        (order) => order?.conversation?.chat_id === chat_id
+        (order) => order?.order?.chat_id === chat_id
       );
       this.setFullStages(this.filteredOrders);
     }
@@ -78,8 +93,27 @@ class OrdersStore {
     if (!updatedOrders?.includes(order)) {
       updatedOrders.push(order);
     }
+
     this.orders = updatedOrders;
+    if (order?._id === this.selectedOrder?._id) this.selectedOrder = order;
+
     this.setFullStages(this.orders);
+  }
+
+  async changeStage(socket, id, stageId) {
+    this.setStageLoading(true);
+    socket.emit("order:updateStage", {
+      id,
+      stageId,
+    });
+  }
+
+  async changeUser(socket, id, userId) {
+    this.setUserLoading(true);
+    socket.emit("order:updateUser", {
+      id,
+      userId,
+    });
   }
 }
 

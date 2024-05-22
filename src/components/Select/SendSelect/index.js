@@ -93,10 +93,6 @@ const SendSelect = observer(
       setValue(defaultValue);
     }, [defaultValue]);
 
-    var formatter = new Intl.NumberFormat("en-US");
-    console.log(formatter.format(inputValue?.toString()?.replace(/,/g, "")));
-    console.log(formatter.format(inputValue?.toString()));
-
     return (
       <Box sx={{ gap: "6px", display: "flex", flexDirection: "column" }}>
         <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>

@@ -16,7 +16,7 @@ import CreateOrderStageModal from "../../components/Orders/CreateOrderStageModal
 const Item = styled("div")(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
   padding: theme.spacing(0),
-  height: 'calc(100% - 66px)',
+  height: "calc(100% - 66px)",
   textAlign: "left",
 }));
 
@@ -28,7 +28,6 @@ const OrdersPage = observer(() => {
   const [openOrder, setOpenOrder] = React.useState(false);
 
   const [selectedStage, setSelectedStage] = React.useState("");
-  const [selectedOrder, setSelectedOrder] = React.useState("");
 
   const handleOpenCreate = () => setOpenCreate(true);
   const handleCloseCreate = () => setOpenCreate(false);
@@ -39,7 +38,7 @@ const OrdersPage = observer(() => {
   };
 
   const handleOpenOrder = (value) => {
-    setSelectedOrder(value);
+    ordersStore.setSelectedOrder(value);
     setOpenOrder(true);
   };
   const handleCloseEdit = () => setOpenEdit(false);
@@ -54,10 +53,8 @@ const OrdersPage = observer(() => {
           overflow: "hidden",
         }}
       >
-        <Box
-          sx={{ minWidth: "300px", borderTop: "1px solid #ccc" }}
-        >
-          <ConversationList isOrderFilter={true}/>
+        <Box sx={{ minWidth: "300px", borderTop: "1px solid #ccc" }}>
+          <ConversationList isOrderFilter={true} />
         </Box>
         <Box
           container
@@ -80,24 +77,23 @@ const OrdersPage = observer(() => {
                 orders={ordersStore?.fullStages[stage.value]}
                 handleOpenEdit={handleOpenEdit}
                 handleOpenOrder={handleOpenOrder}
-                setSelectedOrder={setSelectedOrder}
+                setSelectedOrder={ordersStore.setSelectedOrder}
               />
             );
           })}
           <EmptyStageList handleOpen={handleOpenCreate} />
         </Box>
       </Box>
-      <CreateOrderStageModal show={openCreate} handleClose={handleCloseCreate} />
+      <CreateOrderStageModal
+        show={openCreate}
+        handleClose={handleCloseCreate}
+      />
       <EditStageModal
         show={openEdit}
         handleClose={handleCloseEdit}
         selectedStage={selectedStage}
       />
-      <OrderModal
-        show={openOrder}
-        handleClose={handleCloseOrder}
-        selectedOrder={selectedOrder}
-      />
+      <OrderModal show={openOrder} handleClose={handleCloseOrder} />
     </Item>
   );
 });

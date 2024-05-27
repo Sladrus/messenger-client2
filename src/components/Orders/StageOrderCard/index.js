@@ -4,6 +4,7 @@ import { styled } from "@mui/material/styles";
 import LinkIcon from "@mui/icons-material/Link";
 import { observer } from "mobx-react-lite";
 import { StoreContext } from "../../../context/store";
+import { isToday } from "../../../utils/time";
 
 const types = [
   { name: "Перевод физ лицу ", value: "physical" },
@@ -160,23 +161,44 @@ const StageOrderCard = observer(({ order }) => {
               width: "100%",
               display: "flex",
               alignItems: "center",
-              justifyContent: "end",
+              justifyContent: "space-between",
             }}
           >
-            <LinkIcon sx={{ fontSize: "18px" }} />
             <Typography
               sx={{
                 textOverflow: "ellipsis",
                 whiteSpace: "nowrap",
                 overflow: "hidden",
                 textAlign: "right",
-                pl: "5px",
+                // fontWeight: 600
               }}
               variant="body2"
-              color="textSecondary"
+              color="subTitle"
             >
-              {order?.responsible?.username}
+              {isToday(order?.createdAt)}
             </Typography>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <LinkIcon sx={{ fontSize: "18px" }} />
+              <Typography
+                sx={{
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textAlign: "right",
+                  pl: "5px",
+                }}
+                variant="body2"
+                color="textSecondary"
+              >
+                {order?.responsible?.username}
+              </Typography>
+            </Box>
           </Box>
         </Box>
       </Box>

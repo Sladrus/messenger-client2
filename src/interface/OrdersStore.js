@@ -114,12 +114,14 @@ class OrdersStore {
   }
 
   async filterOrders(chat_id) {
+    console.log(chat_id);
     if (chat_id === 0) {
       this.setFullStages(this.orders);
     } else {
-      this.filteredOrders = this.orders?.filter(
-        (order) => order?.order?.chat_id === chat_id
-      );
+      this.filteredOrders = this.orders?.filter((order) => {
+        console.log(order);
+        return order?.conversation?.chat_id === chat_id;
+      });
       this.setFullStages(this.filteredOrders);
     }
   }

@@ -430,6 +430,7 @@ class ConversationStore {
   }
 
   async sendGrade(socket, id, user) {
+    console.log(id, user);
     this.setSendGradeLoading(true);
     socket.emit("conversation:sendGrade", {
       id,

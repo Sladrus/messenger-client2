@@ -2,6 +2,24 @@ import { makeAutoObservable, action } from "mobx";
 
 class OrdersStore {
   constructor() {
+    this.filter = {
+      responsible: "all",
+      type: "all",
+      unread: "all",
+      stage: "all",
+      tags: [],
+      dateRange: {
+        startDate: null,
+        endDate: new Date(
+          new Date().getFullYear(),
+          new Date().getMonth(),
+          new Date().getDate(),
+          23,
+          59,
+          59
+        ),
+      },
+    };
     this.selectedOrder = null;
     this.isLoading = false;
     this.stageLoading = false;
@@ -40,9 +58,33 @@ class OrdersStore {
     this.orders = value;
   }
 
+  setFilterType(value) {
+    this.filter.type = value;
+  }
+
+  setFilterDateRange(range) {
+    this.filter.dateRange = range;
+  }
+
+  setFilterUnread(value) {
+    this.filter.unread = value;
+  }
+
+  setFilterUser(value) {
+    this.filter.responsible = value;
+  }
+
+  setFilterStage(value) {
+    this.filter.stage = value;
+  }
+
+  setFilterTags(value) {
+    this.filter.tags = value;
+  }
+
   async getOrderStages(socket) {
     this.setLoading(true);
-    socket.emit("orders:get");
+    socket.emit("orders:get", { filter: this.filter });
   }
 
   async createOrderStage(socket, stage) {

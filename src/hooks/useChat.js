@@ -69,5 +69,16 @@ export const useChat = () => {
     conversationStore.filter.dateRange,
   ]);
 
+  useEffect(() => {
+    ordersStore.getOrderStages(socket); // eslint-disable-next-line
+  }, [
+    ordersStore.filter.unread,
+    ordersStore.filter.responsible,
+    ordersStore.filter.type,
+    ordersStore.filter.stage,
+    ordersStore.filter.tags,
+    ordersStore.filter.dateRange,
+  ]);
+
   return { userStore };
 };

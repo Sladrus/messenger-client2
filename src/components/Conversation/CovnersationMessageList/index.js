@@ -1,25 +1,17 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
-import { styled } from "@mui/material/styles";
-import {
-  Box,
-  Card,
-  CircularProgress,
-  Fab,
-  Stack,
-  Typography,
-} from "@mui/material";
-import Avatar from "@mui/joy/Avatar";
-import { observer } from "mobx-react-lite";
-import { StoreContext } from "../../../context/store";
-import { formatDate, isTodayUnix, taskColor } from "../../../utils/time";
-import { generatePastelColor } from "../../../utils/color";
-import Badge from "@mui/material/Badge";
-import env from "react-dotenv";
-import DescriptionIcon from "@mui/icons-material/Description";
-import { FixedSizeList as List } from "react-window";
-import { TimelineDot } from "@mui/lab";
-import { SocketContext } from "../../../context/socket";
 import CheckIcon from "@mui/icons-material/Check";
+import DescriptionIcon from "@mui/icons-material/Description";
+import Avatar from "@mui/joy/Avatar";
+import { TimelineDot } from "@mui/lab";
+import { Box, Card, CircularProgress, Stack, Typography } from "@mui/material";
+import Badge from "@mui/material/Badge";
+import { styled } from "@mui/material/styles";
+import { observer } from "mobx-react-lite";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import env from "react-dotenv";
+import { SocketContext } from "../../../context/socket";
+import { StoreContext } from "../../../context/store";
+import { generatePastelColor } from "../../../utils/color";
+import { formatDate, isTodayUnix, taskColor } from "../../../utils/time";
 
 const token = env.BOT_TOKEN;
 
@@ -553,37 +545,35 @@ const ConversationMessageList = observer(() => {
   return (
     <Item>
       <Stack spacing={1}>
-        {conversationStore.selectedConversation?.messages
-          ?.sort((a, b) => new Date(a.date) - new Date(b.date))
-          ?.map((message) => {
-            if (message.type === "text") {
-              return (
-                <TextMessage
-                  key={message._id}
-                  message={message}
-                  isSentByMe={message?.from?.id === userStore.user._id}
-                />
-              );
-            }
-            if (message.type === "photo") {
-              return (
-                <PhotoMessage
-                  key={message._id}
-                  message={message}
-                  isSentByMe={message.sender === "me"}
-                />
-              );
-            }
-            if (message.type === "event") {
-              return <EventMessage key={message._id} message={message} />;
-            }
-            if (message.type === "task") {
-              return <TaskMessage key={message._id} message={message} />;
-            }
-            if (message.type === "document") {
-              return <DocumentMessage key={message._id} message={message} />;
-            }
-          })}
+        {conversationStore.selectedConversation?.messages?.map((message) => {
+          if (message.type === "text") {
+            return (
+              <TextMessage
+                key={message._id}
+                message={message}
+                isSentByMe={message?.from?.id === userStore.user._id}
+              />
+            );
+          }
+          if (message.type === "photo") {
+            return (
+              <PhotoMessage
+                key={message._id}
+                message={message}
+                isSentByMe={message.sender === "me"}
+              />
+            );
+          }
+          if (message.type === "event") {
+            return <EventMessage key={message._id} message={message} />;
+          }
+          if (message.type === "task") {
+            return <TaskMessage key={message._id} message={message} />;
+          }
+          if (message.type === "document") {
+            return <DocumentMessage key={message._id} message={message} />;
+          }
+        })}
         {conversationStore.messageLoading && <LoadingMessage />}
         <span ref={messagesEndRef}></span>
       </Stack>

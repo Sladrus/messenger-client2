@@ -542,7 +542,7 @@ const ConversationMessageList = observer(() => {
     conversationStore.selectedConversation,
     conversationStore.selectedConversation?.messages?.length,
   ]);
-  return ([
+  return (
     <Item>
       <Stack spacing={1}>
         {[...conversationStore.selectedConversation?.messages]

@@ -398,6 +398,13 @@ class ConversationStore {
     });
   }
 
+  async createNewMessagesFromChat(socket, id) {
+    this.setUnreadLoading(true);
+    socket.emit("conversation:createNewMessagesFromChat", {
+      id,
+    });
+  }
+
   async createMoneysend(socket, id, data) {
     this.setMoneysendLoading(true);
     socket.emit("conversation:createMoneysend", {
@@ -430,7 +437,6 @@ class ConversationStore {
   }
 
   async sendGrade(socket, id, user) {
-    console.log(id, user);
     this.setSendGradeLoading(true);
     socket.emit("conversation:sendGrade", {
       id,

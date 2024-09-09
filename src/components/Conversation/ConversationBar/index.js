@@ -18,6 +18,7 @@ import { chatCount } from "../../../utils/text";
 import ClearIcon from "@mui/icons-material/Clear";
 import { SocketContext } from "../../../context/socket";
 import MuiAppBar from "@mui/material/AppBar";
+import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 
 const drawerWidth = 400;
 
@@ -41,7 +42,6 @@ const AppBar = styled(MuiAppBar, {
 const ConversationBar = observer(({ handleDrawerOpen, open, close }) => {
   const { socket } = useContext(SocketContext);
 
-
   const { conversationStore, userStore } = useContext(StoreContext);
 
   const length =
@@ -59,6 +59,14 @@ const ConversationBar = observer(({ handleDrawerOpen, open, close }) => {
       socket,
       conversationStore.selectedConversation._id,
       userStore.user
+    );
+  };
+
+  const handleLoadNewMessages = () => {
+    return;
+    conversationStore.createNewMessagesFromChat(
+      socket,
+      conversationStore.selectedConversation._id
     );
   };
 
@@ -99,10 +107,12 @@ const ConversationBar = observer(({ handleDrawerOpen, open, close }) => {
                         justifyContent: "center",
                       }}
                     >
-                      {!close && <ClearIcon
-                        sx={{ pr: "25px", cursor: "pointer" }}
-                        onClick={clearSelectedConversation}
-                      />}
+                      {!close && (
+                        <ClearIcon
+                          sx={{ pr: "25px", cursor: "pointer" }}
+                          onClick={clearSelectedConversation}
+                        />
+                      )}
                       <Box>
                         <Typography variant="subtitle2" fontWeight="bold">
                           {conversationStore.selectedConversation.title}
@@ -116,7 +126,25 @@ const ConversationBar = observer(({ handleDrawerOpen, open, close }) => {
                         </Typography>
                       </Box>
                     </Box>
-
+                    <Box sx={{ p: "0 10px" }}>
+                      {conversationStore?.selectedChatId !== null && (
+                        <Fab
+                          variant="extended"
+                          size="medium"
+                          color="primary"
+                          onClick={handleLoadNewMessages}
+                        >
+                          {!conversationStore.unreadLoading ? (
+                            <CloudDownloadIcon />
+                          ) : (
+                            <CircularProgress
+                              sx={{ color: "white" }}
+                              size={16}
+                            />
+                          )}
+                        </Fab>
+                      )}
+                    </Box>
                     <Box sx={{ p: "0 10px" }}>
                       {conversationStore?.selectedChatId !== null &&
                         conversationStore.selectedConversation?.unreadCount >
@@ -145,7 +173,8 @@ const ConversationBar = observer(({ handleDrawerOpen, open, close }) => {
                     {conversationStore.searchedConversations
                       ? "Найдено"
                       : `Загружено`}{" "}
-                    {length} {chatCount(length)} из {conversationStore?.metadata?.total || 0}
+                    {length} {chatCount(length)} из{" "}
+                    {conversationStore?.metadata?.total || 0}
                   </Typography>
                 )}
               </Box>

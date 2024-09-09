@@ -61,8 +61,8 @@ const ConversationBar = observer(({ handleDrawerOpen, open, close }) => {
   };
 
   const handleLoadNewMessages = () => {
-    conversationStore.selectedConversation === "supergroup" ||
-    conversationStore.selectedConversation === "group"
+    conversationStore.selectedConversation?.type === "supergroup" ||
+    conversationStore.selectedConversation?.type === "group"
       ? conversationStore.createNewMessagesFromChat(
           socket,
           conversationStore.selectedConversation._id

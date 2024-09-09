@@ -545,37 +545,35 @@ const ConversationMessageList = observer(() => {
   return (
     <Item>
       <Stack spacing={1}>
-        {[...conversationStore.selectedConversation?.messages]
-          ?.sort((a, b) => new Date(a?.date) - new Date(b?.date))
-          ?.map((message) => {
-            if (message.type === "text") {
-              return (
-                <TextMessage
-                  key={message._id}
-                  message={message}
-                  isSentByMe={message?.from?.id === userStore.user._id}
-                />
-              );
-            }
-            if (message.type === "photo") {
-              return (
-                <PhotoMessage
-                  key={message._id}
-                  message={message}
-                  isSentByMe={message.sender === "me"}
-                />
-              );
-            }
-            if (message.type === "event") {
-              return <EventMessage key={message._id} message={message} />;
-            }
-            if (message.type === "task") {
-              return <TaskMessage key={message._id} message={message} />;
-            }
-            if (message.type === "document") {
-              return <DocumentMessage key={message._id} message={message} />;
-            }
-          })}
+        {conversationStore.selectedConversation?.messages?.map((message) => {
+          if (message.type === "text") {
+            return (
+              <TextMessage
+                key={message._id}
+                message={message}
+                isSentByMe={message?.from?.id === userStore.user._id}
+              />
+            );
+          }
+          if (message.type === "photo") {
+            return (
+              <PhotoMessage
+                key={message._id}
+                message={message}
+                isSentByMe={message.sender === "me"}
+              />
+            );
+          }
+          if (message.type === "event") {
+            return <EventMessage key={message._id} message={message} />;
+          }
+          if (message.type === "task") {
+            return <TaskMessage key={message._id} message={message} />;
+          }
+          if (message.type === "document") {
+            return <DocumentMessage key={message._id} message={message} />;
+          }
+        })}
         {conversationStore.messageLoading && <LoadingMessage />}
         <span ref={messagesEndRef}></span>
       </Stack>

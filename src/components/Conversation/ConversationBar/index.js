@@ -1,3 +1,6 @@
+import ClearIcon from "@mui/icons-material/Clear";
+import CloudDownloadOutlinedIcon from "@mui/icons-material/CloudDownloadOutlined";
+import MenuIcon from "@mui/icons-material/Menu";
 import {
   // AppBar,
   Box,
@@ -8,18 +11,13 @@ import {
   Toolbar,
   Typography,
   styled,
-  useTheme,
 } from "@mui/material";
-import React, { useContext } from "react";
-import MenuIcon from "@mui/icons-material/Menu";
+import MuiAppBar from "@mui/material/AppBar";
 import { observer } from "mobx-react-lite";
+import React, { useContext } from "react";
+import { SocketContext } from "../../../context/socket";
 import { StoreContext } from "../../../context/store";
 import { chatCount } from "../../../utils/text";
-import ClearIcon from "@mui/icons-material/Clear";
-import { SocketContext } from "../../../context/socket";
-import MuiAppBar from "@mui/material/AppBar";
-import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
-
 const drawerWidth = 400;
 
 const AppBar = styled(MuiAppBar, {
@@ -126,7 +124,7 @@ const ConversationBar = observer(({ handleDrawerOpen, open, close }) => {
                         </Typography>
                       </Box>
                     </Box>
-                    <Box sx={{ p: "0 10px" }}>
+                    <Box>
                       {conversationStore?.selectedChatId !== null && (
                         <Fab
                           variant="extended"
@@ -135,7 +133,7 @@ const ConversationBar = observer(({ handleDrawerOpen, open, close }) => {
                           onClick={handleLoadNewMessages}
                         >
                           {!conversationStore.unreadLoading ? (
-                            <CloudDownloadIcon />
+                            <CloudDownloadOutlinedIcon fontSize="medium" />
                           ) : (
                             <CircularProgress
                               sx={{ color: "white" }}

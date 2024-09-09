@@ -123,26 +123,24 @@ const ConversationBar = observer(({ handleDrawerOpen, open, close }) => {
                           }
                         </Typography>
                       </Box>
-                    </Box>
-                    <Box>
-                      {conversationStore?.selectedChatId !== null && (
-                        <Fab
-                          variant="extended"
-                          size="medium"
-                          color="primary"
-                          onClick={handleLoadNewMessages}
-                        >
-                          {!conversationStore.unreadLoading ? (
-                            <CloudDownloadOutlinedIcon fontSize="medium" />
-                          ) : (
-                            <CircularProgress
-                              sx={{ color: "white" }}
-                              size={16}
-                            />
+                      <Box sx={{ pl: "25px" }}>
+                        {conversationStore?.selectedChatId !== null &&
+                          conversationStore.selectedConversation?.type ===
+                            "supergroup" && (
+                            <Box onClick={handleLoadNewMessages}>
+                              {!conversationStore.unreadLoading ? (
+                                <CloudDownloadOutlinedIcon fontSize="medium" />
+                              ) : (
+                                <CircularProgress
+                                  sx={{ color: "white" }}
+                                  size={16}
+                                />
+                              )}
+                            </Box>
                           )}
-                        </Fab>
-                      )}
+                      </Box>
                     </Box>
+
                     <Box sx={{ p: "0 10px" }}>
                       {conversationStore?.selectedChatId !== null &&
                         conversationStore.selectedConversation?.unreadCount >

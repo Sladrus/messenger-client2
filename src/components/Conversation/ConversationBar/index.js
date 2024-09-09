@@ -127,9 +127,11 @@ const ConversationBar = observer(({ handleDrawerOpen, open, close }) => {
                         {conversationStore?.selectedChatId !== null &&
                           conversationStore.selectedConversation?.type ===
                             "supergroup" && (
-                            <Box onClick={handleLoadNewMessages}>
+                            <Box>
                               {!conversationStore.unreadLoading ? (
-                                <CloudDownloadOutlinedIcon fontSize="medium" />
+                                <IconButton onClick={handleLoadNewMessages}>
+                                  <CloudDownloadOutlinedIcon fontSize="medium" />
+                                </IconButton>
                               ) : (
                                 <CircularProgress
                                   sx={{ color: "white" }}

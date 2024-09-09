@@ -61,11 +61,16 @@ const ConversationBar = observer(({ handleDrawerOpen, open, close }) => {
   };
 
   const handleLoadNewMessages = () => {
-    // return;
-    conversationStore.createNewMessagesFromChat(
-      socket,
-      conversationStore.selectedConversation._id
-    );
+    conversationStore.selectedConversation === "supergroup" ||
+    conversationStore.selectedConversation === "group"
+      ? conversationStore.createNewMessagesFromChat(
+          socket,
+          conversationStore.selectedConversation._id
+        )
+      : conversationStore.createNewMessagesFromPrivate(
+          socket,
+          conversationStore.selectedConversation._id
+        );
   };
 
   return (
@@ -124,22 +129,20 @@ const ConversationBar = observer(({ handleDrawerOpen, open, close }) => {
                         </Typography>
                       </Box>
                       <Box sx={{ pl: "25px" }}>
-                        {conversationStore?.selectedChatId !== null &&
-                          conversationStore.selectedConversation?.type ===
-                            "supergroup" && (
-                            <Box>
-                              {!conversationStore.unreadLoading ? (
-                                <IconButton onClick={handleLoadNewMessages}>
-                                  <CloudDownloadOutlinedIcon fontSize="medium" />
-                                </IconButton>
-                              ) : (
-                                <CircularProgress
-                                  sx={{ color: "white" }}
-                                  size={16}
-                                />
-                              )}
-                            </Box>
-                          )}
+                        {conversationStore?.selectedChatId !== null && (
+                          <Box>
+                            {!conversationStore.unreadLoading ? (
+                              <IconButton onClick={handleLoadNewMessages}>
+                                <CloudDownloadOutlinedIcon fontSize="medium" />
+                              </IconButton>
+                            ) : (
+                              <CircularProgress
+                                sx={{ color: "white" }}
+                                size={16}
+                              />
+                            )}
+                          </Box>
+                        )}
                       </Box>
                     </Box>
 

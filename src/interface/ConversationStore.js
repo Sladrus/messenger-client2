@@ -405,6 +405,14 @@ class ConversationStore {
     });
   }
 
+  async createNewMessagesFromPrivate(socket, id) {
+    this.setUnreadLoading(true);
+    this.setSelectedLoading(true);
+    socket.emit("conversation:createNewMessagesFromPrivate", {
+      id,
+    });
+  }
+
   async createMoneysend(socket, id, data) {
     this.setMoneysendLoading(true);
     socket.emit("conversation:createMoneysend", {

@@ -1,4 +1,4 @@
-import { makeAutoObservable, action } from "mobx";
+import { action, makeAutoObservable } from "mobx";
 
 class ConversationStore {
   constructor() {
@@ -400,6 +400,7 @@ class ConversationStore {
 
   async createNewMessagesFromChat(socket, id) {
     this.setUnreadLoading(true);
+    this.setSelectedLoading(true);
     socket.emit("conversation:createNewMessagesFromChat", {
       id,
     });

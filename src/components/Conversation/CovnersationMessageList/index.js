@@ -546,7 +546,7 @@ const ConversationMessageList = observer(() => {
     <Item>
       <Stack spacing={1}>
         {conversationStore.selectedConversation?.messages
-          ?.sort((a, b) => new Date(a.date) - new Date(b.date))
+          ?.sort((a, b) => new Date(a?.date) - new Date(b?.date))
           ?.map((message) => {
             if (message.type === "text") {
               return (

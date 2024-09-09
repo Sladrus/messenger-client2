@@ -61,7 +61,7 @@ const ConversationBar = observer(({ handleDrawerOpen, open, close }) => {
   };
 
   const handleLoadNewMessages = () => {
-    return;
+    // return;
     conversationStore.createNewMessagesFromChat(
       socket,
       conversationStore.selectedConversation._id
